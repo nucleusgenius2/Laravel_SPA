@@ -1,0 +1,32 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "watch": "vite build --watch"
+    },
+    "devDependencies": {
+        "@popperjs/core": "^2.11.6",
+        "@vitejs/plugin-vue": "^4.0.0",
+        "axios": "^1.3.4",
+        "bootstrap": "^5.2.3",
+        "laravel-vite-plugin": "^0.7.2",
+        "sass": "^1.56.1",
+        "vite": "^4.0.0",
+        "vue": "^3.2.37"
+    },
+    "dependencies": {
+        "@ckeditor/ckeditor5-build-classic": "^36.0.1",
+        "@ckeditor/ckeditor5-build-decoupled-document": "^36.0.1",
+        "@ckeditor/ckeditor5-font": "^36.0.1",
+        "@ckeditor/ckeditor5-html-support": "^36.0.1",
+        "@ckeditor/ckeditor5-vue": "^4.0.1",
+        "@tiptap/pm": "^2.0.0-beta.220",
+        "@tiptap/starter-kit": "^2.0.0-beta.220",
+        "@tiptap/vue-3": "^2.0.0-beta.220",
+        "@vueup/vue-quill": "^1.1.1",
+        "vue-axios": "^3.5.2",
+        "vue-router": "^4.1.6",
+        "vue2-editor": "^2.10.3"
+    }
+}

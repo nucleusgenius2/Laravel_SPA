@@ -1,0 +1,49 @@
+.max {
+    max-width: 1240px;
+    margin:auto;
+    padding-left:20px;
+    padding-right:20px;
+}
+
+body {
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif
+}
+
+h1, h2 {
+    font-style: normal;
+    font-weight: 700!important;
+    font-size: 34px!important;
+    text-transform: uppercase;
+    color: #212121;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.heading-1 {
+    font-style: normal;
+    font-weight: 700!important;
+    font-size: 34px!important;
+    text-transform: uppercase;
+    color: #212121;
+    margin: 0;
+    line-height: 1.4;
+}
+
+a {
+    color: #4e41d9;
+    text-decoration: none;
+    transition:0.3s;
+}
+
+a:hover {
+    color: #2b228a;
+    text-decoration: none;
+}
+
+*,:after,:before {
+    box-sizing: border-box;
+}
+
+body {
+    margin:0px;
+}
