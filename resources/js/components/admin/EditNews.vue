@@ -29,7 +29,7 @@
 
             <div class="wrap-save">
                 <div class="save news" @click="save()">Сохранить</div>
-                <div class="text-status" v-if="saveStatus==='save_success' || saveStatus==='save_success_redirect'">
+                <div class="text-status" v-if="saveStatus==='success' || saveStatus==='save_success_redirect'">
                     <span>Успешно сохранено</span>
                 </div>
             </div>
@@ -66,7 +66,7 @@ export default {
 import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
 import CKEditor from '@ckeditor/ckeditor5-vue';
-import axios from "axios";
+import {authRequest} from "@/api.js";
 
 const ckeditor = CKEditor.component;
 
@@ -75,7 +75,6 @@ let array = ref({
     name : '',
     img : '',
 });
-console.log(array);
 let textEditor = ref('');
 let saveStatus = ref('');
 let imgPreview = ref('');
@@ -126,27 +125,17 @@ let editorConfig = {
 //get post info
 onMounted(
     async () => {
-        if (route.params.id != 'add') {
-            let response = await fetch('/api/news/1/' + route.params.id);
-            if (response.ok) {
-                let json = await response.json();
-                array.value = json[0];
-                textEditor.value = json[0]['content'];
-            }
+        if (route.params.id !== 'add') {
+            let response = await authRequest('/api/post/' + route.params.id, 'get');
+            array.value = response.data[0];
+            textEditor.value = response.data[0]['content'];
+            imgPreview.value = response.data[0]['img'];
         }
     }
 );
 
 //update post
-function save(){
-    const token = JSON.parse(localStorage.getItem('token'));
-    axios.defaults.withCredentials = true;
-
-    const headers = {
-        accept: ' multipart/form-data',
-        Authorization: 'Bearer ' + token.token
-    }
-
+async function save(){
 
     //save or update
     let formData = new FormData();
@@ -155,21 +144,34 @@ function save(){
     formData.append('img', array.value.img)
     formData.append('content', textEditor.value)
     formData.append('short_description', array.value.short_description)
-    formData.append('autor', JSON.parse(localStorage.getItem('token')).user),
+    formData.append('autor', JSON.parse(localStorage.getItem('token')).user);
+    formData.append('seo_title', '');
+    formData.append('seo_discription', '');
+    formData.append('id_category', '');
 
-    axios.post('/api/admin/save', formData, {headers: headers})
-        .then((response) => {
-            saveStatus.value = response.data.status;
-            if (response.data.redirect == 'true'){
-                window.location.replace("/admin/post/"+response.data.id+"/edit");
-            }
-            if ( saveStatus === 'save_success') {
-                setTimeout(() => {
-                    saveStatus.value = '';
-                }, "3000");
-            }
+
+    if ( route.params.id === 'add' ){
+        let response = await authRequest('/api/admin/create', 'post', formData );
+
+        if (response.data.redirect === 'true'){
+            window.location.replace("/admin/post/"+response.data.id+"/edit");
         }
-    )
+
+        saveStatus.value = response.data.status;
+    }
+    else {
+        let response = await authRequest('/api/admin/update', 'post', formData );
+        saveStatus.value = response.data.status;
+    }
+
+    if ( saveStatus.value === 'success') {
+        setTimeout(() => {
+            saveStatus.value = '';
+        }, 3000);
+    }
+    else {
+        console.log( saveStatus)
+    }
 
 }
 
@@ -194,6 +196,7 @@ function save(){
     }
     .img-field img {
         max-width:100px;
+        margin-right:30px;
     }
     .img-field .field-admin {
         margin-bottom: 0px;
@@ -214,7 +217,6 @@ function save(){
         width: 100%;
         vertical-align: middle;
         box-shadow: 0 0px 0px rgba(0, 0, 0, 0.075) inset !important;
-        margin-bottom: 0px;
         border-style: solid;
         margin: 0px;
         box-sizing: border-box;

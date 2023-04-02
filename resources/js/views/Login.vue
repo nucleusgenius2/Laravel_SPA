@@ -28,6 +28,7 @@
                 </form>
 
                 <div class="auth-text form-auth-true"  v-if="status === 'auth'">Вы авторезированы</div>
+                <div class="auth-text form-auth-false"  v-if="error !== ''">{{ error }}</div>
             </div>
 
         </template>
@@ -36,7 +37,6 @@
 
 
 <script setup>
-import axios from 'axios';
 import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
 const route = useRoute();
@@ -44,31 +44,29 @@ const route = useRoute();
 let email = ref('');
 let password = ref('');
 let status = ref('noAuth');
-if (localStorage.getItem("token") !== null && localStorage.getItem("user") !== null) {
+let error =  ref('');
+import {notAuthRequest} from "@/api.js";
+if (localStorage.getItem("token") !== null) {
     status.value = 'auth';
 }
 
-function formSubmit(){
+async function formSubmit(){
 
-    let headerReq = {
-        headers: {
-            Accept: 'application/json',
-        }
+    let data = {
+        email: email.value,
+        password: password.value,
     }
-    //auth
-    axios.get('/sanctum/csrf-cookie').then(response => {
-        axios.post('/api/login', {
-            email: email.value,
-            password: password.value,
-        }, headerReq)
-            .then((response) => {
-                status.value = 'auth';
-                localStorage.setItem('token', JSON.stringify(response.data))
-            })
-            .catch(function (error) {
-                console.error(error);
-            });
-    });
+
+    let response = await notAuthRequest('/api/login', 'post', data);
+    if (response.data.status === 'success') {
+        status.value = 'auth';
+        error.value ='';
+        localStorage.setItem('token', JSON.stringify(response.data))
+    }
+    else {
+        error.value = response.data.text;
+    }
+
 }
 
 </script>
@@ -138,7 +136,7 @@ function formSubmit(){
         text-align: center;
     }
 
-    .form-auth-true {
+    .form-auth-true, .form-auth-false {
         max-width: 500px;
         margin: auto;
         padding: 20px;
@@ -146,5 +144,8 @@ function formSubmit(){
         color: #11b737;
         font-size: 18px;
         text-align: center;
+    }
+    .form-auth-false {
+        color: #df3627;
     }
 </style>

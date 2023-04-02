@@ -18,7 +18,7 @@
             </div>
 
             <div class="menu-el">
-                <router-link to="/news/10/1">Новости</router-link>
+                <router-link to="/post-list/10/1">Новости</router-link>
             </div>
 
             <div class="menu-el">

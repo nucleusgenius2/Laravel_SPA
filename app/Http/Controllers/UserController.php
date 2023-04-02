@@ -7,21 +7,34 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Permission;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 
 class UserController
 {
 
     /**
-     * chek admin permission user
+     * @var array
+     */
+    public array $response = [
+        'data' => [
+            'status' => 'error',
+            'text' => '',
+        ],
+        'code' => 402
+    ];
+
+    /**
+     * check admin permission user
      * @param User $user
      * @return bool
      */
     private function isAdminPermission(User $user): bool
     {
-
         $user_right = Permission::where('id', '=', $user['id'])->get();
+
         if (count($user_right)) {
             return true;
         } else {
@@ -37,15 +50,14 @@ class UserController
      */
     public function checkStatusUser(Request $request): JsonResponse
     {
-
         $user = request()->user();
         if ($user->tokenCan('permission:admin')) {
             $data = ['status' => 'success', 'permission' => 'admin'];
         } else {
             $data = ['status' => 'success', 'permission' => 'user'];
         }
-        return response()->json($data, 200);
 
+        return response()->json($data, 200);
     }
 
 
@@ -70,19 +82,30 @@ class UserController
      */
     public function registrationUser(Request $request): JsonResponse
     {
+        $response = $this->response;
 
-        $request->validate([
+        $validated = Validator::make($request->all(), [
             'name' => 'required|string',
-            'email' => 'required|email',
-            'password' => 'required|string'
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|confirmed|min:6',
         ]);
 
-        $user = User::create(request(['name', 'email', 'password']));
-        $token = $user->createToken('token', ['permission:user'])->plainTextToken;
+        if ($validated->fails()) {
+            $response['data']['text'] = $validated ->errors();
+        } else {
+            $data = $validated->valid();
 
-        $data = ['status' => 'success', 'user' => $user->email, 'token' => $token];
-        return response()->json($data, 200);
+            $user = User::create($data);
 
+            $token = $user->createToken('token', ['permission:user'])->plainTextToken;
+
+            $response['data']['status'] = 'success';
+            $response['data']['text'] = 'Регистрация прошла успешно';
+            $response['data']['token'] = $token;
+            $response['data']['user'] = $user->email;
+            $response['code'] = 200;
+        }
+        return response()->json($response['data'], $response['code']);
     }
 
 
@@ -93,22 +116,41 @@ class UserController
      */
     public function loginUser(Request $request): JsonResponse
     {
+        $response = $this->response;
 
-        $request->validate([
+        $validated = Validator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required|string'
+            'password' => 'required|string',
         ]);
-        $user = User::where('email', $request->email)->first();
 
-        //permission user
-        if ($this->isAdminPermission($user)) {
-            $token = $user->createToken('token', ['permission:admin'])->plainTextToken;
+        if ($validated->fails()) {
+            $response['data']['text'] = $validated ->errors();
         } else {
-            $token = $user->createToken('token', ['permission:user'])->plainTextToken;
+            $user = User::where('email', $request->email)->first();
+
+            if($user) {
+                if (Hash::check($request->password, $user->password)) {
+                    /* permission user */
+                    if ($this->isAdminPermission($user)) {
+                        $token = $user->createToken('token', ['permission:admin'])->plainTextToken;
+                    } else {
+                        $token = $user->createToken('token', ['permission:user'])->plainTextToken;
+                    }
+
+                    $response['data']['status'] = 'success';
+                    $response['data']['text'] = 'Регистрация прошла успешно';
+                    $response['data']['token'] = $token;
+                    $response['data']['user'] = $user->email;
+                    $response['code'] = 200;
+                } else {
+                    $response['data']['text'] = 'Пароль не совпадает';
+                }
+            } else {
+                $response['data']['text'] = 'Email не найден';
+            }
         }
 
-        $data = ['status' => 'success', 'user' => $user->email, 'token' => $token];
-        return response()->json($data, 200);
+        return response()->json($response['data'], $response['code']);
 
     }
 

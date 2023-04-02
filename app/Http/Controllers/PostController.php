@@ -3,8 +3,9 @@ declare(strict_types = 1);
 
 namespace App\Http\Controllers;
 
-use App\Models\News;
+use App\Models\Post;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 
 class PostController
@@ -12,17 +13,34 @@ class PostController
 
     /**
      * returns a list of news with pagination or single news
-     * @param string $total
-     * @param string $id
+     * @param int $total
      * @return JsonResponse
      */
-    public function getPostListOrSinglePost(string $total, string $id): JsonResponse
+    public function getPostList(int $total): JsonResponse
     {
-        if ($total != '1') {
-            $array_news = News::orderBy('id', 'desc')->paginate($total);
-        } else {
-            $array_news = News::where('id', '=', $id)->get();
+        $array_news = Post::orderBy('id', 'desc')->paginate($total);
+        if ($array_news) {
+            $code = 200;
         }
-        return response()->json($array_news, 200);
+        else {
+            $code = 404;
+        }
+        return response()->json($array_news,  $code);
+    }
+
+    /**
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function getPostSingle(int $id): JsonResponse
+    {
+        $array_news = Post::where('id', '=', $id)->get();
+        if ($array_news) {
+            $code = 200;
+        }
+        else {
+            $code = 404;
+        }
+        return response()->json($array_news,  $code);
     }
 }

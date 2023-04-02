@@ -55,8 +55,7 @@
 
 <script setup>
 import {onMounted, ref} from "vue";
-import axios from "axios";
-import {headers} from "@/api.js";
+import {authRequest} from "@/api.js";
 import {useRoute} from "vue-router";
 const route = useRoute();
 
@@ -70,22 +69,12 @@ let newPasswordValidate = ref('');
 
 onMounted(
     async () => {
-
-        //get data profile
-        await axios.get('/api/profile', {
-            headers: headers
-        })
-            .then(response => {
-                data.value = response.data;
-            })
-            .catch(error => {
-                console.error(error);
-            })
-
+        let responsive = await authRequest('/api/profile', 'get');
+        data.value = responsive.data;
     }
 );
 
-function updateProfile() {
+async function updateProfile() {
 
     if (data.value.name !== '' && data.value.name !== '' && password.value !== '') {
 
@@ -95,25 +84,20 @@ function updateProfile() {
         } else {
             newPasswordValidate.value = newPassword.value;
         }
-        axios.patch('/api/profile', {
+        let dataReq = {
             name: data.value.name,
             email: data.value.email,
             password: password.value,
             newPassword: newPasswordValidate.value,
-        }, {
-            headers: headers
-        })
-            .then((response) => {
-                if (response.data.status === 'success') {
-                    success.value = 'Данные обновлены';
-                    error.value = '';
-                } else {
-                    error.value = 'Форма заполнена с ошибками';
-                }
-            })
-            .catch(function (error) {
-                error.value = 'Форма заполнена с ошибками';
-            });
+        }
+        let response = await authRequest('/api/profile', 'patch',  dataReq);
+
+        if (response.data.status === 'success') {
+            success.value = 'Данные обновлены';
+            error.value = '';
+        } else {
+            error.value = 'Форма заполнена с ошибками';
+        }
 
     } else {
         error.value = 'Не все обязательные поля заполнены';

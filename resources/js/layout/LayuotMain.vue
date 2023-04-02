@@ -1,12 +1,12 @@
 <template>
-    <Header v-if="props.layout == 'mainLayout'" />
-    <Menu v-if="props.layout == 'mainLayout'" />
+    <Header v-if="props.layout === 'mainLayout'" />
+    <Menu v-if="props.layout === 'mainLayout'" />
 
     <div class="content">
         <slot name="content"></slot>
     </div>
 
-    <Footer v-if="props.layout == 'mainLayout'" />
+    <Footer v-if="props.layout === 'mainLayout'" />
 </template>
 
 

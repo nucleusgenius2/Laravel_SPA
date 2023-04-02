@@ -49,6 +49,7 @@
                 </form>
 
                 <div class="auth-text form-auth-true"  v-if="status === 'auth'">Вы зарегистрированы</div>
+                <div class="auth-text form-auth-false"  v-if="error !== ''">{{ error }}</div>
 
             </div>
 
@@ -59,8 +60,8 @@
 
 
 <script setup>
-import axios from 'axios';
 import {onMounted, ref} from 'vue';
+import {notAuthRequest} from "@/api.js";
 import {useRoute} from "vue-router";
 const route = useRoute();
 
@@ -70,31 +71,31 @@ let email = ref('');
 let password = ref('');
 let passwordConfirm = ref('');
 let status = ref('noAuth');
-if (localStorage.getItem("token") !== null && localStorage.getItem("user") !== null) {
+let error =  ref('');
+if (localStorage.getItem("token") !== null ) {
     status.value = 'auth';
 }
 
 const header = ref('');
 
-function formSubmit(){
+async function formSubmit(){
 
-    //registration
-    axios.get('/sanctum/csrf-cookie').then(response => {
-        axios.post('/api/registration', {
-            name: name.value,
-            email: email.value,
-            password: password.value,
-        })
-            .then((response) => {
-                if ( response.data.status == 'success' ) {
-                    status.value = 'auth';
-                    localStorage.setItem('token', JSON.stringify(response.data))
-                }
-            })
-            .catch(function (error) {
-                console.error(error);
-            });
-    });
+    let data = {
+        name: name.value,
+        email: email.value,
+        password: password.value,
+        password_confirmation: passwordConfirm.value,
+    }
+
+    let response = await notAuthRequest('/api/registration', 'post', data);
+    if (response.data.status === 'success') {
+        status.value = 'auth';
+        localStorage.setItem('token', JSON.stringify(response.data))
+    }
+    else {
+        error.value = response.data.text;
+    }
+
 }
 
 </script>
@@ -155,16 +156,6 @@ function formSubmit(){
         margin: auto;
     }
 
-    .form-auth-true {
-        max-width: 500px;
-        margin: auto;
-        padding: 20px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-        color: #11b737;
-        font-size: 18px;
-        text-align: center;
-    }
-
     .heading-form {
         font-weight: 500;
         font-size: 22px;
@@ -177,5 +168,17 @@ function formSubmit(){
     .wrap-already-reg {
         text-align: center;
         margin-top:20px;
+    }
+    .form-auth-true, .form-auth-false {
+        max-width: 500px;
+        margin: auto;
+        padding: 20px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+        color: #11b737;
+        font-size: 18px;
+        text-align: center;
+    }
+    .form-auth-false {
+        color: #df3627;
     }
 </style>

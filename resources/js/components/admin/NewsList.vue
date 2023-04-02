@@ -10,7 +10,7 @@
                 </div>
             </div>
 
-            <div class="post-el" v-for="(value, name) in array_post">
+            <div class="post-el" v-for="(value, name) in arrayPostEl">
                 <a :href="'/admin/post/'+value['id']+'/edit'" class="post-name">{{ value['name'] }}</a>
                 <div class="post-author">{{ value['autor'] }}</div>
                 <div class="wrap-date">
@@ -22,7 +22,7 @@
             </div>
 
             <div class="pagination-post" v-if="props.pagination === 'true' ">
-                <div class="pagination-el" v-for="(value, name) in array_pagination">
+                <div class="pagination-el" v-for="(value, name) in arrayPagination">
                     <a :href="value['url']">{{ value['label'] }}</a>
                 </div>
             </div>
@@ -32,59 +32,55 @@
 </template>
 
 
-<script>
-export default {
-    name: "NewsList"
-}
-</script>
-
-
 <script setup>
 
 import {onMounted, ref} from 'vue';
 import { useRoute } from "vue-router";
-import axios from "axios";
+import {authRequest} from "@/api.js";
 
 let props = defineProps({
     total: String,
     pagination: String,
 })
 
-
 const route = useRoute();
 
-let array_post = ref([]);
-let array_pagination = ref([]);
+let arrayPostEl = ref([]);
+let arrayPagination = ref([]);
 
 onMounted(
     async () => {
-        let response = await fetch('/api/news/'+props.total+'/all?page='+route.params.page);
-        if (response.ok) {
-            let json = await response.json();
+        let response = await authRequest('/api/post-list/'+props.total+'/all?page='+route.params.page, 'get');
+        if (response.status===200) {
+
+            let arrayPost = response.data.data;
+            let arrayLink = response.data.links;
             //short description post
-            for (let i = 0; i < json['data'].length; i++) {
+            for (let i = 0; i < arrayPost.length; i++) {
                 //converting date
-                json['data'][i]['created_at'] = new Date(json['data'][i]['created_at']).toLocaleString();
-                json['data'][i]['updated_at'] = new Date(json['data'][i]['created_at']).toLocaleString();
+                arrayPost[i]['created_at'] = new Date(arrayPost[i]['created_at']).toLocaleString();
+                arrayPost[i]['updated_at'] = new Date(arrayPost[i]['updated_at']).toLocaleString();
             }
 
             //pagination array localization
-            json['links'][0]['label'] = 'В начало';
-            json['links'][json['links'].length - 1]['label'] = 'В конец';
+            arrayLink[0]['label'] = 'В начало';
+            arrayLink[arrayLink.length - 1]['label'] = 'В конец';
 
-            for (let i = 0; i < json['links'].length; i++) {
+            for (let i = 0; i < arrayLink.length; i++) {
                 let page = i;
                 //first link pagination
-                if( page == 0 ){page = 1;}
+                if (page === 0) {
+                    page = 1;
+                }
                 //last link pagination
-                else if ( page == json['links'].length -1 ){ page = json['links'].length -2 }
-                json['links'][i]['url'] = '/admin/news/10/'+page ;
+                else if (page === arrayLink.length - 1) {
+                    page = arrayLink.length - 2;
+                }
+                arrayLink[i]['url'] = '/admin/post-list/10/' + page;
             }
 
-            array_pagination.value = json['links'];
-
-            array_post.value = json['data'];
-
+            arrayPagination.value = arrayLink;
+            arrayPostEl.value = arrayPost;
         }
     }
 );
@@ -92,23 +88,16 @@ onMounted(
 
 //remove post
 async function removePost(e){
-
-    const token = JSON.parse(localStorage.getItem('token'));
-    let headers = {
-        accept: 'application/json',
-        Authorization: 'Bearer ' + token.token
-    }
-
     let id = e.target.getAttribute('data-id');
-    //set token in axios header
-    let response =  await axios.delete('/api/admin/delete/'+id, {
-        headers: headers
-    })
-    if ( response.data=='success' ){
+
+    let response = await authRequest('/api/admin/delete/'+id, 'delete');
+
+    if ( response.data.status==='success' ){
         e.target.closest('.post-el').remove();
     }
-
-
+    else {
+        console.error(response.data.status);
+    }
 }
 </script>
 

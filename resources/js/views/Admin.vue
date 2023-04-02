@@ -20,13 +20,13 @@
             <div class="wrap-dashboard admin-panel max">
                 <div class="dashboard-col-1">
                     <div class="wrap-dashboard-button">
-                        <div class="dashboard-button news"><a href="/admin/news/10/1">Новости</a></div>
+                        <div class="dashboard-button news"><a href="/admin/post-list/10/1">Новости</a></div>
                     </div>
                 </div>
 
                 <div class="dashboard">
                     <!-- news list -->
-                    <div class="tab-admin" v-if="route.params.edit =='news' && route.params.id !='1'">
+                    <div class="tab-admin" v-if="route.params.edit ==='post-list' && route.params.id !='1'">
 
                         <a class="add-new" href="/admin/post/add/edit">Добавить новость</a>
                         <div class="wrap-list-news">
@@ -36,7 +36,7 @@
                     </div>
 
                     <!-- single editor news -->
-                    <div class="tab-admin" v-if="route.params.edit =='post'" data-tab="editor-news">
+                    <div class="tab-admin" v-if="route.params.edit ==='post'" data-tab="editor-news">
 
                         <div class="wrap-list-news">
                             <EditNews />
@@ -57,10 +57,9 @@
 <script setup>
 import NewsList from '@/components/admin/NewsList.vue';
 import EditNews from '@/components/admin/EditNews.vue';
-import axios from "axios";
 import {onMounted, ref} from 'vue';
 import { useRoute } from "vue-router";
-import {headers} from "@/api.js";
+import {authRequest} from "@/api.js";
 
 let auth = ref('');
 let userEmail = ref('');
@@ -69,31 +68,28 @@ const route = useRoute();
 //check auth user
 onMounted(async () => {
     //check local store
-    if (localStorage.getItem("token") !== null && localStorage.getItem("user") !== null) {
+    if (localStorage.getItem("token") !== null) {
 
         //set token in axios header
-        let response = await axios.get('/api/authorization', {
-            headers: headers
-        })
+        let response = await authRequest('/api/authorization', 'get');
 
         auth.value = response.data;
         userEmail.value = JSON.parse(localStorage.getItem('token')).user
     }
-
 });
 
+
 //logout
-async function logout(){
-
-    //set token in axios header
-    axios.get('/api/logout/', {
-        headers: headers
-    }).then(response => {
-        if ( response.data.status == 'success' ){
-            window.location.replace("/")
-        }
-    });
-
+async function logout() {
+    let response = await authRequest('/api/logout/', 'get');
+    if (response.data.status === 'success') {
+        auth.value.status = '';
+        localStorage.removeItem('token');
+        window.location.replace("/login");
+    }
+    else {
+        console.error(response.status);
+    }
 }
 
 </script>

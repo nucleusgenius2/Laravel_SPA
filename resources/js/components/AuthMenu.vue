@@ -15,9 +15,8 @@
 
 
 <script setup>
-import axios from "axios";
 import {onMounted, ref} from "vue";
-import {headers} from "@/api.js";
+import {authRequest} from "@/api.js";
 
 let auth = ref('');
 let userEmail = ref('');
@@ -31,20 +30,15 @@ defineExpose({
 //check auth user
 onMounted(async () => {
     //check local store
-    if (localStorage.getItem("token") !== null && localStorage.getItem("user") !== null) {
-
-        //set token in axios header
-        await axios.get('/api/authorization', {
-            headers: headers
-        })
-            .then(response => {
-                auth.value = response.data;
-                userEmail.value = JSON.parse(localStorage.getItem('token')).user;
-            })
-            .catch(err => {
-                //delete an outdated token
-                localStorage.removeItem('token');
-            });
+    if (localStorage.getItem("token") !== null ) {
+        let response = await authRequest('/api/authorization', 'get');
+        if ( response.data.status === 'success' ){
+            auth.value = response.data;
+            userEmail.value = JSON.parse(localStorage.getItem('token')).user;
+        }
+        else {
+            localStorage.removeItem('token');
+        }
     }
 
 });
@@ -52,22 +46,15 @@ onMounted(async () => {
 
 //logout
 async function logout() {
-
-    //set token in axios header
-    axios.get('/api/logout/', {
-        headers: headers
-    })
-        .then(response => {
-            if (response.data.status == 'success') {
-                auth.value.status = '';
-                localStorage.removeItem('token');
-            }
-        })
-        .catch(err => {
-            //delete an outdated token
-            console.error(err);
-        });;
-
+    let response = await authRequest('/api/logout/', 'get');
+    if (response.data.status === 'success') {
+        auth.value.status = '';
+        localStorage.removeItem('token');
+        window.location.replace("/login");
+    }
+    else {
+        console.error(response.status);
+    }
 }
 </script>
 

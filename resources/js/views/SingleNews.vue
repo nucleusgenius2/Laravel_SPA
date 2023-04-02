@@ -17,17 +17,15 @@
 <script setup>
 import {onMounted, ref} from 'vue';
 import { useRoute } from "vue-router";
+import {authRequest} from "@/api.js";
 
 const route = useRoute();
 let array = ref([]);
 
 onMounted(
     async () => {
-        let response = await fetch('/api/news/1/'+route.params.id );
-        if (response.ok) {
-            let json = await response.json();
-            array.value = json[0];
-        }
+        let response = await authRequest('/api/post/'+route.params.id, 'get' );
+        array.value = response.data[0];
     }
 );
 </script>

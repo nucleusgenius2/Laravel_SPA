@@ -23,7 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //public api
-Route::get('/news/{total}/{id}', [PostController::class, 'getPostListOrSinglePost']);
+Route::get('/post-list/{total}/{paginate}', [PostController::class, 'getPostList']);
+Route::get('/post/{id}', [PostController::class, 'getPostSingle']);
 Route::post('login', [UserController::class, 'loginUser']);
 Route::post('registration', [UserController::class, 'registrationUser']);
 
@@ -35,12 +36,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'profileInfo']);
     Route::patch('/profile', [ProfileController::class, 'profileUpdate']);
-
 });
 
 //admin api
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::post('/admin/save', [AdminController::class, 'saveAndUpdatePost']);
+    Route::post('/admin/create', [AdminController::class, 'createPost']);
+    Route::post('/admin/update', [AdminController::class, 'updatePost']);
     Route::delete('/admin/delete/{id}', [AdminController::class, 'deletePost']);
 });
 
