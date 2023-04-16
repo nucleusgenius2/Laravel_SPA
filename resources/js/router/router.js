@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import {authRequest} from "@/api.js";
 
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -15,15 +16,15 @@ const router = createRouter({
         {
             path: "/post/:id",
             name: "SinglePost",
-            component: () => import("../views/SingleNews.vue"),
+            component: () => import("@/views/SinglePost.vue"),
             meta: {
                 layout : "mainLayout"
             }
         },
         {
-            path: "/post-list/:total/:page",
+            path: "/post-list/:page",
             name: "ListPost",
-            component: () => import("../views/NewsPage.vue"),
+            component: () => import("@/views/ListPost.vue"),
             meta: {
                 layout : "mainLayout"
             }
@@ -31,7 +32,7 @@ const router = createRouter({
         {
             path: "/registration",
             name: "Registration",
-            component: () => import("../views/Registration.vue"),
+            component: () => import("@/views/Registration.vue"),
             meta: {
                 layout : "mainLayout"
             }
@@ -39,7 +40,7 @@ const router = createRouter({
         {
             path: "/login",
             name: "Login",
-            component: () => import("../views/Login.vue"),
+            component: () => import("@/views/Login.vue"),
             meta: {
                 layout : "mainLayout"
             }
@@ -47,22 +48,41 @@ const router = createRouter({
         {
             path: "/profile",
             name: "Profile",
-            component: () => import("../views/profile.vue"),
+            component: () => import("@/views/Profile.vue"),
             meta: {
                 layout : "mainLayout"
             }
         },
         {
-            path: "/admin/:edit/:id/:page",
+            path: "/admin/:edit/:page",
             name: "Admin",
-            component: () => import("../views/Admin.vue"),
+            component: () => import("@/views/Admin.vue"),
             meta: {
                 layout : "admin"
             }
         },
 
+        //page not found
+        {
+            path: "/404",
+            name: "404",
+            component: () => import("@/views/Page404.vue"),
+            meta: {
+                layout : "mainLayout"
+            }
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            component: () => import("@/views/Page404.vue"),
+            meta: {
+                layout : "mainLayout"
+            }
+        },
+
     ],
 });
+
+
 
 // protect router
 router.beforeEach( async (to, from, next) => {

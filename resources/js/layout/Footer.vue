@@ -2,6 +2,7 @@
     <div class="wrap-footer">
         <div class="footer max">
             <div class="footer-col-1">СООБЩЕСТВО</div>
+
             <div class="footer-col-2">
                 <p><a class="soc" href="https://vk.com/ru_faf" target="_blank" rel="noopener"><br />
                     <img src="/images/vk_1.png" alt="vk" /></a></p>
@@ -11,6 +12,7 @@
                     <img src="/images/discord.png" alt="discord" /></a></p>
                 <div class="text-soc">Основное общение в дискорде</div>
             </div>
+
             <div class="footer-col-3">
                 <div class="wrap-button">
                     <div class="button-01 hover-purple">Скачать клиент</div>

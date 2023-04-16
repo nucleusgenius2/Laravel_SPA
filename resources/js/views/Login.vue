@@ -39,13 +39,14 @@
 <script setup>
 import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
+import {notAuthRequest} from "@/api.js";
 const route = useRoute();
 
 let email = ref('');
 let password = ref('');
 let status = ref('noAuth');
 let error =  ref('');
-import {notAuthRequest} from "@/api.js";
+
 if (localStorage.getItem("token") !== null) {
     status.value = 'auth';
 }
@@ -61,7 +62,7 @@ async function formSubmit(){
     if (response.data.status === 'success') {
         status.value = 'auth';
         error.value ='';
-        localStorage.setItem('token', JSON.stringify(response.data))
+        localStorage.setItem('token', JSON.stringify(response.data.json))
     }
     else {
         error.value = response.data.text;

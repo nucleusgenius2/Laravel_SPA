@@ -4,6 +4,7 @@
 
             <div class="max">
                 <div class="wrap-profile">
+
                     <h2>Ваш профиль</h2>
                     <div class="profile-el">
                         <span class="heading-field">Ваше имя</span>
@@ -84,12 +85,14 @@ async function updateProfile() {
         } else {
             newPasswordValidate.value = newPassword.value;
         }
+
         let dataReq = {
             name: data.value.name,
             email: data.value.email,
             password: password.value,
             newPassword: newPasswordValidate.value,
         }
+
         let response = await authRequest('/api/profile', 'patch',  dataReq);
 
         if (response.data.status === 'success') {
@@ -97,10 +100,12 @@ async function updateProfile() {
             error.value = '';
         } else {
             error.value = 'Форма заполнена с ошибками';
+            success.value = '';
         }
 
     } else {
         error.value = 'Не все обязательные поля заполнены';
+        success.value = '';
     }
 }
 

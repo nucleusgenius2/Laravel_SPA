@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 
 class ProfileController
 {
+    use ResponseController;
 
     /**
      * get data from user profile
@@ -30,23 +31,16 @@ class ProfileController
      */
     public function profileUpdate(Request $request): JsonResponse
     {
-        $response = [
-            'data' => [
-                'status' => 'error',
-                'text' => '',
-            ],
-            'code' => 402
-        ];
 
         $validated = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'email|unique:users,email,' . request()->user()->id,
-            'password' => 'required|string',
-            'newPassword' => 'string'
+            'name' => 'required|string|max:30',
+            'email' => 'email|max:30|unique:users,email,' . request()->user()->id,
+            'password' => 'required|string|max:30',
+            'newPassword' => 'string|max:30'
         ]);
 
         if ($validated->fails()) {
-            $response['data']['text'] = $validated ->errors();
+            $this->text = $validated ->errors();
         } else {
             $data = $validated->valid();
 
@@ -54,31 +48,37 @@ class ProfileController
 
             $user = User::where('id', $id)->first();
 
-            //check password user
-            if (Hash::check($data['password'], $user->password)) {
+            if ($user) {
+                //check password user
+                if (Hash::check($data['password'], $user->password)) {
 
-                if ($request->newPassword === 'none') {
-                    $user->update([
-                        'name' => $data['name'],
-                        'email' => $data['email'],
-                    ]);
+                    if ($request->newPassword === 'none') {
+                        $user->update([
+                            'name' => $data['name'],
+                            'email' => $data['email'],
+                        ]);
+                    } else {
+                        $user->update([
+                            'name' => $data['name'],
+                            'email' => $data['email'],
+                            'password' => $data['newPassword']
+                        ]);
+                    }
+
+                    $this->text = 'Данные успешно обновлены';
+                    $this->status = 'success';
+                    $this->code = 200;
                 } else {
-                    $user->update([
-                        'name' => $data['name'],
-                        'email' => $data['email'],
-                        'password' => $data['newPassword']
-                    ]);
+                    $this->text = 'Не верно указан пароль';
                 }
-
-                $response['data']['status'] = 'success';
-                $response['data']['text'] = 'Данные успешно обновлены';
-                $response['code'] = 200;
-            } else {
-                $response['data']['text'] = 'Не верно указан пароль';
+            }
+            else {
+                $this->text = 'Пользователь не существует';
             }
 
         }
-        return response()->json($response['data'], $response['code']);
+
+        return $this->responseJsonApi();
     }
 
 

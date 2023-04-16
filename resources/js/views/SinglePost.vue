@@ -16,16 +16,22 @@
 
 <script setup>
 import {onMounted, ref} from 'vue';
-import { useRoute } from "vue-router";
+import {useRoute} from "vue-router";
 import {authRequest} from "@/api.js";
+import router from "@/router/router";
 
 const route = useRoute();
 let array = ref([]);
 
 onMounted(
     async () => {
-        let response = await authRequest('/api/post/'+route.params.id, 'get' );
-        array.value = response.data[0];
+       let response = await authRequest('/api/post/'+route.params.id, 'get' );
+       if ( response.data.status === 'success' ){
+           array.value = response.data.json[0];
+       }
+       else {
+           return router.push({ name: '404',  query: { textError: encodeURIComponent(response.data.text) } })
+       }
     }
 );
 </script>

@@ -3,26 +3,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\ResponseController;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 
 class AdminController
 {
-
-    /**
-     * @var array
-     */
-    public array $response = [
-        'data' => [
-            'status' => 'error',
-            'text' => '',
-        ],
-        'code' => 402
-    ];
-
+    use ResponseController;
 
     /**
      * delete post
@@ -31,22 +23,32 @@ class AdminController
      */
     public function deletePost(int $id): JsonResponse
     {
-        $response = $this->response;
+        $validated = Validator::make(['id' => $id], [
+            'page' => 'integer|min:1',
+        ]);
 
-        $array_news = Post::where('id', '=', $id)->delete();
+        if ($validated->fails()) {
+            $this->text = $validated->errors();
+        } else {
+            $data = $validated->valid();
 
-        if ($array_news) {
-            $response['data']['status'] = 'success';
-            $response['code'] = 200;
+            $array_news = Post::where('id', '=', $data['id'])->delete();
+
+            if ($array_news) {
+                $this->status = 'success';
+                $this->code = 200;
+            } else {
+                $this->text = 'Запрашиваемой страницы не существует';
+            }
         }
 
-        return response()->json($response['data'], $response['code']);
+        return $this->responseJsonApi();
     }
 
 
     /**
-     * image upload
-     * @param object|null $img
+     * upload img
+     * @param object|string|null $img
      * @return array
      */
     protected function uploaderImg(null|object|string $img): array
@@ -82,9 +84,15 @@ class AdminController
             }
         }
         else {
+            log::info( '3');
             if ($img) {
                 $imageReturn['img'] = $img;
                 $imageReturn['status'] = 'success';
+
+            }
+            else {
+                log::info( '3');
+                $imageReturn['img'] ='';
             }
         }
 
@@ -99,21 +107,19 @@ class AdminController
      */
     public function createPost(Request $request): JsonResponse
     {
-        $response = $this->response;
-
         $validated = Validator::make($request->all(), [
-            'name' => 'required|string|min:3',
+            'name' => 'required|string|min:3|max:255',
             'content' => 'nullable|string',
-            'short_description' => 'nullable|string',
-            'seo_title' => 'nullable|string',
-            'seo_discription' => 'nullable|string',
+            'short_description' => 'nullable|string|max:300',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:255',
             'img' => 'nullable|image|mimes:png,jpg,jpeg',
-            'id_category' => 'nullable|string',
-            'autor' => 'required|string',
+            'id_category' => 'nullable|int',
+            'author' => 'required|string|max:100',
         ]);
 
         if ($validated->fails()) {
-            $response['data']['text'] = $validated->errors();
+            $this->text = $validated->errors();
         } else {
             $data = $validated->valid();
 
@@ -124,22 +130,26 @@ class AdminController
                 'content' => $data['content'] ?? '',
                 'short_description' => $data['short_description'] ?? '',
                 'seo_title' => $data['seo_title'] ?? '',
-                'seo_discription' => $data['seo_discription'] ?? '',
-                'img' => $imageName,
-                'id_category' => $data['id_category'] ?? '',
-                'autor' => $data['autor']
+                'seo_description' => $data['seo_description'] ?? '',
+                'img' => $imageName['img'],
+                'id_category' => $data['id_category'] ?? 0,
+                'author' => $data['author']
             ];
 
             $flight = Post::create($array_save_new);
 
             if ($flight) {
-                $response['data']['status'] = 'success';
-                $response['data']['text'] = 'Запись обновлена';
-                $response['code'] = 200;
+                $this->status = 'success';
+                $this->code = 200;
+                $this->text = 'Запись создана';
+                $this->json = $flight->id;
+            }
+            else {
+                $this->text = 'Запись не была создана';
             }
         }
 
-        return response()->json($response['data'], $response['code']);
+        return $this->responseJsonApi();
     }
 
 
@@ -150,21 +160,18 @@ class AdminController
      */
     public function updatePost(Request $request): JsonResponse
     {
-        $response = $this->response;
-
         $validated = Validator::make($request->all(), [
             'id' => 'required|int',
-            'name' => 'required|string|min:3',
+            'name' => 'required|string|min:3|max:255',
             'content' => 'nullable|string',
-            'short_description' => 'nullable|string',
-            'seo_title' => 'nullable|string',
-            'seo_discription' => 'nullable|string',
-            'id_category' => 'nullable|string',
+            'short_description' => 'nullable|string|max:255',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:300',
+            'id_category' => 'nullable|int',
         ]);
 
         if ($validated->fails()) {
-            $response['data']['text'] = $validated->errors();
-
+            $this->text = $validated->errors();
         } else {
             $data = $validated->valid();
 
@@ -176,23 +183,26 @@ class AdminController
                     'content' => $data['content'] ?? '',
                     'short_description' => $data['short_description'] ?? '',
                     'seo_title' => $data['seo_title'] ?? '',
-                    'seo_discription' => $data['seo_discription'] ?? '',
+                    'seo_description' => $data['seo_description'] ?? '',
                     'img' => $imageName['img'],
-                    'id_category' => $data['id_category'] ?? '',
+                    'id_category' => $data['id_category'] ?? 0,
                 ]);
 
                 if ($array_save_new) {
-                    $response['data']['status'] = 'success';
-                    $response['data']['text'] = 'Запись обновлена';
-                    $response['code'] = 200;
+                    $this->status = 'success';
+                    $this->code = 200;
+                    $this->text = 'Запись создана';
+                }
+                else {
+                    $this->text = 'Запрашиваемой страницы не существует';
                 }
             }
             else {
-                $response['data']['text'] =  $imageName['text'];
+                $this->text = $imageName['text'];
             }
         }
 
-        return response()->json($response['data'], $response['code']);
+        return $this->responseJsonApi();
     }
 
 }

@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('news', function (Blueprint $table) {
             $table->id();
-			$table->text('name');
-			$table->text('content');
-			$table->text('short_description');
-			$table->text('seo_title');
-			$table->text('seo_discription');
-			$table->text('img');
-			$table->text('id_category');
-			$table->text('autor');
-			$table->text('autor');
+			$table->string('name', 255)->comment('Название новости');
+			$table->text('content')->comment('Содержимое новости');
+			$table->string('short_description', 255)->comment('Краткое описание новости');
+			$table->string('seo_title', 255);
+			$table->string('seo_description', 300);
+			$table->string('img', 400)->comment('Ссылка на изображение');
+			$table->integer('id_category');
+			$table->string('author');
             $table->timestamps();
         });
     }

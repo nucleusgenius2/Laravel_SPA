@@ -88,9 +88,10 @@ async function formSubmit(){
     }
 
     let response = await notAuthRequest('/api/registration', 'post', data);
+
     if (response.data.status === 'success') {
         status.value = 'auth';
-        localStorage.setItem('token', JSON.stringify(response.data))
+        localStorage.setItem('token', JSON.stringify(response.data.json))
     }
     else {
         error.value = response.data.text;

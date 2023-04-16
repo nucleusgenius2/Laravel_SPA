@@ -14,17 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController
 {
-
-    /**
-     * @var array
-     */
-    public array $response = [
-        'data' => [
-            'status' => 'error',
-            'text' => '',
-        ],
-        'code' => 402
-    ];
+    use ResponseController;
 
     /**
      * check admin permission user
@@ -51,6 +41,7 @@ class UserController
     public function checkStatusUser(Request $request): JsonResponse
     {
         $user = request()->user();
+
         if ($user->tokenCan('permission:admin')) {
             $data = ['status' => 'success', 'permission' => 'admin'];
         } else {
@@ -68,9 +59,11 @@ class UserController
     public function logoutUser(): JsonResponse
     {
         $user = request()->user();
+
         $user->tokens()->delete();
 
-        $data =  ['status' => 'success'];
+        $data = ['status' => 'success'];
+
         return response()->json($data, 200);
     }
 
@@ -82,16 +75,14 @@ class UserController
      */
     public function registrationUser(Request $request): JsonResponse
     {
-        $response = $this->response;
-
         $validated = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|confirmed|min:6',
+            'name' => 'required|string|max:30',
+            'email' => 'required|email|unique:users|max:30',
+            'password' => 'required|string|confirmed|min:6|max:30',
         ]);
 
         if ($validated->fails()) {
-            $response['data']['text'] = $validated ->errors();
+            $this->text = $validated ->errors();
         } else {
             $data = $validated->valid();
 
@@ -99,13 +90,18 @@ class UserController
 
             $token = $user->createToken('token', ['permission:user'])->plainTextToken;
 
-            $response['data']['status'] = 'success';
-            $response['data']['text'] = 'Регистрация прошла успешно';
-            $response['data']['token'] = $token;
-            $response['data']['user'] = $user->email;
-            $response['code'] = 200;
+            $dataUser = [
+                'token' => $token,
+                'user' => $user->email,
+            ];
+
+            $this->status = 'success';
+            $this->code = 200;
+            $this->json = $dataUser;
+            $this->text = 'Регистрация прошла успешно';
         }
-        return response()->json($response['data'], $response['code']);
+
+        return $this->responseJsonApi();
     }
 
 
@@ -116,15 +112,13 @@ class UserController
      */
     public function loginUser(Request $request): JsonResponse
     {
-        $response = $this->response;
-
         $validated = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
         if ($validated->fails()) {
-            $response['data']['text'] = $validated ->errors();
+            $this->text = $validated ->errors();
         } else {
             $user = User::where('email', $request->email)->first();
 
@@ -137,21 +131,24 @@ class UserController
                         $token = $user->createToken('token', ['permission:user'])->plainTextToken;
                     }
 
-                    $response['data']['status'] = 'success';
-                    $response['data']['text'] = 'Регистрация прошла успешно';
-                    $response['data']['token'] = $token;
-                    $response['data']['user'] = $user->email;
-                    $response['code'] = 200;
+                    $dataUser = [
+                        'token' => $token,
+                        'user' => $user->email,
+                    ];
+
+                    $this->status = 'success';
+                    $this->code = 200;
+                    $this->json = $dataUser;
+                    $this->text = 'Регистрация прошла успешно';
                 } else {
-                    $response['data']['text'] = 'Пароль не совпадает';
+                    $this->text = 'Пароль не совпадает';
                 }
             } else {
-                $response['data']['text'] = 'Email не найден';
+                $this->text = 'Email не найден';
             }
         }
 
-        return response()->json($response['data'], $response['code']);
-
+        return $this->responseJsonApi();
     }
 
 

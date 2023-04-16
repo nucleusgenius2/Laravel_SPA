@@ -14,9 +14,13 @@ export async function authRequest (url ='', type='get', data={}){
     }
 
     if (type === 'get') {
-         response = await axios.get(url, {
-            headers: headers
-         })
+        try {
+            response = await axios.get(url, {
+                headers: headers
+            });
+        } catch (error) {
+            response = error.response;
+        }
     }
 
     if (type === 'post' ) {
@@ -49,6 +53,16 @@ export async function authRequest (url ='', type='get', data={}){
         }
     }
 
+    if (typeof response.data.text === 'object'){
+        let string = '';
+
+        for (let i in response.data.text) {
+            string = string + response.data.text[i]+' ';
+        }
+
+        response.data.text = string;
+
+    }
     return response;
 
 }

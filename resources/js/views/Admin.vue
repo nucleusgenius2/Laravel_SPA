@@ -20,17 +20,17 @@
             <div class="wrap-dashboard admin-panel max">
                 <div class="dashboard-col-1">
                     <div class="wrap-dashboard-button">
-                        <div class="dashboard-button news"><a href="/admin/post-list/10/1">Новости</a></div>
+                        <div class="dashboard-button news"><a href="/admin/post-list/1">Новости</a></div>
                     </div>
                 </div>
 
                 <div class="dashboard">
                     <!-- news list -->
-                    <div class="tab-admin" v-if="route.params.edit ==='post-list' && route.params.id !='1'">
+                    <div class="tab-admin" v-if="route.params.edit ==='post-list' && route.params.id !=='1'">
 
-                        <a class="add-new" href="/admin/post/add/edit">Добавить новость</a>
+                        <a class="add-new" href="/admin/post/add">Добавить новость</a>
                         <div class="wrap-list-news">
-                            <NewsList total="10" pagination="true"/>
+                            <AdminPostList total="10" pagination="true"/>
                         </div>
 
                     </div>
@@ -39,7 +39,7 @@
                     <div class="tab-admin" v-if="route.params.edit ==='post'" data-tab="editor-news">
 
                         <div class="wrap-list-news">
-                            <EditNews />
+                            <AdminEditPost />
                         </div>
 
                     </div>
@@ -55,8 +55,8 @@
 
 
 <script setup>
-import NewsList from '@/components/admin/NewsList.vue';
-import EditNews from '@/components/admin/EditNews.vue';
+import AdminPostList from '@/components/admin/AdminPostList.vue';
+import AdminEditPost from '@/components/admin/AdminEditPost.vue';
 import {onMounted, ref} from 'vue';
 import { useRoute } from "vue-router";
 import {authRequest} from "@/api.js";
@@ -85,6 +85,7 @@ async function logout() {
     if (response.data.status === 'success') {
         auth.value.status = '';
         localStorage.removeItem('token');
+
         window.location.replace("/login");
     }
     else {

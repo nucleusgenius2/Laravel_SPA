@@ -7,12 +7,14 @@
                 <img src="/images/ED_logo_4_2x.png" alt="logo">
             </div>
         </div>
+
         <div class="header-col-2">
             <div class="logo">
                 <div class="title-1">Русский сервер</div>
                 <div class="title-2">Supreme Commander Forged Alliance</div>
             </div>
         </div>
+
         <div class="header-col-3">
             <div class="wrap-button">
                 <div class="button-01 hover-purple">Скачать клиент</div>

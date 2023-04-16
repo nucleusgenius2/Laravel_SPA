@@ -22,7 +22,7 @@
             <div class="wrap-field">
                 <div class="heading-field">Изображение новости</div>
                 <div class="img-field">
-                    <img v-if="array.img!=''" :src="imgPreview">
+                    <img v-if="array.img!==''" :src="imgPreview">
                     <input class='file' type="file" @change="onChangeFile">
                 </div>
             </div>
@@ -64,6 +64,7 @@ export default {
 
 <script setup>
 import {onMounted, ref} from 'vue';
+import router from "@/router/router";
 import {useRoute} from "vue-router";
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import {authRequest} from "@/api.js";
@@ -125,11 +126,17 @@ let editorConfig = {
 //get post info
 onMounted(
     async () => {
-        if (route.params.id !== 'add') {
-            let response = await authRequest('/api/post/' + route.params.id, 'get');
-            array.value = response.data[0];
-            textEditor.value = response.data[0]['content'];
-            imgPreview.value = response.data[0]['img'];
+        if (route.params.page !== 'add') {
+            let response = await authRequest('/api/post/' + route.params.page, 'get');
+
+            if ( response.data.status === 'success' ){
+                array.value = response.data.json[0];
+                textEditor.value = response.data.json[0].content;
+                imgPreview.value = response.data.json[0].img;
+            }
+            else {
+                return router.push({ name: '404',  query: { textError: encodeURIComponent(response.data.text) } })
+            }
         }
     }
 );
@@ -139,25 +146,23 @@ async function save(){
 
     //save or update
     let formData = new FormData();
-    formData.append('id', route.params.id)
+    formData.append('id', route.params.page)
     formData.append('name', array.value.name)
     formData.append('img', array.value.img)
     formData.append('content', textEditor.value)
     formData.append('short_description', array.value.short_description)
-    formData.append('autor', JSON.parse(localStorage.getItem('token')).user);
+    formData.append('author', JSON.parse(localStorage.getItem('token')).user);
     formData.append('seo_title', '');
-    formData.append('seo_discription', '');
+    formData.append('seo_description', '');
     formData.append('id_category', '');
 
-
-    if ( route.params.id === 'add' ){
+    if ( route.params.page === 'add' ){
         let response = await authRequest('/api/admin/create', 'post', formData );
 
-        if (response.data.redirect === 'true'){
-            window.location.replace("/admin/post/"+response.data.id+"/edit");
+        if (response.data.status === 'success'){
+            saveStatus.value = response.data.status;
+            window.location.replace("/admin/post/"+response.data.json);
         }
-
-        saveStatus.value = response.data.status;
     }
     else {
         let response = await authRequest('/api/admin/update', 'post', formData );
@@ -170,7 +175,7 @@ async function save(){
         }, 3000);
     }
     else {
-        console.log( saveStatus)
+        console.log(saveStatus.value);
     }
 
 }

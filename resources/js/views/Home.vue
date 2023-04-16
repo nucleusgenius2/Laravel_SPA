@@ -52,7 +52,7 @@
 
             <div class="m-top max">
                 <h2> Последние новости </h2>
-                <News total="6" pagination="false"/>
+                <News page="1" total="6" pagination="false"/>
             </div>
 
         </template>
@@ -64,7 +64,6 @@
 import News from '@/components/News.vue';
 import {useRoute} from "vue-router";
 const route = useRoute();
-
 </script>
 
 

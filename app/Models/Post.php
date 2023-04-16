@@ -13,6 +13,7 @@ class Post extends Model{
      */
     protected $table = 'news';
 
+
     /**
      * @var string[]
      */
@@ -21,10 +22,10 @@ class Post extends Model{
         'content',
         'short_description',
         'seo_title',
-        'seo_discription',
+        'seo_description',
         'img',
         'id_category',
-        'autor',
+        'author',
     ];
 
 }

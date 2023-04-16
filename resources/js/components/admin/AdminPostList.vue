@@ -11,14 +11,13 @@
             </div>
 
             <div class="post-el" v-for="(value, name) in arrayPostEl">
-                <a :href="'/admin/post/'+value['id']+'/edit'" class="post-name">{{ value['name'] }}</a>
-                <div class="post-author">{{ value['autor'] }}</div>
+                <a :href="'/admin/post/'+value['id']" class="post-name">{{ value['name'] }}</a>
+                <div class="post-author">{{ value['author'] }}</div>
                 <div class="wrap-date">
                     <div class="post-date-c"><span>Дата создания:</span> <span>{{ value['created_at'] }}</span></div>
                     <div class="post-date-u"><span>Дата обновления:</span> <span>{{ value['updated_at'] }}</span></div>
                 </div>
                 <div class="remove-post" @click="removePost" :data-id="value['id']">Удалить</div>
-
             </div>
 
             <div class="pagination-post" v-if="props.pagination === 'true' ">
@@ -35,8 +34,10 @@
 <script setup>
 
 import {onMounted, ref} from 'vue';
+import router from "@/router/router";
 import { useRoute } from "vue-router";
 import {authRequest} from "@/api.js";
+
 
 let props = defineProps({
     total: String,
@@ -50,11 +51,13 @@ let arrayPagination = ref([]);
 
 onMounted(
     async () => {
-        let response = await authRequest('/api/post-list/'+props.total+'/all?page='+route.params.page, 'get');
-        if (response.status===200) {
+        let response = await authRequest('/api/post-list/'+ route.params.page, 'get' );
 
-            let arrayPost = response.data.data;
-            let arrayLink = response.data.links;
+        if ( response.data.status === 'success' ){
+
+            let arrayPost = response.data.json.data;
+            let arrayLink = response.data.json.links;
+
             //short description post
             for (let i = 0; i < arrayPost.length; i++) {
                 //converting date
@@ -76,12 +79,14 @@ onMounted(
                 else if (page === arrayLink.length - 1) {
                     page = arrayLink.length - 2;
                 }
-                arrayLink[i]['url'] = '/admin/post-list/10/' + page;
+
+                arrayLink[i]['url'] = '/admin/post-list/' + page;
             }
 
             arrayPagination.value = arrayLink;
             arrayPostEl.value = arrayPost;
         }
+
     }
 );
 
