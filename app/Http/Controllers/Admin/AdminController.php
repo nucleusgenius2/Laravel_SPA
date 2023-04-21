@@ -47,11 +47,10 @@ class AdminController
 
 
     /**
-     * upload img
-     * @param object|string|null $img
+     * @param object $img
      * @return array
      */
-    protected function uploaderImg(null|object|string $img): array
+    protected function uploaderImg(object $img): array
     {
         $imageReturn = [
             'img' =>'',
@@ -59,41 +58,23 @@ class AdminController
             'text' => ''
         ];
 
-        if (gettype($img) == 'object') {
-            $arrayValidateImg = [
-                'img' => $img
-            ];
+        $validated = Validator::make(['img' => $img], [
+            'img' => 'image|mimes:png,jpg,jpeg',
+        ]);
 
-            $validated = Validator::make($arrayValidateImg, [
-                'img' => 'image|mimes:png,jpg,jpeg',
-            ]);
+        if ($validated->fails()) {
+            $imageReturn['text'] = $validated->errors();
+        } else {
+            $data = $validated->valid();
 
-            if ($validated->fails()) {
-                $imageReturn['text'] = $validated->errors();
-            } else {
-                $data = $validated->valid();
+            //upload img in dir
+            $imageName = time() . '.' . $data['img']->extension();
+            $data['img']->move(public_path('images'), $imageName);
 
-                //upload img in dir
-                $imageName = time() . '.' . $data['img']->extension();
-                $data['img']->move(public_path('images'), $imageName);
+            //name img for bd
+            $imageReturn['img'] = '/images/' . $imageName;
 
-                //name img for bd
-                $imageReturn['img'] = '/images/' . $imageName;
-
-                $imageReturn['status'] = 'success';
-            }
-        }
-        else {
-            log::info( '3');
-            if ($img) {
-                $imageReturn['img'] = $img;
-                $imageReturn['status'] = 'success';
-
-            }
-            else {
-                log::info( '3');
-                $imageReturn['img'] ='';
-            }
+            $imageReturn['status'] = 'success';
         }
 
         return $imageReturn;
@@ -175,9 +156,24 @@ class AdminController
         } else {
             $data = $validated->valid();
 
-            $imageName = $this->uploaderImg($data['img']);
+            if (gettype($data['img']) == 'object') {
+                $imageName = $this->uploaderImg($data['img']);
 
-            if ( $imageName['status'] == 'success'){
+                if ( $imageName['status'] !='success'){
+                    return $this->responseJsonApi();
+                }
+            }
+            else {
+                $imageName['img'] = $data['img'];
+            }
+
+            $validated = Validator::make(['img'=>$imageName['img']], [
+                'img' => 'nullable|string',
+            ]);
+
+            if ($validated->fails()) {
+                $this->text = $validated->errors();
+            } else {
                 $array_save_new = Post::where('id', '=', $data['id'])->update([
                     'name' => $data['name'],
                     'content' => $data['content'] ?? '',
@@ -197,14 +193,10 @@ class AdminController
                     $this->text = 'Запрашиваемой страницы не существует';
                 }
             }
-            else {
-                $this->text = $imageName['text'];
-            }
         }
 
         return $this->responseJsonApi();
     }
-
 }
 
 
