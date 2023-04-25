@@ -31,7 +31,6 @@ class ProfileController
      */
     public function profileUpdate(Request $request): JsonResponse
     {
-
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|max:30',
             'email' => 'email|max:30|unique:users,email,' . request()->user()->id,
@@ -80,6 +79,4 @@ class ProfileController
 
         return $this->responseJsonApi();
     }
-
-
 }

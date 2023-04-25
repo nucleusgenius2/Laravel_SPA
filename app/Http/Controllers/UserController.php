@@ -21,9 +21,9 @@ class UserController
      * @param User $user
      * @return bool
      */
-    private function isAdminPermission(User $user): bool
+    public function isAdminPermission(User $user): bool
     {
-        $user_right = Permission::where('id', '=', $user['id'])->get();
+        $user_right = Permission::where('id_user', '=', $user['id'])->get();
 
         if (count($user_right)) {
             return true;
@@ -150,6 +150,4 @@ class UserController
 
         return $this->responseJsonApi();
     }
-
-
 }

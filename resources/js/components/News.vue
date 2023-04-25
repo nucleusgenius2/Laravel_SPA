@@ -21,6 +21,8 @@
             </div>
         </div>
 
+        <div class="empty-list" v-if="emptyPage">По вашему запросу не найдено новостей</div>
+
     </div>
 </template>
 
@@ -43,6 +45,7 @@ const route = useRoute();
 
 let arrayPostEl = ref([]);
 let arrayPagination = ref([]);
+let emptyPage = ref(null);
 
 onMounted(
     async () => {
@@ -94,7 +97,7 @@ onMounted(
             arrayPostEl.value = arrayPost;
         }
         else {
-            return router.push({ name: '404',  query: { textError: encodeURIComponent(response.data.text) } })
+            emptyPage.value = true;
         }
 
     }

@@ -19,10 +19,9 @@ trait ResponseController
     public string $status = 'error';
 
     /**
-     * @var string|object
+     * @var mixed|null
      */
-    public string|object $text = '';
-
+    public mixed $text = null;
 
     /**
      * @var mixed|null

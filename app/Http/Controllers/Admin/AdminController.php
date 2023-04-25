@@ -7,7 +7,6 @@ use App\Http\Controllers\ResponseController;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
@@ -104,7 +103,12 @@ class AdminController
         } else {
             $data = $validated->valid();
 
-            $imageName = $this->uploaderImg($data['img']);
+            if (gettype($data['img']) == 'object') {
+                $imageName = $this->uploaderImg($data['img']);
+            }
+            else {
+                $imageName = $data['img'];
+            }
 
             $array_save_new = [
                 'name' => $data['name'],
@@ -112,7 +116,7 @@ class AdminController
                 'short_description' => $data['short_description'] ?? '',
                 'seo_title' => $data['seo_title'] ?? '',
                 'seo_description' => $data['seo_description'] ?? '',
-                'img' => $imageName['img'],
+                'img' => $imageName['img'] ?? '',
                 'id_category' => $data['id_category'] ?? 0,
                 'author' => $data['author']
             ];
