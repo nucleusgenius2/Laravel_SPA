@@ -36,8 +36,6 @@ class PostControllerTest extends TestCase
         $response
             ->assertJson(fn (AssertableJson $json) =>
             $json->where('status', 'success')
-                //->where('content', 'Victoria Faith')
-                // ->missing('password')
                  ->etc()
             );
     }
