@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
@@ -12,7 +13,7 @@ use Mockery\MockInterface;
 
 class UserControllerTest extends TestCase
 {
-    //use RefreshDatabase;
+    use RefreshDatabase;
 
 
     public function test_isAdminPermission(): bool

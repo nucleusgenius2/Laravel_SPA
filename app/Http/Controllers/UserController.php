@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendMail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -87,7 +88,7 @@ class UserController
             $data = $validated->valid();
 
             $user = User::create($data);
-
+            
             $token = $user->createToken('token', ['permission:user'])->plainTextToken;
 
             $dataUser = [

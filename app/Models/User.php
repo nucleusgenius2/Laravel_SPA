@@ -3,9 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Jobs\SendMail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -42,9 +44,34 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    //custom mutator - bcrypt pass
+
+    /**
+     * custom mutator - bcrypt pass
+     * @param $value
+     */
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);
     }
+
+
+    public static function boot()
+    {
+
+        parent::boot();
+
+        /**
+         * Создание кода для метода
+         *
+         * @возвращение ответа()
+         */
+
+        static::created(function ($user) {
+            //SendMail::dispatch($user,'registration')->onQueue('emails');
+            SendMail::dispatch($user,'registration')->onQueue('emails')->delay(now()->addMinutes(2));
+        });
+    }
+
+
+
 }
