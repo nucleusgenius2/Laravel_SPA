@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Events\UserLogin;
 use App\Jobs\SendMail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -88,7 +89,7 @@ class UserController
             $data = $validated->valid();
 
             $user = User::create($data);
-            
+
             $token = $user->createToken('token', ['permission:user'])->plainTextToken;
 
             $dataUser = [
@@ -141,6 +142,8 @@ class UserController
                     $this->code = 200;
                     $this->json = $dataUser;
                     $this->text = 'Регистрация прошла успешно';
+
+                    UserLogin::dispatch($user);
                 } else {
                     $this->text = 'Пароль не совпадает';
                 }

@@ -42,6 +42,10 @@ class SendMail implements ShouldQueue
             $subject = 'Вы зарегистрированы на сайте ...';
             $dataEmail['text'] = 'Вы зарегистрированы';
         }
+        else if ( $dataEmail['type'] === 'login' ){
+            $subject = 'Вы вошли на сайт ...';
+            $dataEmail['text'] = 'Вы вошли на сайт';
+        }
 
         Mail::send('mail', ['data' => $dataEmail], function ($message) use ($dataEmail, $subject) {
             $message->to($dataEmail['email'], $dataEmail['name'])->subject($subject);

@@ -57,21 +57,10 @@ class User extends Authenticatable
 
     public static function boot()
     {
-
         parent::boot();
 
-        /**
-         * Создание кода для метода
-         *
-         * @возвращение ответа()
-         */
-
         static::created(function ($user) {
-            //SendMail::dispatch($user,'registration')->onQueue('emails');
-            SendMail::dispatch($user,'registration')->onQueue('emails')->delay(now()->addMinutes(2));
+            SendMail::dispatch($user,'registration')->onQueue('emails');
         });
     }
-
-
-
 }
