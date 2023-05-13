@@ -1,5 +1,5 @@
 <template>
-    <Header v-if="props.layout === 'mainLayout'" />
+    <Header v-if="props.layout === 'mainLayout'" :auth="props.auth" />
     <Menu v-if="props.layout === 'mainLayout'" />
 
     <div class="content">
@@ -16,7 +16,8 @@ import Footer from '@/layout/Footer.vue';
 import Header from '@/layout/Header.vue';
 let props = defineProps({
     layout: String,
-})
+    auth: String
+});
 
 
 </script>

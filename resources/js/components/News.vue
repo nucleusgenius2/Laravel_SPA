@@ -39,7 +39,7 @@ let props = defineProps({
     total: String,
     page: String,
     pagination : String,
-})
+});
 
 const route = useRoute();
 
@@ -145,7 +145,6 @@ onMounted(
     .content-short-post {
         max-width: 400px;
         margin: 10px 0;
-        padding-left: 20px;
         padding-left: 20px;
     }
 

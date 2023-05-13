@@ -1,5 +1,5 @@
 <template>
-    <AuthMenu />
+    <AuthMenu :auth='auth' />
 
     <div class="wrap-header max">
         <div class="header-col-1">
@@ -27,6 +27,9 @@
 
 <script setup>
 import AuthMenu from '@/components/AuthMenu.vue';
+let props = defineProps({
+    auth: String
+});
 </script>
 
 

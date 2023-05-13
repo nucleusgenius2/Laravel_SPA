@@ -1,5 +1,5 @@
 <template>
-    <MainLayout :layout = 'route.meta.layout'>
+    <MainLayout :layout = 'route.meta.layout' :auth='status'>
         <template #content>
 
             <div class="max">
@@ -42,6 +42,8 @@ import {useRoute} from "vue-router";
 import {notAuthRequest} from "@/api.js";
 const route = useRoute();
 
+const emit = defineEmits(['eventAuthorization', 'authorization'])
+
 let email = ref('');
 let password = ref('');
 let status = ref('noAuth');
@@ -63,6 +65,7 @@ async function formSubmit(){
         status.value = 'auth';
         error.value ='';
         localStorage.setItem('token', JSON.stringify(response.data.json))
+        console.log('123');
     }
     else {
         error.value = response.data.text;

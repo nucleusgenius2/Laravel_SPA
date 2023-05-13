@@ -15,20 +15,28 @@
 
 
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, ref , watch} from "vue";
 import {authRequest} from "@/api.js";
+
 
 let auth = ref('');
 let userEmail = ref('');
 
+let props = defineProps({
+    auth: String
+});
 
-defineExpose({
-    auth
+//listen props
+watch(() => props.auth, (selection, prevSelection) => {
+    authorization();
 })
 
 
-//check auth user
 onMounted(async () => {
+    authorization();
+});
+
+async function authorization(){
     //check local store
     if (localStorage.getItem("token") !== null ) {
         let response = await authRequest('/api/authorization', 'get');
@@ -40,9 +48,7 @@ onMounted(async () => {
             localStorage.removeItem('token');
         }
     }
-
-});
-
+}
 
 //logout
 async function logout() {
