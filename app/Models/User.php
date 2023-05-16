@@ -4,11 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Jobs\SendMail;
+use App\Models\UserBalance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
+
 
 class User extends Authenticatable
 {
@@ -54,6 +56,21 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
+    /**
+     * connect table users_balance
+     */
+    public function userBalance()
+    {
+         return $this->hasOne(UserBalance::class, 'id_user');
+    }
+
+    /**
+     * connect table users_balance_operations
+     */
+    public function userBalanceOperations()
+    {
+        return $this->hasMany(UserBalanceOperations::class,'id_user');
+    }
 
     public static function boot()
     {
@@ -62,5 +79,6 @@ class User extends Authenticatable
         static::created(function ($user) {
             SendMail::dispatch($user,'registration')->onQueue('emails');
         });
+
     }
 }

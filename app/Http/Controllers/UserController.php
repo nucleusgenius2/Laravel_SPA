@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Events\UserLogin;
 use App\Jobs\SendMail;
+use App\Models\UserBalance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -91,6 +92,8 @@ class UserController
             $user = User::create($data);
 
             $token = $user->createToken('token', ['permission:user'])->plainTextToken;
+
+            $balance = UserBalance::create(['id_user' => $user->id, 'balance' => 0]);
 
             $dataUser = [
                 'token' => $token,

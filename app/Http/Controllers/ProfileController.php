@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\UserBalanceOperations;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +24,15 @@ class ProfileController
     {
         $user = request()->user();
 
-        return response()->json($user, 200);
+        $dataBalance = UserBalanceOperations::where('id_user','=', $user->id)->orderBy('updated_at', 'desc')->limit(5)->with(['userBalance'])->get();
+
+        $userData = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'data_balance' => $dataBalance
+        ];
+
+        return response()->json($userData, 200);
     }
 
     /**

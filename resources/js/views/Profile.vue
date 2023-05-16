@@ -2,7 +2,7 @@
     <MainLayout :layout = 'route.meta.layout'>
         <template #content>
 
-            <div class="max">
+            <div class="flex-column-2">
                 <div class="wrap-profile">
 
                     <h2>Ваш профиль</h2>
@@ -47,6 +47,28 @@
                     </div>
 
                 </div>
+                <div class="wrap-balance" v-if="typeof (data.name) !=='undefined' ">
+
+                    <div class="balance" v-if="data.data_balance.length > 0">
+                        <span>Ваш баланс: </span><span>{{ data.data_balance[0].user_balance.balance }}</span>
+                    </div>
+
+                    <div class="balance" v-if="data.data_balance.length === 0">
+                        <span>Ваш баланс: </span><span> 0 </span>
+                    </div>
+
+                    <div class="last-operation">
+                        <div>Последние 5 операций: </div>
+                        <div class="operation" v-for="(value, name) in data.data_balance">
+                            <div class="name-operation">{{ value['name'] }}</div>
+                            <div class="summa-operation plus" v-if="value['type']==='plus'">+ {{ value['balance'] }}</div>
+                            <div class="summa-operation minus" v-if="value['type']==='minus'">- {{ value['balance'] }}</div>
+                            <div class="date-operation">{{ new Date(  value['created_at'] ).toLocaleString() }}</div>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
 
         </template>
@@ -72,8 +94,15 @@ onMounted(
     async () => {
         let responsive = await authRequest('/api/profile', 'get');
         data.value = responsive.data;
+console.log(responsive.data);
+        let timerId = setInterval(() => getProfileData(), 5000);
     }
 );
+
+async function getProfileData(){
+    let responsive = await authRequest('/api/profile', 'get');
+    data.value = responsive.data;
+}
 
 async function updateProfile() {
 
@@ -193,5 +222,34 @@ async function updateProfile() {
         font-size: 18px;
         text-align: center;
         margin-top: 9px;
+    }
+
+    .flex-column-2 {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .flex-column-2 > div {
+        flex-basis: 50%
+    }
+    .balance span:last-child{
+        font-weight:600;
+    }
+    .last-operation {
+        margin-top: 20px;
+    }
+    .operation {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .operation > div {
+        margin-right:10px;
+    }
+
+    .plus {
+        color: #20b02b;
+    }
+    .minus {
+        color: #c62929;
     }
 </style>

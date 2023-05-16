@@ -65,7 +65,6 @@ async function formSubmit(){
         status.value = 'auth';
         error.value ='';
         localStorage.setItem('token', JSON.stringify(response.data.json))
-        console.log('123');
     }
     else {
         error.value = response.data.text;
