@@ -4,9 +4,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\UserBalanceOperations;
+use App\Traits\ResponseController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;

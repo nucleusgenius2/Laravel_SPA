@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Events\UserLogin;
 use App\Jobs\SendMail;
 use App\Models\UserBalance;
+use App\Traits\ResponseController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -13,7 +14,7 @@ use App\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Auth\Events\Registered;
 
 class UserController
 {
@@ -104,6 +105,9 @@ class UserController
             $this->code = 200;
             $this->json = $dataUser;
             $this->text = 'Регистрация прошла успешно';
+
+
+            event(new Registered($user));
         }
 
         return $this->responseJsonApi();
