@@ -3,16 +3,18 @@
 @section('content')
 <tr>
     <td>
-    {{-- Greeting --}}
-    @if (! empty($greeting))
-    # {{ $greeting }}
-    @else
-    @if ($level === 'error')
-    # @lang('Ошибка')
-    @else
-    # @lang('Привествуем!')
-    @endif
-    @endif
+        <div style="padding:20px; text-align: center">
+        {{-- Greeting --}}
+        @if (! empty($greeting))
+        {{ $greeting }}
+        @else
+        @if ($level === 'error')
+        @lang('Ошибка')
+        @else
+        @lang('Привествуем!')
+        @endif
+        @endif
+        </div>
     </td>
 </tr>
 
@@ -28,18 +30,19 @@
 
 <tr>
     <td>
-{{-- Action Button --}}
-@isset($actionText)
-<?php
-    $color = match ($level) {
-        'success', 'error' => $level,
-        default => 'primary',
-    };
-?>
-<x-mail::button :url="$actionUrl" :color="$color">
-{{ $actionText }}
-</x-mail::button>
-@endisset
+    {{-- Action Button --}}
+    @isset($actionText)
+        <?php
+            $color = match ($level) {
+                'success', 'error' => $level,
+                default => 'primary',
+            };
+        ?>
+        <x-mail-button :link="$actionUrl">
+        {{ $actionText }}
+        </x-mail-button>
+
+    @endisset
     </td>
 </tr>
 
