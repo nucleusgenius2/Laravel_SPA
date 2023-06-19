@@ -3,7 +3,7 @@
 @section('content')
 <tr>
     <td>
-        <div style="padding:20px; text-align: center">
+        <div style="padding:20px; text-align: center; font-size: 20px; color: #3c3c3c; font-weight: 600; margin-bottom:10px">
         {{-- Greeting --}}
         @if (! empty($greeting))
         {{ $greeting }}
@@ -20,11 +20,7 @@
 
 <tr>
     <td>
-    {{-- Intro Lines --}}
-    @foreach ($introLines as $line)
-    {{ $line }}
-
-    @endforeach
+        <div style="margin-bottom:10px"> {{ __('Нажмите кнопку ниже, чтобы подтвердить свой адрес электронной почты.') }}</div>
     </td>
 </tr>
 
@@ -32,14 +28,11 @@
     <td>
     {{-- Action Button --}}
     @isset($actionText)
-        <?php
-            $color = match ($level) {
-                'success', 'error' => $level,
-                default => 'primary',
-            };
-        ?>
+
         <x-mail-button :link="$actionUrl">
-        {{ $actionText }}
+            <x-slot name="text">
+                {{ __('Подтвердить email') }}
+            </x-slot>
         </x-mail-button>
 
     @endisset
@@ -49,11 +42,7 @@
 
 <tr>
     <td>
-    {{-- Outro Lines --}}
-    @foreach ($outroLines as $line)
-    {{ $line }}
-
-    @endforeach
+       <div style="margin-bottom:15px; margin-top:30px"> {{ __('Если вы не регистрировались на сайте САЙТ, то проигнорируйте данное письмо.') }}</div>
     </td>
 </tr>
 
@@ -64,9 +53,8 @@
 
 <tr>
     <td>
-
-    "Если кнопка у вас не нажимается, скопируйте данную ссылку в адресную строку браузера и перейдите по ней:"
-    <span class="break-all">({{ $actionUrl }})</span>
+        {{ __('Если кнопка у вас не нажимается, скопируйте данную ссылку в адресную строку браузера и перейдите по ней:') }}
+        <span class="break-all">{{ $actionUrl }}</span>
     </td>
 </tr>
 

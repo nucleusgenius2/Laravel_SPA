@@ -19,24 +19,32 @@
 <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse; background-color: #fafafa;" width="100%">
     <tr>
         <td>
-          <table data-2='213' align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;" width="570px"
-                       style="background-color:#ffffff;border-color:#e8e5ef;border-radius:2px;border-width:1px;box-sizing:border-box;font-family:'-apple-system' , 'blinkmacsystemfont' , 'segoe ui' , 'roboto' , 'helvetica' , 'arial' , sans-serif , 'apple color emoji' , 'segoe ui emoji' , 'segoe ui symbol';margin:0 auto 0 auto;padding:0;max-width:570px"
-          >
+          <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;" width="570px">
+
               {{-- header message--}}
               <tr>
                   <td>
-
-                      <table style="background-image:url('https://msk-sait.ru/image/mail-fon-2.jpg'); background-size: 100% auto; padding:25px" width="100%">
+                      <table width="570px" style="overflow:hidden; background-size: 100% auto; background-color:#ffffff;background-image: url(https://msk-sait.ru/image/mail-fon-2.jpg); background-position: center; background-repeat: no-repeat; ">
                           <tr>
-                              <td style="text-align:center; padding-top:30px; padding-bottom:20px">
-                                  <img src="https://msk-sait.ru/image/logoRUSC.png" alt="logo">
+                              <td style="text-align:center;">
+
                               </td>
                           </tr>
                           <tr>
+                              <td style="text-align:center;">
+                                  <img style="vertical-align: bottom;" src="https://msk-sait.ru/image/Logo3.png" alt="logo">
+                              </td>
+                          </tr>
+                      </table>
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      <table width="570px" style="background-color: #f5f5f5; padding: 15px; background-position: center; background-repeat: no-repeat;">
+                          <tr>
                               <td>
-                                  <div style="text-align:center; font-size:35px;line-height:1; color: #fff; padding-bottom:30px">RU SC</div>
-                                  <div style="text-align:center; color:white;font-family:'yanone kaffeesatz' , 'open sans' , 'helvetica' , 'arial' , sans-serif;font-size:30px;line-height:1.2;text-align:center; font-weight: 600;">Русский сервер для игры </div>
-                                  <div style="text-align:center; color:white;font-family:'yanone kaffeesatz' , 'open sans' , 'helvetica' , 'arial' , sans-serif;font-size:30px;line-height:1.2;text-align:center; font-weight: 600; padding-bottom:40px">Supreme Commander: Forged Alliance </div>
+                                  <div style="text-align:center; color:#373737;font-family:'yanone kaffeesatz' , 'open sans' , 'helvetica' , 'arial' , sans-serif;font-size:30px;line-height:1.2;text-align:center; font-weight: 600; ">Русский сервер для игры </div>
+                                  <div style="text-align:center; color:#373737;font-family:'yanone kaffeesatz' , 'open sans' , 'helvetica' , 'arial' , sans-serif;font-size:20px;line-height:1.2;text-align:center; font-weight: 600;">Supreme Commander: Forged Alliance (RU SC)</div>
                               </td>
                           </tr>
                       </table>
@@ -48,7 +56,7 @@
               {{-- content message --}}
               <tr>
                   <td>
-                      <table style="background-color: #fff;" align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;" width="100%">
+                      <table style="background-color: #fff; padding: 25px;" align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;" width="100%">
                          @yield('content')
                       </table>
                     </td>
@@ -58,7 +66,7 @@
               {{-- footer message --}}
               <tr>
                   <td>
-                      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:20px;" width="100%">
+                      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;" width="100%">
                           <tr style="background-color: #2d2d2d;">
                               <td style="color: #fff;">
                                   <div style="padding:20px;">
