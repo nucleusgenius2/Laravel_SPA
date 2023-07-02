@@ -5,7 +5,7 @@
                 <span>Вы авторизованы: <span>{{ userEmail }}</span></span>
                 <div class="wrap-menu">
                     <span class="menu"><a class="link" href='/profile'>Профиль</a> </span>
-                    <span class="menu" v-if="auth.permission==='admin'"><a class="admin-link" href='/admin/all/1'>Перейти в админ панель</a> </span>
+                    <span class="menu" v-if="auth.permission==='admin'"><a class="admin-link" href='/admin'>Перейти в админ панель</a> </span>
                 </div>
                 <span class="logout link" @click="logout">Выйти из аккаунта </span>
             </div>

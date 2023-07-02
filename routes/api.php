@@ -23,7 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //public api
-Route::get('/post-list/{paginate}', [PostController::class, 'getPostList']);
+Route::get('/connect', function () {
+    return true;
+});
+//Route::get('/post-list/', [PostController::class, 'getPostList']);
+Route::get('/posts', [PostController::class, 'getPostList']);
 Route::get('/post/{id}', [PostController::class, 'getPostSingle']);
 Route::post('login', [UserController::class, 'loginUser']);
 Route::post('registration', [UserController::class, 'registrationUser']);

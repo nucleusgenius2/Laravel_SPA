@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import {authRequest} from "@/api.js";
 
-
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -53,13 +52,35 @@ const router = createRouter({
                 layout : "mainLayout"
             }
         },
+        /*
         {
-            path: "/admin/:edit/:page",
-            name: "Admin",
-            component: () => import("@/views/Admin.vue"),
+            //path: "/admin/:edit/:page",
+            path: "/admin/",
+            name: "admin",
+            component: () => import("@/views/admin.vue"),
             meta: {
                 layout : "admin"
             }
+        },
+        */
+        {
+            path: "/admin",
+            name: "admin",
+            component: () => import("@/views/admin/Admin.vue"),
+            children: [
+                {
+                    // при совпадении пути с шаблоном /user/:id/profile
+                    // в <router-view> компонента User будет показан UserProfile
+                    path: '',
+                    component: () => import("@/views/admin/AdminDashboard.vue"),
+                },
+                {
+                    // при совпадении пути с шаблоном /user/:id/profile
+                    // в <router-view> компонента User будет показан UserProfile
+                    path: 'posts',
+                    component: () => import("@/views/admin/AdminPosts.vue"),
+                },
+            ]
         },
 
         //page not found
@@ -86,12 +107,12 @@ const router = createRouter({
 
 // protect router
 router.beforeEach( async (to, from, next) => {
-    if ( to.name === 'Admin' || to.name === 'Profile' ) {
+    if ( to.name === 'admin' || to.name === 'Profile' ) {
         if ( localStorage.getItem("token") !== null ) {
 
             let response = await authRequest('/api/authorization', 'get');
 
-            if (to.name === 'Admin') {
+            if (to.name === 'admin') {
                 if (response.data.permission === 'admin') {
                     next()
                 } else {

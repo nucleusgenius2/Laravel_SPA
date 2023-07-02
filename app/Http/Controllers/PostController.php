@@ -8,6 +8,7 @@ use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ResponseController;
 
@@ -15,14 +16,15 @@ class PostController
 {
     use ResponseController;
 
+
     /**
      * returns a list of news with pagination or single news
-     * @param int $pagination
+     * @param Request $request
      * @return JsonResponse
      */
-    public function getPostList(int $pagination): JsonResponse
+    public function getPostList(Request $request): JsonResponse
     {
-        $validated = Validator::make(['page' => $pagination], [
+        $validated = Validator::make(['page' => $request->page], [
             'page' => 'integer|min:1',
         ]);
 
