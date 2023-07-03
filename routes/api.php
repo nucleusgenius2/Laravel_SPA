@@ -26,9 +26,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/connect', function () {
     return true;
 });
+
 //Route::get('/post-list/', [PostController::class, 'getPostList']);
 Route::get('/posts', [PostController::class, 'getPostList']);
-Route::get('/post/{id}', [PostController::class, 'getPostSingle']);
+Route::get('/posts/{id}', [PostController::class, 'getPostSingle']);
 Route::post('login', [UserController::class, 'loginUser']);
 Route::post('registration', [UserController::class, 'registrationUser']);
 
@@ -44,9 +45,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 //admin api
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::post('/admin/create', [AdminController::class, 'createPost']);
-    Route::post('/admin/update', [AdminController::class, 'updatePost']);
-    Route::delete('/admin/delete/{id}', [AdminController::class, 'deletePost']);
+    Route::post('/posts/', [AdminController::class, 'createPost']);
+    Route::patch('/posts/', [AdminController::class, 'updatePost']);
+    Route::delete('/posts/{id}', [AdminController::class, 'deletePost']);
+    //Route::post('/admin/create', [AdminController::class, 'createPost']);
+    //Route::post('/admin/update', [AdminController::class, 'updatePost']);
+    //Route::delete('/admin/delete/{id}', [AdminController::class, 'deletePost']);
 });
 
 

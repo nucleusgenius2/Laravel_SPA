@@ -1,6 +1,7 @@
 <template>
     <div class="wrap-news">
         <div class="news-list">
+            <a class="add-new" href="/admin/posts/add">Добавить новость</a>
 
             <div class="post-heading-block">
                 <div class="post-name">Название новости</div>
@@ -11,7 +12,7 @@
             </div>
 
             <div class="post-el" v-for="(value, name) in arrayPostEl">
-                <a :href="'/admin/post/'+value['id']" class="post-name">{{ value['name'] }}</a>
+                <a :href="'/admin/posts/'+value['id']" class="post-name">{{ value['name'] }}</a>
                 <div class="post-author">{{ value['author'] }}</div>
                 <div class="wrap-date">
                     <div class="post-date-c"><span>Дата создания:</span> <span>{{ value['created_at'] }}</span></div>
@@ -38,7 +39,6 @@ import router from "@/router/router";
 import { useRoute } from "vue-router";
 import {authRequest} from "@/api.js";
 
-console.log('22222');
 let props = defineProps({
     total: String,
 })
@@ -92,7 +92,7 @@ getPostsList(1);
 async function removePost(e){
     let id = e.target.getAttribute('data-id');
 
-    let response = await authRequest('/api/admin/delete/'+id, 'delete');
+    let response = await authRequest('/api/posts/'+id, 'delete');
 
     if ( response.data.status==='success' ){
         e.target.closest('.post-el').remove();
@@ -160,8 +160,8 @@ async function removePost(e){
     border: 1px solid #c1c0c0;
     align-items: center;
     background-color: #383838;
-    margin-top: -1px;
     color: #fff;
+    margin-top: 30px;
 }
 
 .post-heading-block div {
@@ -187,5 +187,20 @@ async function removePost(e){
 .pagination-el div {
     cursor: pointer;
 }
+
+.add-new {
+    background-color: #13af3b;
+    display: inline-block;
+    padding: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
+    margin-bottom: 10px;
+}
+
+.news-list {
+    margin-top:20px
+}
+
 
 </style>

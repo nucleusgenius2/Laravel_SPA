@@ -69,16 +69,16 @@ const router = createRouter({
             component: () => import("@/views/admin/Admin.vue"),
             children: [
                 {
-                    // при совпадении пути с шаблоном /user/:id/profile
-                    // в <router-view> компонента User будет показан UserProfile
                     path: '',
                     component: () => import("@/views/admin/AdminDashboard.vue"),
                 },
                 {
-                    // при совпадении пути с шаблоном /user/:id/profile
-                    // в <router-view> компонента User будет показан UserProfile
                     path: 'posts',
                     component: () => import("@/views/admin/AdminPosts.vue"),
+                },
+                {
+                    path: 'posts/:id',
+                    component: () => import("@/views/admin/AdminPostsSingle.vue"),
                 },
             ]
         },

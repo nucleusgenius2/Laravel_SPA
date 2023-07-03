@@ -2,6 +2,8 @@
     <div class="wrap-news">
         <div class="news-list">
 
+            <a class="add-new" href="/admin/posts/add">Добавить новость</a>
+
             <div class="post-heading-block">
                 <div class="post-name">Название новости</div>
                 <div class="post-author">Автор</div>
@@ -32,7 +34,6 @@
 
 
 <script setup>
-
 import {onMounted, ref} from 'vue';
 import router from "@/router/router";
 import { useRoute } from "vue-router";

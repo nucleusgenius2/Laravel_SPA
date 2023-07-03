@@ -83,6 +83,7 @@ let imgPreview = ref('');
 
 function onChangeFile(event) {
     array.value.img = event.target.files[0];
+    console.log(array.value.img)
     imgPreview.value = window.URL.createObjectURL( array.value.img );
 }
 
@@ -126,8 +127,9 @@ let editorConfig = {
 //get post info
 onMounted(
     async () => {
-        if (route.params.page !== 'add') {
-            let response = await authRequest('/api/post/' + route.params.page, 'get');
+        if (route.params.id !== 'add') {
+            console.log(route.params.id)
+            let response = await authRequest('/api/posts/' + route.params.id, 'get');
 
             if ( response.data.status === 'success' ){
                 array.value = response.data.json[0];
@@ -135,7 +137,7 @@ onMounted(
                 imgPreview.value = response.data.json[0].img;
             }
             else {
-                return router.push({ name: '404',  query: { textError: encodeURIComponent(response.data.text) } })
+                return router.put({ name: '404',  query: { textError: encodeURIComponent(response.data.text) } })
             }
         }
     }
@@ -146,7 +148,7 @@ async function save(){
 
     //save or update
     let formData = new FormData();
-    formData.append('id', route.params.page)
+    formData.append('id', route.params.id)
     formData.append('name', array.value.name)
     formData.append('img', array.value.img)
     formData.append('content', textEditor.value)
@@ -155,17 +157,21 @@ async function save(){
     formData.append('seo_title', '');
     formData.append('seo_description', '');
     formData.append('id_category', '');
-
-    if ( route.params.page === 'add' ){
-        let response = await authRequest('/api/admin/create', 'post', formData );
+    console.log(formData);
+     //create post
+    if ( route.params.id === 'add' ){
+        let response = await authRequest('/api/posts', 'post', formData);
 
         if (response.data.status === 'success'){
             saveStatus.value = response.data.status;
-            window.location.replace("/admin/post/"+response.data.json);
+            window.location.replace("/admin/posts/"+response.data.json);
         }
     }
+    //update post
     else {
-        let response = await authRequest('/api/admin/update', 'post', formData );
+        formData.append('_method',"PATCH") //фикс бага ларавел(форм дата не работает в пут и патч), отправляем пост, но с методом PATCH, чтобы вызвался роут патч
+        console.log(formData);
+        let response = await authRequest('/api/posts', 'post', formData );
         saveStatus.value = response.data.status;
     }
 
@@ -185,70 +191,81 @@ async function save(){
 
 
 <style scoped>
-    .text-status {
-        color: #09be92;
-        padding: 10px;
-        display: inline-block;
-        cursor: pointer;
-        font-weight:600
-    }
-    .wrap-save {
-        display:flex;
-    }
-    .img-field {
-        display:flex;
-        align-items: center;
-    }
-    .img-field img {
-        max-width:100px;
-        margin-right:30px;
-    }
-    .img-field .field-admin {
-        margin-bottom: 0px;
-    }
-    .wrap-field {
-        margin-bottom: 30px;
-    }
-    .field-admin {
-        font-size: 13px;
-        border-color: #c2c2bf;
-        background-color: rgb(249, 249, 249);
-        border-radius: 3px;
-        border-width: 1px;
-        height: 35px;
-        padding: 1px 2px 1px 10px;
-        outline: none !important;
-        transition: 0.3s;
-        width: 100%;
-        vertical-align: middle;
-        box-shadow: 0 0px 0px rgba(0, 0, 0, 0.075) inset !important;
-        border-style: solid;
-        margin: 0px;
-        box-sizing: border-box;
-        max-width: 100%;
-    }
-    input:focus, textarea:focus {
-        border-color: #4e41d9;
-    }
+.text-status {
+    color: #09be92;
+    padding: 10px;
+    display: inline-block;
+    cursor: pointer;
+    font-weight:600
+}
+.wrap-save {
+    display:flex;
+}
+.img-field {
+    display:flex;
+    align-items: center;
+}
+.img-field img {
+    max-width:100px;
+    margin-right:30px;
+}
+.img-field .field-admin {
+    margin-bottom: 0px;
+}
+.wrap-field {
+    margin-bottom: 30px;
+}
+.field-admin {
+    font-size: 13px;
+    border-color: #c2c2bf;
+    background-color: rgb(249, 249, 249);
+    border-radius: 3px;
+    border-width: 1px;
+    height: 35px;
+    padding: 1px 2px 1px 10px;
+    outline: none !important;
+    transition: 0.3s;
+    width: 100%;
+    vertical-align: middle;
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.075) inset !important;
+    border-style: solid;
+    margin: 0px;
+    box-sizing: border-box;
+    max-width: 100%;
+}
+input:focus, textarea:focus {
+    border-color: #4e41d9;
+}
 
-    .heading-field {
-        margin-bottom: 5px;
-        font-weight: 600;
-    }
+.heading-field {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
 
-    .save {
-        background-color: #09be92;
-        color:#fff;
-        padding:10px;
-        display: inline-block;
-        cursor: pointer;
-    }
-    .save:hover {
-        background-color: #099d79;
-    }
-    .textarea-field {
-        min-height: 80px;
-        padding-top: 10px;
-    }
+.save {
+    background-color: #09be92;
+    color:#fff;
+    padding:10px;
+    display: inline-block;
+    cursor: pointer;
+}
+.save:hover {
+    background-color: #099d79;
+}
+.ck-editor__editable {
+    border: 1px solid #cecece!important;
+    min-height: 300px;
+}
+.ck-editor__editable:focus {
+    border: 1px solid #2977ff!important;
+}
+.textarea-field {
+    min-height: 80px;
+    padding-top: 10px;
+}
+
+.wrap-news {
+    margin-top:30px;
+}
 
 </style>

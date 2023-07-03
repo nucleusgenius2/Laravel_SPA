@@ -146,7 +146,9 @@ class AdminController
      * @return JsonResponse
      */
     public function updatePost(Request $request): JsonResponse
+
     {
+        log::info( $request->all());
         $validated = Validator::make($request->all(), [
             'id' => 'required|int',
             'name' => 'required|string|min:3|max:255',
@@ -156,6 +158,7 @@ class AdminController
             'seo_description' => 'nullable|string|max:300',
             'id_category' => 'nullable|int',
         ]);
+
 
         if ($validated->fails()) {
             $this->text = $validated->errors();
