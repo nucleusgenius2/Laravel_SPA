@@ -18,29 +18,8 @@
             </div>
 
             <div class="wrap-dashboard admin-panel max">
+                <AdminMenu/>
                 <router-view />
-
-                <div class="dashboard">
-                    <!-- news list -->
-                    <div class="tab-admin" v-if="route.params.edit ==='post-list' && route.params.id !=='1'">
-
-                        <a class="add-new" href="/admin/post/add">Добавить новость</a>
-                        <div class="wrap-list-news">
-                            <AdminPostList total="10" pagination="true"/>
-                        </div>
-
-                    </div>
-
-                    <!-- single editor news -->
-                    <div class="tab-admin" v-if="route.params.edit ==='post'" data-tab="editor-news">
-
-                        <div class="wrap-list-news">
-                            <AdminEditPost />
-                        </div>
-
-                    </div>
-
-                </div>
             </div>
 
         </template>
@@ -51,8 +30,7 @@
 
 
 <script setup>
-import AdminPostList from '@/components/admin/AdminPostList.vue';
-import AdminEditPost from '@/components/admin/AdminEditPost.vue';
+import AdminMenu from '@/components/admin/AdminMenu.vue';
 import {onMounted, ref} from 'vue';
 import { useRoute } from "vue-router";
 import {authRequest} from "@/api.js";

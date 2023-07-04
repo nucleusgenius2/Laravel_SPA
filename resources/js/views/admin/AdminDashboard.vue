@@ -1,11 +1,5 @@
 <template>
-    <div class="wrap-dashboard admin-panel max">
-        <div class="dashboard-col-1">
-            <div class="wrap-dashboard-button">
-                <div class="dashboard-button news"><a href="/admin/posts">Новости</a></div>
-            </div>
-        </div>
-    </div>
+
 </template>
 
 <script>

@@ -3,28 +3,14 @@
         <div className="wrap-news">
 
             <div class="wrap-field">
-                <div class="heading-field">Название новости</div>
+                <div class="heading-field">Имя</div>
                 <input class='field-admin' v-model="array.name">
             </div>
 
-            <div class="document-editor__toolbar"></div>
-            <div class="wrap-field">
-                <div class="heading-field">Контент новости</div>
-                <ckeditor :editor="editor" v-model="textEditor" :config="editorConfig" @ready="onReady"></ckeditor>
-            </div>
 
-            <div class="document-editor__toolbar"></div>
             <div class="wrap-field">
                 <div class="heading-field">Краткое описание новости</div>
                 <textarea class='field-admin textarea-field' v-model="array.short_description"></textarea>
-            </div>
-
-            <div class="wrap-field">
-                <div class="heading-field">Изображение новости</div>
-                <div class="img-field">
-                    <img v-if="array.img!==''" :src="imgPreview">
-                    <input class='file' type="file" @change="onChangeFile">
-                </div>
             </div>
 
             <div class="wrap-save">
@@ -38,28 +24,6 @@
     </div>
 </template>
 
-<script>
-//editor ckeditor
-import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
-export default {
-    name: 'app',
-    data() {
-        return {
-            editor: DecoupledEditor,
-        };
-    },
-    methods: {
-        onReady( editor )  {
-            // Insert the toolbar before the editable area.
-            editor.ui.getEditableElement().parentElement.insertBefore(
-                editor.ui.view.toolbar.element,
-                editor.ui.getEditableElement()
-            );
-        }
-    }
-}
-
-</script>
 
 
 <script setup>
@@ -87,42 +51,6 @@ function onChangeFile(event) {
 }
 
 
-let editorConfig = {
-    fontSize: {
-        options: [
-            9,
-            10,
-            12,
-            13,
-            14,
-            'default',
-            16,
-            17,
-            18,
-            19,
-            21,
-            25
-        ]
-    },
-
-    toolbar: {
-        items: [
-            'heading', '|',
-            'fontsize', '|',
-            'alignment', '|',
-            'fontColor', 'fontBackgroundColor', '|',
-            'bold', 'italic',
-            'underline',
-            'link', '|',
-            'outdent', 'indent', '|',
-            'bulletedList', 'numberedList',
-            '|',
-            'undo', 'redo'
-        ],
-        shouldNotGroupWhenFull: true
-    }
-
-}
 //get post info
 onMounted(
     async () => {
@@ -155,7 +83,7 @@ async function save(){
     formData.append('seo_title', '');
     formData.append('seo_description', '');
     formData.append('id_category', '');
-     //create post
+    //create post
     if ( route.params.id === 'add' ){
         let response = await authRequest('/api/posts', 'post', formData);
 
@@ -248,20 +176,12 @@ input:focus, textarea:focus {
 .save:hover {
     background-color: #099d79;
 }
-.ck-editor__editable {
-    border: 1px solid #cecece!important;
-    min-height: 300px;
-}
-.ck-editor__editable:focus {
-    border: 1px solid #2977ff!important;
-}
+
 .textarea-field {
     min-height: 80px;
     padding-top: 10px;
 }
 
-.wrap-news {
-    margin-top:30px;
-}
+
 
 </style>

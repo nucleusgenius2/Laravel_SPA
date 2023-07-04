@@ -189,7 +189,7 @@ class AdminController
                     'short_description' => $data['short_description'] ?? '',
                     'seo_title' => $data['seo_title'] ?? '',
                     'seo_description' => $data['seo_description'] ?? '',
-                    'img' => $imageName['img'],
+                    'img' => $imageName['img'] ?? '',
                     'id_category' => $data['id_category'] ?? 0,
                 ]);
 

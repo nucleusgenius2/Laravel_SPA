@@ -45,12 +45,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 //admin api
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::post('/posts/', [AdminController::class, 'createPost']);
-    Route::patch('/posts/', [AdminController::class, 'updatePost']);
+    Route::get('/users', [UserController::class, 'getUserList']);
+
+    Route::post('/posts', [AdminController::class, 'createPost']);
+    Route::patch('/posts', [AdminController::class, 'updatePost']);
     Route::delete('/posts/{id}', [AdminController::class, 'deletePost']);
-    //Route::post('/admin/create', [AdminController::class, 'createPost']);
-    //Route::post('/admin/update', [AdminController::class, 'updatePost']);
-    //Route::delete('/admin/delete/{id}', [AdminController::class, 'deletePost']);
 });
 
 
