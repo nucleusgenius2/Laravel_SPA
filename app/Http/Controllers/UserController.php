@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Events\UserLogin;
 use App\Jobs\SendMail;
+use App\Models\Post;
 use App\Models\UserBalance;
 use App\Traits\ResponseController;
 use Illuminate\Http\JsonResponse;
@@ -178,14 +179,43 @@ class UserController
         } else {
             $data = $validated->valid();
 
-            $postList = User::orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
+            $postUser = User::orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
 
-            if (count($postList) > 0) {
+            if (count($postUser) > 0) {
                 $this->status = 'success';
                 $this->code = 200;
-                $this->json = $postList;
+                $this->json = $postUser;
             } else {
-                $this->text = 'Запрашиваемой страницы не существует';
+                $this->text = 'таблица юзеров пуста';
+            }
+        }
+
+        return $this->responseJsonApi();
+    }
+
+    /**
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function getUserSingle(int $id): JsonResponse
+    {
+        $validated = Validator::make(['id' => $id], [
+            'id' => 'integer|min:1',
+        ]);
+
+        if ($validated->fails()) {
+            $this->text = $validated->errors();
+        } else {
+            $data = $validated->valid();
+
+            $contentUserSingle = User::where('id', '=', $data['id'])->get();
+
+            if (count($contentUserSingle) > 0) {
+                $this->status = 'success';
+                $this->code = 200;
+                $this->json = $contentUserSingle;
+            } else {
+                $this->text = 'юзера не существует';
             }
         }
 

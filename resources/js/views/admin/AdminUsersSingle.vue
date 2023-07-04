@@ -4,12 +4,22 @@
 
             <div class="wrap-field">
                 <div class="heading-field">Имя</div>
-                <input class='field-admin' v-model="array.name">
+                <input class='field-admin' v-model="user.name">
+            </div>
+
+            <div class="wrap-field">
+                <div class="heading-field">Email</div>
+                <input class='field-admin' v-model="user.email">
+            </div>
+
+            <div class="wrap-field">
+                <div class="heading-field">Дата регистрации</div>
+                <span>{{ user.created_at }} </span>
             </div>
 
             <div class="wrap-field">
                 <div class="heading-field">Краткое описание новости</div>
-                <textarea class='field-admin textarea-field' v-model="array.short_description"></textarea>
+                <textarea class='field-admin textarea-field' v-model="user.short_description"></textarea>
             </div>
 
             <div class="wrap-save">
@@ -35,7 +45,7 @@ import {authRequest} from "@/api.js";
 const ckeditor = CKEditor.component;
 
 const route = useRoute();
-let array = ref({
+let user = ref({
     name : '',
     img : '',
 });
@@ -45,7 +55,7 @@ let imgPreview = ref('');
 
 
 function onChangeFile(event) {
-    array.value.img = event.target.files[0];
+    user.value.img = event.target.files[0];
     imgPreview.value = window.URL.createObjectURL( array.value.img );
 }
 
@@ -54,10 +64,11 @@ function onChangeFile(event) {
 onMounted(
     async () => {
         if (route.params.id !== 'add') {
-            let response = await authRequest('/api/posts/' + route.params.id, 'get');
+            let response = await authRequest('/api/users/' + route.params.id, 'get');
 
             if ( response.data.status === 'success' ){
-                array.value = response.data.json[0];
+                user.value = response.data.json[0];
+                user.value.created_at = new Date(user.value.created_at).toLocaleString();
                 textEditor.value = response.data.json[0].content;
                 imgPreview.value = response.data.json[0].img;
             }
@@ -74,10 +85,10 @@ async function save(){
     //save or update
     let formData = new FormData();
     formData.append('id', route.params.id)
-    formData.append('name', array.value.name)
-    formData.append('img', array.value.img)
+    formData.append('name', user.value.name)
+    formData.append('img', user.value.img)
     formData.append('content', textEditor.value)
-    formData.append('short_description', array.value.short_description)
+    formData.append('short_description', user.value.short_description)
     formData.append('author', JSON.parse(localStorage.getItem('token')).user);
     formData.append('seo_title', '');
     formData.append('seo_description', '');

@@ -46,6 +46,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 //admin api
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/users', [UserController::class, 'getUserList']);
+    Route::get('/users/{id}', [UserController::class, 'getUserSingle']);
 
     Route::post('/posts', [AdminController::class, 'createPost']);
     Route::patch('/posts', [AdminController::class, 'updatePost']);
