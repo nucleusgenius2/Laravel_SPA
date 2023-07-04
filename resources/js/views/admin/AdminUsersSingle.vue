@@ -7,7 +7,6 @@
                 <input class='field-admin' v-model="array.name">
             </div>
 
-
             <div class="wrap-field">
                 <div class="heading-field">Краткое описание новости</div>
                 <textarea class='field-admin textarea-field' v-model="array.short_description"></textarea>
