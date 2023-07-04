@@ -33,9 +33,9 @@ class AdminController
         } else {
             $data = $validated->valid();
 
-            $array_news = Post::where('id', '=', $data['id'])->delete();
+            $post = Post::where('id', '=', $data['id'])->delete();
 
-            if ($array_news) {
+            if ($post) {
                 $this->status = 'success';
                 $this->code = 200;
             } else {
@@ -112,7 +112,7 @@ class AdminController
                 $imageName = $data['img'];
             }
 
-            $array_save_new = [
+            $arraySavePost = [
                 'name' => $data['name'],
                 'content' => $data['content'] ?? '',
                 'short_description' => $data['short_description'] ?? '',
@@ -123,7 +123,7 @@ class AdminController
                 'author' => $data['author']
             ];
 
-            $flight = Post::create($array_save_new);
+            $flight = Post::create($arraySavePost);
 
             if ($flight) {
                 $this->status = 'success';
@@ -148,7 +148,6 @@ class AdminController
     public function updatePost(Request $request): JsonResponse
 
     {
-        log::info( $request->all());
         $validated = Validator::make($request->all(), [
             'id' => 'required|int',
             'name' => 'required|string|min:3|max:255',
@@ -183,7 +182,7 @@ class AdminController
             if ($validated->fails()) {
                 $this->text = $validated->errors();
             } else {
-                $array_save_new = Post::where('id', '=', $data['id'])->update([
+                $arraySavePost = Post::where('id', '=', $data['id'])->update([
                     'name' => $data['name'],
                     'content' => $data['content'] ?? '',
                     'short_description' => $data['short_description'] ?? '',
@@ -193,7 +192,7 @@ class AdminController
                     'id_category' => $data['id_category'] ?? 0,
                 ]);
 
-                if ($array_save_new) {
+                if ($arraySavePost) {
                     $this->status = 'success';
                     $this->code = 200;
                     $this->text = 'Запись создана';

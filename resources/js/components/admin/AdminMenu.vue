@@ -23,18 +23,17 @@ export default {
         display:flex;
         margin-top:30px;
     }
-    .wrap-admin-menu div{
+    .wrap-admin-menu a{
         margin-right: 10px;
         padding:10px;
-        color:#fff;
     }
-    .wrap-admin-menu div a {
+    .wrap-admin-menu a {
         transition: 0s;
     }
-    .wrap-admin-menu div:hover{
+    .wrap-admin-menu a:hover{
         background-color: #8b8b8b;
     }
-    .wrap-admin-menu div:hover a {
+    .wrap-admin-menu a:hover  {
         color:#fff;
     }
 </style>
