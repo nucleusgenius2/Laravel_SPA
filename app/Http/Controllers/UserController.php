@@ -81,7 +81,7 @@ class UserController
     public function registrationUser(Request $request): JsonResponse
     {
         $validated = Validator::make($request->all(), [
-            'name' => 'required|string|max:30',
+            'name' => 'required|string|max:16|regex:/(^[A-Za-z0-9-_]+$)+/',
             'email' => 'required|email|unique:users|max:30',
             'password' => 'required|string|confirmed|min:6|max:30',
         ]);

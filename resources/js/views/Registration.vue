@@ -89,14 +89,14 @@ async function formSubmit(){
     }
 
     let response = await notAuthRequest('/api/registration', 'post', data);
-
+console.log(response.data)
     if (response.data.status === 'success') {
         status.value = 'auth';
         error.value ='';
         localStorage.setItem('token', JSON.stringify(response.data.json))
     }
     else {
-        status.value ='';
+        status.value ='noAuth';
         error.value = response.data.text;
     }
 
@@ -176,6 +176,7 @@ async function formSubmit(){
     .form-auth-true, .form-auth-false {
         max-width: 500px;
         margin: auto;
+        margin-top: 20px;
         padding: 20px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
         color: #11b737;
