@@ -2,15 +2,15 @@
     <div class="wrap-news">
         <div class="news-list">
 
-            <div class="post-el" v-for="(value, name) in arrayPostEl">
-                <div class="heading-post">{{ value['name'] }}</div>
+            <div class="post-el" v-for="(post) in arrayPostEl">
+                <div class="heading-post">{{ post.name }}</div>
                 <div class="wrap-section-post">
-                    <div class="thumb-post"><img :src="value['img']" alt="new-thumb"></div>
+                    <div class="thumb-post"><img :src="post.img" alt="new-thumb"></div>
                     <div class="post-short-text">
-                        <div class="content-short-post">{{ value['short_description'] }}</div>
+                        <div class="content-short-post">{{ post.short_description }}</div>
                     </div>
                 </div>
-                <a :href="'/post/'+value['id']">Читать далее</a>
+                <a :href="'/posts/'+post.id">Читать далее</a>
             </div>
 
         </div>
@@ -55,7 +55,7 @@ onMounted(
             page = props.page;
         }
 
-        let response = await authRequest('/api/post-list/'+ page, 'get' );
+        let response = await authRequest('/api/posts?page='+page, 'get' );
 
         if ( response.data.status === 'success' ){
 
