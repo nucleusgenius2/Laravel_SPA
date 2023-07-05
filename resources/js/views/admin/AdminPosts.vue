@@ -11,19 +11,19 @@
                 </div>
             </div>
 
-            <div class="post-el" v-for="(value, name) in arrayPostEl">
-                <a :href="'/admin/posts/'+value['id']" class="post-name">{{ value['name'] }}</a>
-                <div class="post-author">{{ value['author'] }}</div>
+            <div class="post-el" v-for="(post) in arrayPostEl">
+                <a :href="'/admin/posts/'+post.id" class="post-name">{{ post.name }}</a>
+                <div class="post-author">{{ post.author }}</div>
                 <div class="wrap-date">
-                    <div class="post-date-c"><span>Дата создания:</span> <span>{{ value['created_at'] }}</span></div>
-                    <div class="post-date-u"><span>Дата обновления:</span> <span>{{ value['updated_at'] }}</span></div>
+                    <div class="post-date-c"><span>Дата создания:</span> <span>{{ post.created_at }}</span></div>
+                    <div class="post-date-u"><span>Дата обновления:</span> <span>{{ post.updated_at }}</span></div>
                 </div>
-                <div class="remove-post" @click="removePost" :data-id="value['id']">Удалить</div>
+                <div class="remove-post" @click="removePost" :data-id="post.id">Удалить</div>
             </div>
 
             <div class="pagination-post">
-                <div class="pagination-el" v-for="(value, name) in arrayPagination">
-                    <div @click="getPostsList(value['url'])" >{{ value['label'] }}</div>
+                <div class="pagination-el" v-for="(pagination) in arrayPagination">
+                    <div @click="getPostsList(pagination.url)" >{{ pagination.label }}</div>
                 </div>
             </div>
 

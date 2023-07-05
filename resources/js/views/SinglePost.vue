@@ -4,8 +4,8 @@
 
             <div class="wrap-single-news max">
                 <div class="wrap-news">
-                    <h1>{{ array['name'] }}</h1>
-                    <div class="content-news" v-html="array['content']"></div>
+                    <h1>{{ post.name }}</h1>
+                    <div class="content-news" v-html="post.content"></div>
                 </div>
             </div>
 
@@ -21,13 +21,13 @@ import {authRequest} from "@/api.js";
 import router from "@/router/router";
 
 const route = useRoute();
-let array = ref([]);
+let post = ref([]);
 
 onMounted(
     async () => {
-       let response = await authRequest('/api/post/'+route.params.id, 'get' );
+       let response = await authRequest('/api/posts/'+route.params.id, 'get' );
        if ( response.data.status === 'success' ){
-           array.value = response.data.json[0];
+           post.value = response.data.json[0];
        }
        else {
            return router.push({ name: '404',  query: { textError: encodeURIComponent(response.data.text) } })

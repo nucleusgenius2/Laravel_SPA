@@ -16,8 +16,8 @@
         </div>
 
         <div class="pagination-post" v-if="props.pagination === 'true' ">
-            <div class="pagination-el" v-for="(value, name) in arrayPagination">
-                <a :href="value['url']">{{ value['label'] }}</a>
+            <div class="pagination-el" v-for="(pagination) in arrayPagination">
+                <a :href="pagination.url">{{ pagination.label }}</a>
             </div>
         </div>
 

@@ -13,7 +13,7 @@ const router = createRouter({
             }
         },
         {
-            path: "/post/:id",
+            path: "/posts/:id",
             name: "SinglePost",
             component: () => import("@/views/SinglePost.vue"),
             meta: {
@@ -52,17 +52,6 @@ const router = createRouter({
                 layout : "mainLayout"
             }
         },
-        /*
-        {
-            //path: "/admin/:edit/:page",
-            path: "/admin/",
-            name: "admin",
-            component: () => import("@/views/admin.vue"),
-            meta: {
-                layout : "admin"
-            }
-        },
-        */
         {
             path: "/admin",
             name: "admin",

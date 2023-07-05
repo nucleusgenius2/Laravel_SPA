@@ -89,7 +89,7 @@ async function formSubmit(){
     }
 
     let response = await notAuthRequest('/api/registration', 'post', data);
-console.log(response.data)
+
     if (response.data.status === 'success') {
         status.value = 'auth';
         error.value ='';

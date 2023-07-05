@@ -13,7 +13,7 @@
                 <div class="wrap-icons">Иконки</div>
             </div>
 
-            <div class="post-el table-users" v-for="(user, name) in arrayPostEl">
+            <div class="post-el table-users" v-for="(user) in arrayPostEl">
                 <div><a :href="'/admin/users/'+user.id" class="post-name">{{ user.name }}</a></div>
                 <div class="user-email">{{ user.email }}</div>
                 <div class="user-ip">сделать вывод</div>
@@ -24,8 +24,8 @@
             </div>
 
             <div class="pagination-post">
-                <div class="pagination-el" v-for="(value, name) in arrayPagination">
-                    <div @click="getPostsList(value['url'])" >{{ value['label'] }}</div>
+                <div class="pagination-el" v-for="(pagination) in arrayPagination">
+                    <div @click="getPostsList(pagination.url)" >{{ pagination.label }}</div>
                 </div>
             </div>
 
@@ -51,7 +51,7 @@ let arrayPostEl = ref([]);
 let arrayPagination = ref([]);
 
 async function getPostsList (page){
-    let response = await authRequest('/api//users?page='+page, 'get' );
+    let response = await authRequest('/api/users?page='+page, 'get' );
 
     if ( response.data.status === 'success' ){
         let arrayPost = response.data.json.data;
