@@ -94,15 +94,9 @@ onMounted(
     async () => {
         let responsive = await authRequest('/api/profile', 'get');
         data.value = responsive.data;
-console.log(responsive.data);
-        let timerId = setInterval(() => getProfileData(), 5000);
     }
 );
 
-async function getProfileData(){
-    let responsive = await authRequest('/api/profile', 'get');
-    data.value = responsive.data;
-}
 
 async function updateProfile() {
 

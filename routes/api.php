@@ -27,7 +27,7 @@ Route::get('/connect', function () {
     return true;
 });
 
-//Route::get('/post-list/', [PostController::class, 'getPostList']);
+
 Route::get('/posts', [PostController::class, 'getPostList']);
 Route::get('/posts/{id}', [PostController::class, 'getPostSingle']);
 Route::post('login', [UserController::class, 'loginUser']);
@@ -35,16 +35,16 @@ Route::post('registration', [UserController::class, 'registrationUser']);
 
 
 //user api
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'user_active'])->group(function () {
     Route::get('/authorization', [UserController::class, 'checkStatusUser']);
-    Route::get('/logout/', [UserController::class, 'logoutUser']);
+    Route::get('/logout', [UserController::class, 'logoutUser']);
 
     Route::get('/profile', [ProfileController::class, 'profileInfo']);
     Route::patch('/profile', [ProfileController::class, 'profileUpdate']);
 });
 
 //admin api
-Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+Route::middleware(['auth:sanctum','user_active', 'admin'])->group(function () {
     Route::get('/users', [UserController::class, 'getUserList']);
     Route::get('/users/{id}', [UserController::class, 'getUserSingle']);
 
