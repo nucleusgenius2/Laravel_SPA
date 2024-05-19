@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-//class Permission extends Model{
 class UserRights extends Model{
 
 
     /**
-     * table db
-     * @var string
+     * @var string[]
      */
-    protected $table = 'user_rights';
+    protected $fillable = [
+        'user_id',
+        'rights'
+    ];
 
 }

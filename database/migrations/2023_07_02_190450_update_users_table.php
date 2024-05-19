@@ -26,8 +26,6 @@ return new class extends Migration {
         Schema::table('users', function (Blueprint $table) {
             $table->tinyInteger('status');
             $table->string('icons' );
-            $table->dropColumn('black_list');
-            $table->dropColumn('friend_list');
         });
     }
 };
