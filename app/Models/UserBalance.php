@@ -6,11 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserBalance extends Model{
 
-    /**
-     * table db
-     * @var string
-     */
-    protected $table = 'users_balance';
 
     /**
      * @var string[]

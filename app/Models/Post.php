@@ -6,14 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model{
 
-
-    /**
-     * table db
-     * @var string
-     */
-    protected $table = 'news';
-
-
     /**
      * @var string[]
      */
@@ -24,7 +16,7 @@ class Post extends Model{
         'seo_title',
         'seo_description',
         'img',
-        'id_category',
+        'category_id',
         'author',
     ];
 

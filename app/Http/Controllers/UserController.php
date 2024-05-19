@@ -11,7 +11,7 @@ use App\Traits\ResponseController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Permission;
+use App\Models\UserRights;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -28,7 +28,7 @@ class UserController
      */
     public function isAdminPermission(User $user): bool
     {
-        $userRight = Permission::where('user_id', '=', $user['id'])->get();
+        $userRight = UserRights::where('user_id', '=', $user['id'])->get();
 
         if (count($userRight)) {
             return true;

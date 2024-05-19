@@ -12,10 +12,8 @@ return new class extends Migration {
     {
         //
         Schema::table('users', function (Blueprint $table) {
-            $table->tinyInteger('status')->default(1); //макс 255
+            $table->tinyInteger('status')->default(1);
             $table->string('icons', 255)->nullable();
-            $table->text('black_list')->nullable();
-            $table->text('friend_list')->nullable();
         });
 
     }

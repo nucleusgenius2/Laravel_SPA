@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_rights', function (Blueprint $table) {
             $table->id();
 			$table->integer('user_id');
-			$table->string('rights', 100)->comment('Наличие админскких или обычных прав');
+			$table->tinyInteger('rights')->comment('0 юзер, 1 админ');
             $table->timestamps();
         });
 

@@ -96,7 +96,7 @@ class AdminController
             'seo_title' => 'nullable|string|max:255',
             'seo_description' => 'nullable|string|max:255',
             'img' => 'nullable|image|mimes:png,jpg,jpeg',
-            'id_category' => 'nullable|int',
+            'category_id' => 'nullable|int',
             'author' => 'required|string|max:100',
         ]);
 
@@ -119,7 +119,7 @@ class AdminController
                 'seo_title' => $data['seo_title'] ?? '',
                 'seo_description' => $data['seo_description'] ?? '',
                 'img' => $imageName['img'] ?? '',
-                'id_category' => $data['id_category'] ?? 0,
+                'category_id' => $data['category_id'] ?? 0,
                 'author' => $data['author']
             ];
 
@@ -155,7 +155,7 @@ class AdminController
             'short_description' => 'nullable|string|max:255',
             'seo_title' => 'nullable|string|max:255',
             'seo_description' => 'nullable|string|max:300',
-            'id_category' => 'nullable|int',
+            'category_id' => 'nullable|int',
         ]);
 
 
@@ -189,7 +189,7 @@ class AdminController
                     'seo_title' => $data['seo_title'] ?? '',
                     'seo_description' => $data['seo_description'] ?? '',
                     'img' => $imageName['img'] ?? '',
-                    'id_category' => $data['id_category'] ?? 0,
+                    'category_id' => $data['category_id'] ?? 0,
                 ]);
 
                 if ($arraySavePost) {
