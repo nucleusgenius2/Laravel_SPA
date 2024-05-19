@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users_balance_operations', function (Blueprint $table) {
             $table->id();
-			$table->integer('id_user');
+			$table->integer('user_id');
 			$table->string('name', 255)->comment('Название операции');
 			$table->string('type', 50)->comment('Тип операции');
 			$table->decimal('balance', 10, 3)->comment('изменение баланса юзера');

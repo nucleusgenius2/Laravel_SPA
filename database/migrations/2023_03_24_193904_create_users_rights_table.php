@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_rights', function (Blueprint $table) {
             $table->id();
-			$table->integer('id_user');
+			$table->integer('user_id');
 			$table->string('rights', 100)->comment('Наличие админскких или обычных прав');
             $table->timestamps();
         });

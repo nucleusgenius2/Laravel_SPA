@@ -56,7 +56,7 @@ class BalanceMinus implements ShouldQueue
             ]);
 
             UserBalanceOperations::create([
-                'id_user' =>$this->user->id,
+                'user_id' =>$this->user->id,
                 'name' => 'Пополнение баланса',
                 'type' => 'minus',
                 'balance' => $this->number

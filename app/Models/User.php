@@ -62,7 +62,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function userBalance()
     {
-         return $this->hasOne(UserBalance::class, 'id_user');
+         return $this->hasOne(UserBalance::class, 'user_id');
     }
 
     /**
@@ -70,7 +70,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function userBalanceOperations()
     {
-        return $this->hasMany(UserBalanceOperations::class,'id_user');
+        return $this->hasMany(UserBalanceOperations::class,'user_id');
     }
 
     public static function boot()

@@ -23,7 +23,7 @@ class ProfileController
     {
         $user = request()->user();
 
-        $dataBalance = UserBalanceOperations::where('id_user','=', $user->id)->orderBy('updated_at', 'desc')->limit(5)->with(['userBalance'])->get();
+        $dataBalance = UserBalanceOperations::where('user_id','=', $user->id)->orderBy('updated_at', 'desc')->limit(5)->with(['userBalance'])->get();
 
         $userData = [
             'name' => $user->name,

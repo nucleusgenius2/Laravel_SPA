@@ -16,7 +16,7 @@ class UserBalanceOperations extends Model{
      * @var string[]
      */
     protected $fillable = [
-        'id_user',
+        'user_id',
         'name',
         'balance',
         'type'
@@ -24,7 +24,7 @@ class UserBalanceOperations extends Model{
 
     public function userBalance()
     {
-        return $this->belongsTo(UserBalance::class, 'id_user', 'id_user');
+        return $this->belongsTo(UserBalance::class, 'user_id', 'user_id');
     }
 
 }

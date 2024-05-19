@@ -28,7 +28,7 @@ class UserController
      */
     public function isAdminPermission(User $user): bool
     {
-        $userRight = Permission::where('id_user', '=', $user['id'])->get();
+        $userRight = Permission::where('user_id', '=', $user['id'])->get();
 
         if (count($userRight)) {
             return true;
@@ -95,7 +95,7 @@ class UserController
 
             $token = $user->createToken('token', ['permission:user'])->plainTextToken;
 
-            $balance = UserBalance::create(['id_user' => $user->id, 'balance' => 0]);
+            $balance = UserBalance::create(['user_id' => $user->id, 'balance' => 0]);
 
             $dataUser = [
                 'token' => $token,
