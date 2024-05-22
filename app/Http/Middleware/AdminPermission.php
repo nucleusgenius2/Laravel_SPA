@@ -21,7 +21,7 @@ class AdminPermission
         if ($user->tokenCan('permission:admin')) {
             return $next($request);
         } else {
-            return 'not permission';
+            return response('Недостаточно прав', 303);
         }
 
     }
