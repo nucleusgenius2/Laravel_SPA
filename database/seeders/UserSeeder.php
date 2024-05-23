@@ -22,5 +22,14 @@ class UserSeeder extends Seeder
             'status' => 2
         ]);
 
+        User::firstOrCreate([
+            'id' => 2
+        ],[
+            'name' => 'user',
+            'email' => 'user@mail.ru',
+            'password' => '123456',
+            'status' => 1
+        ]);
+
     }
 }

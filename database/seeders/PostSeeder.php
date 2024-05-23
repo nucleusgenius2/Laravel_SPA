@@ -26,7 +26,5 @@ class PostSeeder extends Seeder
             'author' => ''
         ]);
 
-
-
     }
 }

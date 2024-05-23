@@ -28,9 +28,7 @@ class UserController
      */
     public function isAdminPermission(User $user): bool
     {
-        $userRight = UserRights::where('user_id', '=', $user['id'])->get();
-
-        if (count($userRight)) {
+        if ($user->status === 2) {
             return true;
         } else {
             return false;
