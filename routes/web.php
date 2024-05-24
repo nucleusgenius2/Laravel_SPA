@@ -24,11 +24,6 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 
 
 
-Route::get('/test', function () {
-    return view('layout.mail');
-});
-
-
 Route::get('/{any}', function () {
     return view('app');
 })->where('any', '.*');

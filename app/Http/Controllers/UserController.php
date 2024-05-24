@@ -11,7 +11,6 @@ use App\Traits\ResponseController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\UserRights;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -93,8 +92,6 @@ class UserController
 
             $token = $user->createToken('token', ['permission:user'])->plainTextToken;
 
-            $balance = UserBalance::create(['user_id' => $user->id, 'balance' => 0]);
-
             $dataUser = [
                 'token' => $token,
                 'user' => $user->email,
@@ -104,7 +101,6 @@ class UserController
             $this->code = 200;
             $this->json = $dataUser;
             $this->text = 'Регистрация прошла успешно';
-
 
             event(new Registered($user));
         }

@@ -25,6 +25,8 @@
                             Войти
                         </button>
                     </div>
+
+                    <div class="reset-password"><router-link to="/reset-email">Забыли пароль?</router-link></div>
                 </form>
 
                 <div class="auth-text form-auth-true"  v-if="status === 'auth'">Вы авторезированы</div>
@@ -150,5 +152,13 @@ async function formSubmit(){
     }
     .form-auth-false {
         color: #df3627;
+    }
+
+    .reset-password {
+        margin-top:20px;
+        cursor: pointer;
+    }
+    .reset-password:hover{
+        color: #4e41d9;
     }
 </style>

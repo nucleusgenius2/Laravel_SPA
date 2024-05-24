@@ -17,7 +17,7 @@ class UserActive
     public function handle(Request $request, Closure $next): Response|string
     {
         $user = request()->user();
-        if ($user->status == 0) {
+        if ($user->status !== 0) {
             return $next($request);
         } else {
             return response('Пользователь заблокирован', 303);
