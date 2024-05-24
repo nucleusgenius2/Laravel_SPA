@@ -22,7 +22,7 @@ class PostController
      * @param Request $request
      * @return JsonResponse
      */
-    public function getPostList(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $validated = Validator::make(['page' => $request->page], [
             'page' => 'integer|min:1',
@@ -52,7 +52,7 @@ class PostController
      * @param int $id
      * @return JsonResponse
      */
-    public function getPostSingle(int $id): JsonResponse
+    public function show(int $id): JsonResponse
     {
         $validated = Validator::make(['id' => $id], [
             'id' => 'integer|min:1',

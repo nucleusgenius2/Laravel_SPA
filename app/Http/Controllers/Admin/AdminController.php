@@ -22,7 +22,7 @@ class AdminController
      * @param int $id
      * @return JsonResponse
      */
-    public function deletePost(int $id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
         $validated = Validator::make(['id' => $id], [
             'page' => 'integer|min:1',
@@ -87,7 +87,7 @@ class AdminController
      * @param Request $request
      * @return JsonResponse
      */
-    public function createPost(Request $request): JsonResponse
+    public function create(Request $request): JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|min:3|max:255',
@@ -145,7 +145,7 @@ class AdminController
      * @param Request $request
      * @return JsonResponse
      */
-    public function updatePost(Request $request): JsonResponse
+    public function update(Request $request): JsonResponse
 
     {
         $validated = Validator::make($request->all(), [

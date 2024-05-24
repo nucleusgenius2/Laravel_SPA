@@ -30,10 +30,11 @@ Route::get('/connect', function () {
 });
 
 
-Route::get('/posts', [PostController::class, 'getPostList']);
-Route::get('/posts/{id}', [PostController::class, 'getPostSingle']);
-Route::post('login', [UserController::class, 'loginUser']);
-Route::post('registration', [UserController::class, 'registrationUser']);
+Route::get('/posts', [PostController::class, 'index']);
+Route::get('/posts/{id}', [PostController::class, 'show']);
+
+Route::post('login', [UserController::class, 'login']);
+Route::post('registration', [UserController::class, 'registration']);
 
 Route::post('/reset_password', [ResetPasswordController::class, 'resetEmailMessage']);
 Route::patch('/reset_password', [ResetPasswordController::class, 'reset']);
@@ -41,20 +42,20 @@ Route::patch('/reset_password', [ResetPasswordController::class, 'reset']);
 //user api
 Route::middleware(['auth:sanctum', 'user_active'])->group(function () {
     Route::get('/authorization', [UserController::class, 'checkStatusUser']);
-    Route::get('/logout', [UserController::class, 'logoutUser']);
+    Route::get('/logout', [UserController::class, 'logout']);
 
-    Route::get('/profile', [ProfileController::class, 'profileInfo']);
-    Route::patch('/profile', [ProfileController::class, 'profileUpdate']);
+    Route::get('/profile', [ProfileController::class, 'index']);
+    Route::patch('/profile', [ProfileController::class, 'update']);
 });
 
 //admin api
 Route::middleware(['auth:sanctum','user_active', 'admin'])->group(function () {
-    Route::get('/users', [UserController::class, 'getUserList']);
-    Route::get('/users/{id}', [UserController::class, 'getUserSingle']);
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{id}', [UserController::class, 'show']);
 
-    Route::post('/posts', [AdminController::class, 'createPost']);
-    Route::patch('/posts', [AdminController::class, 'updatePost']);
-    Route::delete('/posts/{id}', [AdminController::class, 'deletePost']);
+    Route::post('/posts', [AdminController::class, 'create']);
+    Route::patch('/posts', [AdminController::class, 'update']);
+    Route::delete('/posts/{id}', [AdminController::class, 'destroy']);
 });
 
 

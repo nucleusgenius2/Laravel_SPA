@@ -19,7 +19,7 @@ class ProfileController
      * get data from user profile
      * @return JsonResponse
      */
-    public function profileInfo(): JsonResponse
+    public function index(): JsonResponse
     {
         $user = request()->user();
 
@@ -39,7 +39,7 @@ class ProfileController
      * @param Request $request
      * @return JsonResponse
      */
-    public function profileUpdate(Request $request): JsonResponse
+    public function update(Request $request): JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|max:30',

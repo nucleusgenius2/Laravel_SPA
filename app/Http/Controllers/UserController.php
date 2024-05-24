@@ -58,7 +58,7 @@ class UserController
      * logout
      * @return JsonResponse
      */
-    public function logoutUser(): JsonResponse
+    public function logout(): JsonResponse
     {
         $user = request()->user();
 
@@ -75,7 +75,7 @@ class UserController
      * @param Request $request
      * @return JsonResponse
      */
-    public function registrationUser(Request $request): JsonResponse
+    public function registration(Request $request): JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|max:16|regex:/(^[A-Za-z0-9-_]+$)+/',
@@ -114,7 +114,7 @@ class UserController
      * @param Request $request
      * @return JsonResponse
      */
-    public function loginUser(Request $request): JsonResponse
+    public function login(Request $request): JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -162,7 +162,7 @@ class UserController
      * @param Request $request
      * @return JsonResponse
      */
-    public function getUserList(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $validated = Validator::make(['page' => $request->page], [
             'page' => 'integer|min:1',
@@ -191,7 +191,7 @@ class UserController
      * @param int $id
      * @return JsonResponse
      */
-    public function getUserSingle(int $id): JsonResponse
+    public function show(int $id): JsonResponse
     {
         $validated = Validator::make(['id' => $id], [
             'id' => 'integer|min:1',
