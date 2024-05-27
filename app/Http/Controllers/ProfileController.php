@@ -35,9 +35,43 @@ class ProfileController
     }
 
     /**
-     * updating information in the user profile
-     * @param Request $request
-     * @return JsonResponse
+     * @OA\Post(
+     *  path="/api/profile",
+     *  summary="Сhange user data",
+     *  security={{"bearer_token":{}}},
+     *  description="Сhange user data by name, email, password",
+     *  operationId="userUpdate",
+     *  tags={"user"},
+     *  @OA\RequestBody(
+     *    required=true,
+     *    description="Transfer the changed user data. The newPassword is sent only if the password has changed",
+     *    @OA\JsonContent(
+     *       required={"name","email","password","newPassword"},
+     *       @OA\Property(property="name", type="string", maxLength=30, example="user1"),
+     *       @OA\Property(property="email", type="string", format="email", maxLength=30, example="user1@mail.com"),
+     *       @OA\Property(property="password", type="string", format="password", maxLength=30, minLength=6, example="PassWord12345"),
+     *       @OA\Property(property="newPassword", type="string", format="password"),
+     *    ),
+     *  ),
+     *  @OA\Response(
+     *    response=200,
+     *    description="Register Successfully",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="text", type="string", example="Данные успешно обновлены"),
+     *       @OA\Property(property="status", type="string", example="success"),
+     *       @OA\Property(property="json", type="array", @OA\Items() ),
+     *    )
+     *  ),
+     *  @OA\Response(
+     *      response=422,
+     *      description="Unprocessable Entity",
+     *      @OA\JsonContent(
+     *         @OA\Property(property="text", type="string", example="Пользователь не существует"),
+     *         @OA\Property(property="status", type="string", example="error"),
+     *         @OA\Property(property="json", type="array", @OA\Items() )
+     *       )
+     *  )
+     * )
      */
     public function update(Request $request): JsonResponse
     {

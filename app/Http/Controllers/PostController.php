@@ -18,9 +18,38 @@ class PostController
 
 
     /**
-     * returns a list of news with pagination or single news
-     * @param Request $request
-     * @return JsonResponse
+     * @OA\Get(
+     *  path="/api/posts",
+     *  summary="Get list of posts",
+     *  description="Pass the page number",
+     *  operationId="postsGet",
+     *  tags={"post"},
+     *  @OA\Parameter(
+     *        description="number page",
+     *        in="query",
+     *        name="page",
+     *        required=true,
+     *        example="1",
+     *   ),
+     *  @OA\Response(
+     *    response=200,
+     *    description="Array of posts received",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="text", type="string"),
+     *       @OA\Property(property="status", type="string", example="success"),
+     *       @OA\Property(property="json", type="array", @OA\Items() ),
+     *    )
+     *  ),
+     *  @OA\Response(
+     *      response=422,
+     *      description="Unprocessable Entity",
+     *      @OA\JsonContent(
+     *         @OA\Property(property="text", type="string", example="Запрашиваемой страницы не существует"),
+     *         @OA\Property(property="status", type="string", example="error"),
+     *         @OA\Property(property="json", type="array", @OA\Items() )
+     *       )
+     *  )
+     * )
      */
     public function index(Request $request): JsonResponse
     {

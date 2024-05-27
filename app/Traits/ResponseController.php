@@ -11,7 +11,7 @@ trait ResponseController
     /**
      * @var int
      */
-    public int $code = 404;
+    public int $code = 422;
 
     /**
      * @var string
