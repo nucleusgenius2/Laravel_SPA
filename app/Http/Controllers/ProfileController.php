@@ -87,37 +87,31 @@ class ProfileController
         } else {
             $data = $validated->valid();
 
-            $id = request()->user()->id;
+            $user = request()->user();
 
-            $user = User::where('id', $id)->first();
+            //check password user
+            if (Hash::check($data['password'], $user->password)) {
 
-            if ($user) {
-                //check password user
-                if (Hash::check($data['password'], $user->password)) {
-
-                    if ($request->newPassword === 'none') {
-                        $user->update([
-                            'name' => $data['name'],
-                            'email' => $data['email'],
-                        ]);
-                    } else {
-                        $user->update([
-                            'name' => $data['name'],
-                            'email' => $data['email'],
-                            'password' => $data['newPassword']
-                        ]);
-                    }
-
-                    $this->text = 'Данные успешно обновлены';
-                    $this->status = 'success';
-                    $this->code = 200;
+                if ($request->newPassword === 'none') {
+                    $user->update([
+                        'name' => $data['name'],
+                        'email' => $data['email'],
+                    ]);
                 } else {
-                    $this->text = 'Не верно указан пароль';
+                    $user->update([
+                        'name' => $data['name'],
+                        'email' => $data['email'],
+                        'password' => $data['newPassword']
+                    ]);
                 }
+
+                $this->text = 'Данные успешно обновлены';
+                $this->status = 'success';
+                $this->code = 200;
+            } else {
+                $this->text = 'Не верно указан пароль';
             }
-            else {
-                $this->text = 'Пользователь не существует';
-            }
+
 
         }
 

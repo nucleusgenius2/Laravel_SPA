@@ -37,7 +37,95 @@ class PostController
      *    @OA\JsonContent(
      *       @OA\Property(property="text", type="string"),
      *       @OA\Property(property="status", type="string", example="success"),
-     *       @OA\Property(property="json", type="array", @OA\Items() ),
+     *       @OA\Property(property="json", type="array", @OA\Items(
+     *            @OA\Property(
+     *                property="current_page",
+     *                type="integer",
+     *                example=1
+     *            ),
+     *            @OA\Property(
+     *                property="data",
+     *                type="array",
+     *                @OA\Items(
+     *                  @OA\Property(
+     *                      property="id",
+     *                      type="integer",
+     *                      example=1
+     *                  ),
+     *                  @OA\Property(
+     *                       property="name",
+     *                       type="string",
+     *                       example="Тестовая новость"
+     *                   ),
+     *                   @OA\Property(
+     *                        property="content",
+     *                        type="string",
+     *                        example="Содержимое новости"
+     *                    ),
+     *                    @OA\Property(
+     *                         property="short_description",
+     *                         type="string",
+     *                         example="Краткое описание новости"
+     *                     ),
+     *                     @OA\Property(
+     *                          property="seo_title",
+     *                          type="string",
+     *                          example="заголовок для сео"
+     *                      ),
+     *                      @OA\Property(
+     *                           property="seo_description",
+     *                           type="string",
+     *                           example="описание для сео"
+     *                      ),
+     *                      @OA\Property(
+     *                            property="img",
+     *                            type="string",
+     *                            example="/images/1680444267.png"
+     *                       ),
+     *                       @OA\Property(
+     *                             property="category_id",
+     *                             type="integer",
+     *                             example=1
+     *                       ),
+     *                       @OA\Property(
+     *                              property="author",
+     *                              type="integer",
+     *                              example="Вася"
+     *                       ),
+     *                       @OA\Property(
+     *                               property="created_at",
+     *                               type="string",
+     *                               example="2024-05-27T19:19:59.000000Z"
+     *                       ),
+     *                       @OA\Property(
+     *                               property="updated_at",
+     *                               type="string",
+     *                               example="2024-05-27T19:19:59.000000Z"
+     *                        ),
+     *                )
+     *            ),
+     *            @OA\Property(
+     *                 property="first_page_url",
+     *                 type="string",
+     *                 example="http://localhost/api/posts?page=1"
+     *             ),
+     *             @OA\Property(
+     *                  property="from",
+     *                  type="integer",
+     *                  example=1
+     *             ),
+     *             @OA\Property(
+     *                   property="last_page",
+     *                   type="integer",
+     *                   example=1
+     *              ),
+     *              @OA\Property(
+     *                    property="last_page_url",
+     *                    type="string",
+     *                    example="http://localhost/api/posts?page=1"
+     *               )
+     *        )
+     *      ),
      *    )
      *  ),
      *  @OA\Response(
@@ -46,7 +134,7 @@ class PostController
      *      @OA\JsonContent(
      *         @OA\Property(property="text", type="string", example="Запрашиваемой страницы не существует"),
      *         @OA\Property(property="status", type="string", example="error"),
-     *         @OA\Property(property="json", type="array", @OA\Items() )
+     *         @OA\Property(property="json", type="string")
      *       )
      *  )
      * )
@@ -78,8 +166,95 @@ class PostController
 
 
     /**
-     * @param int $id
-     * @return JsonResponse
+     * @OA\Get(
+     *  path="/api/posts/{post_id}",
+     *  summary="Get post",
+     *  description="Get single post",
+     *  operationId="postGet",
+     *  tags={"post"},
+     *  @OA\Parameter(
+     *        description="post id",
+     *        in="path",
+     *        name="post_id",
+     *        required=true,
+     *        example="1",
+     *   ),
+     *  @OA\Response(
+     *    response=200,
+     *    description="Array of posts received",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="text", type="string"),
+     *       @OA\Property(property="status", type="string", example="success"),
+     *       @OA\Property(property="json", type="array", @OA\Items(
+     *          @OA\Property(
+     *              property="id",
+     *              type="integer",
+     *              example=1
+     *          ),
+     *          @OA\Property(
+     *              property="name",
+     *              type="string",
+     *              example="Тестовая новость"
+     *          ),
+     *          @OA\Property(
+     *             property="content",
+     *              type="string",
+     *              example="Содержимое новости"
+     *          ),
+     *          @OA\Property(
+     *             property="short_description",
+     *             type="string",
+     *             example="Краткое описание новости"
+     *          ),
+     *          @OA\Property(
+     *             property="seo_title",
+     *             type="string",
+     *             example="заголовок для сео"
+     *          ),
+     *          @OA\Property(
+     *             property="seo_description",
+     *             type="string",
+     *             example="описание для сео"
+     *          ),
+     *          @OA\Property(
+     *             property="img",
+     *             type="string",
+     *             example="/images/1680444267.png"
+     *          ),
+     *          @OA\Property(
+     *             property="category_id",
+     *             type="integer",
+     *             example=1
+     *          ),
+     *          @OA\Property(
+     *             property="author",
+     *             type="integer",
+     *             example="Вася"
+     *          ),
+     *          @OA\Property(
+     *             property="created_at",
+     *             type="string",
+     *             example="2024-05-27T19:19:59.000000Z"
+     *          ),
+     *          @OA\Property(
+     *              property="updated_at",
+     *              type="string",
+     *              example="2024-05-27T19:19:59.000000Z"
+     *           ),
+     *        )
+     *      ),
+     *    )
+     *  ),
+     *  @OA\Response(
+     *      response=422,
+     *      description="Unprocessable Entity",
+     *      @OA\JsonContent(
+     *         @OA\Property(property="text", type="string", example="Запрашиваемой страницы не существует"),
+     *         @OA\Property(property="status", type="string", example="error"),
+     *         @OA\Property(property="json", type="string")
+     *       )
+     *  )
+     * )
      */
     public function show(int $id): JsonResponse
     {
