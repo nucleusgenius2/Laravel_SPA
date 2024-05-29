@@ -111,9 +111,9 @@ class UserController
      *      response=422,
      *      description="Unprocessable Entity",
      *      @OA\JsonContent(
-     *         @OA\Property(property="text", type="string", example="Email не найден"),
+     *         @OA\Property(property="text", type="null"),
      *         @OA\Property(property="status", type="string", example="error"),
-     *         @OA\Property(property="json", type="array", @OA\Items() )
+     *         @OA\Property(property="json", type="null")
      *       )
      *  )
      * )
@@ -193,7 +193,7 @@ class UserController
      *      @OA\JsonContent(
      *         @OA\Property(property="text", type="string", example="Email не найден"),
      *         @OA\Property(property="status", type="string", example="error"),
-     *         @OA\Property(property="json", type="array", @OA\Items() )
+     *         @OA\Property(property="json", type="null" )
      *       )
      *  )
      * )

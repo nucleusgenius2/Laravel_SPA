@@ -134,7 +134,7 @@ class PostController
      *      @OA\JsonContent(
      *         @OA\Property(property="text", type="string", example="Запрашиваемой страницы не существует"),
      *         @OA\Property(property="status", type="string", example="error"),
-     *         @OA\Property(property="json", type="string")
+     *         @OA\Property(property="json", type="null")
      *       )
      *  )
      * )
@@ -229,7 +229,7 @@ class PostController
      *          @OA\Property(
      *             property="author",
      *             type="integer",
-     *             example="Вася"
+     *             example="username"
      *          ),
      *          @OA\Property(
      *             property="created_at",
@@ -251,7 +251,7 @@ class PostController
      *      @OA\JsonContent(
      *         @OA\Property(property="text", type="string", example="Запрашиваемой страницы не существует"),
      *         @OA\Property(property="status", type="string", example="error"),
-     *         @OA\Property(property="json", type="string")
+     *         @OA\Property(property="json", type="null")
      *       )
      *  )
      * )

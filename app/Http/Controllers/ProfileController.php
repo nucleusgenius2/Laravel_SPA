@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\UserBalanceOperations;
 use App\Traits\ResponseController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -35,10 +36,10 @@ class ProfileController
     }
 
     /**
-     * @OA\Post(
+     * @OA\Patch(
      *  path="/api/profile",
      *  summary="Сhange user data",
-     *  security={{"bearer_token":{}}},
+     *  security={{"sanctum":{}}},
      *  description="Сhange user data by name, email, password",
      *  operationId="userUpdate",
      *  tags={"user"},
@@ -57,7 +58,7 @@ class ProfileController
      *    response=200,
      *    description="Register Successfully",
      *    @OA\JsonContent(
-     *       @OA\Property(property="text", type="string", example="Данные успешно обновлены"),
+     *       @OA\Property(property="text", type="string", example="Data updated successfully"),
      *       @OA\Property(property="status", type="string", example="success"),
      *       @OA\Property(property="json", type="array", @OA\Items() ),
      *    )
@@ -68,7 +69,7 @@ class ProfileController
      *      @OA\JsonContent(
      *         @OA\Property(property="text", type="string", example="Пользователь не существует"),
      *         @OA\Property(property="status", type="string", example="error"),
-     *         @OA\Property(property="json", type="array", @OA\Items() )
+     *         @OA\Property(property="json", type="null")
      *       )
      *  )
      * )
@@ -77,7 +78,7 @@ class ProfileController
     {
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|max:30',
-            'email' => 'email|max:30|unique:users,email,' . request()->user()->id,
+            'email' => 'required|email|max:30|unique:users,email,' . request()->user()->id,
             'password' => 'required|string|max:30',
             'newPassword' => 'string|max:30'
         ]);
@@ -111,8 +112,6 @@ class ProfileController
             } else {
                 $this->text = 'Не верно указан пароль';
             }
-
-
         }
 
         return $this->responseJsonApi();
