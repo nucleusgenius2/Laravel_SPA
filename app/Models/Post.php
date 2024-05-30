@@ -20,4 +20,6 @@ class Post extends Model{
         'author',
     ];
 
+    public const cashSecond = 300;
+
 }

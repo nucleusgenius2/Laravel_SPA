@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Traits\ResponseController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
@@ -64,6 +65,8 @@ class AdminController
             $data = $validated->valid();
 
             $post = Post::where('id', '=', $data['id'])->delete();
+
+            Cache::forget('post_id_'.$data['id']);
 
             if ($post) {
                 $this->status = 'success';
@@ -221,6 +224,8 @@ class AdminController
                     'img' => $imageName['img'] ?? '',
                     'category_id' => $data['category_id'] ?? 0,
                 ]);
+
+                Cache::forget('post_id_'.$data['id']);
 
                 if ($arraySavePost) {
                     $this->status = 'success';

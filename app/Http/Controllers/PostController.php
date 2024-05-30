@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Events\UserLogin;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Http\Request;
@@ -142,7 +143,7 @@ class PostController
     public function index(Request $request): JsonResponse
     {
         $validated = Validator::make(['page' => $request->page], [
-            'page' => 'integer|min:1',
+            'page' => 'required|integer|min:1',
         ]);
 
         if ($validated->fails()) {
@@ -150,7 +151,10 @@ class PostController
         } else {
             $data = $validated->valid();
 
-            $postList = Post::orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
+
+            $postList = Cache::remember('post_index_page_'.$data['page'], Post::cashSecond, function () use ($data) {
+                return Post::orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
+            });
 
             if (count($postList) > 0) {
                 $this->status = 'success';
@@ -259,7 +263,7 @@ class PostController
     public function show(int $id): JsonResponse
     {
         $validated = Validator::make(['id' => $id], [
-            'id' => 'integer|min:1',
+            'id' => 'required|integer|min:1',
         ]);
 
         if ($validated->fails()) {
@@ -267,7 +271,9 @@ class PostController
         } else {
             $data = $validated->valid();
 
-            $contentPostSingle = Post::where('id', '=', $data['id'])->get();
+            $contentPostSingle = Cache::rememberForever('post_id_'.$data['id'], function () use ($data) {
+                return Post::where('id', '=', $data['id'])->get();
+            });
 
             if (count($contentPostSingle) > 0) {
                 $this->status = 'success';
