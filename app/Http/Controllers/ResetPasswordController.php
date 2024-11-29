@@ -83,7 +83,6 @@ class ResetPasswordController
         if ($validated->fails()) {
             $this->text = $validated->errors();
         } else {
-            $data = $validated->valid();
 
             $status = Password::reset(
                 $request->only('email', 'password', 'password_confirmation', 'token'),

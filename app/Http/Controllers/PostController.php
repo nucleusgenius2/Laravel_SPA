@@ -151,7 +151,6 @@ class PostController
         } else {
             $data = $validated->valid();
 
-
             $postList = Cache::remember('post_index_page_'.$data['page'], Post::cashSecond, function () use ($data) {
                 return Post::orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
             });

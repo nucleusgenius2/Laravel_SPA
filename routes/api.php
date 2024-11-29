@@ -53,7 +53,7 @@ Route::middleware(['auth:sanctum','user_active', 'admin'])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
 
-    Route::post('/posts', [AdminController::class, 'create']);
+    Route::post('/posts', [AdminController::class, 'store']);
     Route::patch('/posts', [AdminController::class, 'update']);
     Route::delete('/posts/{id}', [AdminController::class, 'destroy']);
 });

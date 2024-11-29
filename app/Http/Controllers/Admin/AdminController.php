@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 
-use App\Http\Controllers\UserController;
 use App\Models\Post;
 use App\Traits\ResponseController;
 use Illuminate\Http\JsonResponse;
@@ -120,7 +119,7 @@ class AdminController
      * @param Request $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|min:3|max:255',
@@ -156,13 +155,13 @@ class AdminController
                 'author' => $data['author']
             ];
 
-            $flight = Post::create($arraySavePost);
+            $post = Post::create($arraySavePost);
 
-            if ($flight) {
+            if ($post) {
                 $this->status = 'success';
                 $this->code = 200;
                 $this->text = 'Запись создана';
-                $this->json = $flight->id;
+                $this->json = $post->id;
             }
             else {
                 $this->text = 'Запись не была создана';

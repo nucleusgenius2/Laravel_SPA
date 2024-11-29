@@ -37,10 +37,9 @@ class UserController
 
     /**
      * show link for admin page
-     * @param Request $request
      * @return JsonResponse
      */
-    public function checkStatusUser(Request $request): JsonResponse
+    public function checkStatusUser(): JsonResponse
     {
         $user = request()->user();
 
