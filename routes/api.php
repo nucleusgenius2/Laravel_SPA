@@ -1,6 +1,8 @@
 <?php
 
 
+use App\Http\Controllers\MapsController;
+use App\Http\Controllers\ModController;
 use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +48,13 @@ Route::middleware(['auth:sanctum', 'user_active'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'index']);
     Route::patch('/profile', [ProfileController::class, 'update']);
+
+    Route::get('/map/{name}', [MapsController::class, 'hasMap']);
+    Route::get('/maps', [MapsController::class, 'index']);
+    Route::get('/maps/downland', [MapsController::class, 'downlandMap']);
+
+    Route::get('/mods', [ModController::class, 'index']);
+    Route::get('/mods/downland', [ModController::class, 'downlandMod']);
 });
 
 //admin api
@@ -56,6 +65,12 @@ Route::middleware(['auth:sanctum','user_active', 'admin'])->group(function () {
     Route::post('/posts', [AdminController::class, 'store']);
     Route::patch('/posts', [AdminController::class, 'update']);
     Route::delete('/posts/{id}', [AdminController::class, 'destroy']);
+
+    Route::delete('/mods/{id}', [ModController::class, 'destroy']);
+    Route::post('/mods', [ModController::class, 'store']);
+
+    Route::delete('/maps/{id}', [MapsController::class, 'destroy']);
+    Route::post('/maps', [MapsController::class, 'store']);
 });
 
 

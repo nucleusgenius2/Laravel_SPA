@@ -101,6 +101,14 @@ const router = createRouter({
                     path: 'users/:id',
                     component: () => import("@/views/admin/AdminUsersSingle.vue"),
                 },
+                {
+                    path: 'maps',
+                    component: () => import("@/views/admin/AdminMaps.vue"),
+                },
+                {
+                    path: 'mods',
+                    component: () => import("@/views/admin/AdminMods.vue"),
+                },
             ]
         },
 
