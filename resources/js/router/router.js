@@ -69,6 +69,14 @@ const router = createRouter({
             }
         },
         {
+            path: "/question",
+            name: "Question",
+            component: () => import("@/views/Qestion.vue"),
+            meta: {
+                layout : "mainLayout"
+            }
+        },
+        {
             path: "/admin",
             name: "admin",
             component: () => import("@/views/admin/Admin.vue"),

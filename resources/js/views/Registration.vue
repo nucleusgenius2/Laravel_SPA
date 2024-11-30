@@ -64,7 +64,6 @@ import {onMounted, ref} from 'vue';
 import {notAuthRequest} from "@/api.js";
 import {useRoute} from "vue-router";
 const route = useRoute();
-const emit = defineEmits(['eventAuthorization', 'authorization'])
 
 let name = ref('');
 let email = ref('');

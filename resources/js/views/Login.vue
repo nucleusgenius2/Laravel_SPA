@@ -44,8 +44,6 @@ import {useRoute} from "vue-router";
 import {notAuthRequest} from "@/api.js";
 const route = useRoute();
 
-const emit = defineEmits(['eventAuthorization', 'authorization'])
-
 let email = ref('');
 let password = ref('');
 let status = ref('noAuth');
