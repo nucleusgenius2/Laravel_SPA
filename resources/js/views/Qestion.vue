@@ -16,8 +16,8 @@
                 </div>
 
                 <div class='help-block'>
-                    <p>{{ $t('qestion_page_22') }}:</p>
-                    <p><a href="https://disk.yandex.ru/d/p8kKNv3iEJAz7g">7) {{ $t('qestion_page_22') }}</a></p>
+                    <p>{{ $t('qestion_page_21') }}:</p>
+                    <p><a href="https://disk.yandex.ru/d/p8kKNv3iEJAz7g">{{ $t('qestion_page_22') }}</a></p>
                 </div>
 
             </div>

@@ -2,6 +2,8 @@
 import {useRoute} from "vue-router";
 const route = useRoute();
 
+import { useRecaptchaProvider } from 'vue-recaptcha'
+useRecaptchaProvider()
 </script>
 
 

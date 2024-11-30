@@ -7,7 +7,7 @@ export async function authRequest (url ='', type='get', data={}){
     if (localStorage.getItem("token") !== null ) {
         token = JSON.parse(localStorage.getItem('token'));
     }
-
+console.log( token)
     let headers = {
         accept: 'application/json',
        // 'Content-Type' : "multipart/form-data; charset=utf-8; boundary=" + Math.random().toString().substr(2),

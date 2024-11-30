@@ -1,6 +1,7 @@
 import {createI18n} from "vue-i18n";
 import {reset} from "./reset_password/reset";
 import {auth} from "./registration_or_login/auth";
+import {validation_text} from "@/i18n/validation_text/validation_text";
 
 
 export const messages = {
@@ -60,6 +61,7 @@ export const messages = {
         "help.discord" : "По всем вопросам пишите в",
         ...reset.ru,
         ...auth.ru,
+        ...validation_text.ru
     },
     en: {
         "download_client": "Download client",
@@ -120,6 +122,7 @@ export const messages = {
         "help.discord" : "For all questions, please write to",
         ...auth.en,
         ...reset.en,
+        ...validation_text.en
     },
 
 }

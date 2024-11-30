@@ -45,7 +45,7 @@ async function authorization(){
             userEmail.value = JSON.parse(localStorage.getItem('token')).user;
         }
         else {
-            localStorage.removeItem('token');
+           // localStorage.removeItem('token');
         }
     }
 }

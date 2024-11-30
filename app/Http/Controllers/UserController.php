@@ -7,6 +7,7 @@ use App\Events\UserLogin;
 use App\Jobs\SendMail;
 use App\Models\Post;
 use App\Models\UserBalance;
+use App\Rules\ReCaptcha;
 use App\Traits\ResponseController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -123,6 +124,7 @@ class UserController
             'name' => 'required|string|max:16|regex:/(^[A-Za-z0-9-_]+$)+/',
             'email' => 'required|email|unique:users|max:30',
             'password' => 'required|string|confirmed|min:6|max:30',
+            'g-recaptcha-response' => ['required', new ReCaptcha]
         ]);
 
         if ($validated->fails()) {
