@@ -4,12 +4,11 @@
 namespace App\Http\Controllers;
 
 
-use App\Actions\HashFileGenerated;
-use App\Models\Icons;
-use App\Models\Map;
+
 use App\Models\Mod;
-use App\Models\Post;
+use App\Services\HashFileGenerated;
 use App\Traits\ResponseController;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +20,7 @@ class ModController extends HashFileGenerated
 
 
     /**
-     * скачать мод, только авторезированным
+     * download the mod, only authorized
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
@@ -58,11 +57,11 @@ class ModController extends HashFileGenerated
     }
 
     /**
-     * Получаем список модов
+     * We get a list of mods
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request) : JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'page' => 'required|integer|min:1',
@@ -88,11 +87,11 @@ class ModController extends HashFileGenerated
     }
 
     /**
-     * загружаем новый мод
+     * downloading a new mod
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request) : JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|unique:maps|min:4|max:50|regex:/(^[A-Za-z0-9-_. ]+$)+/',
@@ -101,7 +100,7 @@ class ModController extends HashFileGenerated
             'version' => 'required|integer|min:1',
             'type' => 'required|integer|min:0|max:1',
             'url_img' => 'required|image|mimes:png,jpg,jpeg|max:10000',
-            'mod_archive' => 'required|file|mimes:zip|max:204800', //200 мегабайт мод
+            'mod_archive' => 'required|file|mimes:zip|max:204800',
         ]);
 
         if ($validated->fails()) {
@@ -109,7 +108,6 @@ class ModController extends HashFileGenerated
         } else {
             $data = $validated->valid();
 
-            //upload img in dir
             $imageName = $data['name'] . '.' . $data['url_img']->extension();
             $data['url_img']->move(public_path('preview_mods'), $imageName);
 
@@ -117,7 +115,6 @@ class ModController extends HashFileGenerated
 
             $data['mod_archive']->move(public_path('mods'), $archiveName);
 
-            //логика генерации хеша файлов
             $hash = $this->getHash('mods', $archiveName);
             if (!$hash){
                 $hash = [];
@@ -148,11 +145,11 @@ class ModController extends HashFileGenerated
 
 
     /**
-     * удаление модов
+     * removing mods
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    function destroy(int $id)
+    function destroy(int $id): JsonResponse
     {
         $validated = Validator::make(['id' => $id], [
             'id' => 'integer|min:1',
@@ -166,13 +163,11 @@ class ModController extends HashFileGenerated
             $fileDataBase = Mod::where('id',  $data['id'])->first();
             if ( $fileDataBase ){
 
-                //удаление архива с картой
                 $removeArchive = File::delete(public_path('/mods/'.$fileDataBase->url_name));
                 if ( $removeArchive ){
-                    //удаление записи из базы
+
                     $removeDataBase = Mod::where('id', $data['id'])->delete();
 
-                    //удаление картинки превьюшки
                     if ($removeDataBase ) {
                         $removePreview = File::delete(public_path('/preview_mods/'.$fileDataBase->url_img));
 

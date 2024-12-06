@@ -4,9 +4,11 @@
 namespace App\Http\Controllers;
 
 
-use App\Actions\HashFileGenerated;
+
 use App\Models\Map;
+use App\Services\HashFileGenerated;
 use App\Traits\ResponseController;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +22,7 @@ class MapsController extends HashFileGenerated
 
 
     /**
-     * скачать карту, только авторезированным
+     * download the map, only authorized
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
@@ -47,15 +49,15 @@ class MapsController extends HashFileGenerated
     }
 
     /**
-     * Получаем список карт
+     * We get a list of maps
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request, Map $map)
+    public function index(Request $request, Map $map): JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'page' => 'required|integer|min:1',
-            'name' => 'string|min:1|max:50|regex:/(^[A-Za-z0-9.-_(?!\S*\s\S*\s)]+$)+/', //(?!\S*\s\S*\s) разрешает 1 пробел, но запрещает 2
+            'name' => 'string|min:1|max:50|regex:/(^[A-Za-z0-9.-_(?!\S*\s\S*\s)]+$)+/',
             'total_player_from' => 'integer|min:1',
             'total_player_to' => 'integer|min:1',
             'size' => 'string|min:4|max:50|regex:/(^[A-Za-z0-9]+$)+/',
@@ -90,9 +92,11 @@ class MapsController extends HashFileGenerated
 
 
     /**
-     * проверить есть ли карта в базе данных
+     * checking if the card is in the database
+     * @param string $name
+     * @return JsonResponse
      */
-    public function hasMap(string $name)
+    public function hasMap(string $name): JsonResponse
     {
         $validated = Validator::make(['name' => $name], [
             'name' => 'string|min:1|max:50|regex:/(^[A-Za-z0-9.-_(?!\S*\s\S*\s)]+$)+/',
@@ -124,7 +128,7 @@ class MapsController extends HashFileGenerated
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request) : JsonResponse
     {
 
         $validated = Validator::make($request->all(), [
@@ -143,7 +147,6 @@ class MapsController extends HashFileGenerated
         } else {
             $data = $validated->valid();
 
-            //upload img in dir
             $imageName = $data['name'] . '.' . $data['url_img']->extension();
             $data['url_img']->move(public_path('maps/preview'), $imageName);
 
@@ -151,8 +154,6 @@ class MapsController extends HashFileGenerated
             $archiveName = $data['name'] . '.' . $data['map_archive']->extension();
             $data['map_archive']->move(public_path('maps'), $archiveName);
 
-
-            //логика генерации хеша файлов
             $hash = $this->getHash('maps', $archiveName);
             if (!$hash){
                 $hash = [];
@@ -182,87 +183,9 @@ class MapsController extends HashFileGenerated
     }
 
 
-    /**
-     * загружаем новую карту через ПАРСЕР
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function uploadParserMap(Request $request)
-    {
-        $validated = Validator::make($request->all(), [
-         //   'name' => 'required|string|unique:maps|min:4|max:50|regex:/(^[A-Za-z0-9.-_(?!\S*\s\S*\s)]+$)+/',
-            'name' => 'required|string|unique:maps|min:4|max:50',
-            'map_size' => 'required|string|max:20|regex:/(^[A-Za-z0-9-]+$)+/',
-            'version' => 'required|integer|min:1',
-            'total_player' => 'required|integer|min:1|max:16',
-            'rate' => 'required|integer|min:0|max:1',
-            'url_img' => 'required|string|max:200|url',
-            'map_archive' => 'required|string|max:200|url',
-            'total_game' => 'required|integer|min:0',
-        ]);
-
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
-        } else {
-            $data = $validated->valid();
-
-            if ($data['total_game'] > 150 ) {
-
-                $archiveName = $data['name'] . '.zip';
-                $imageName = $data['name'] . '.png';
-                file_put_contents(public_path('maps') . '/' . $archiveName, fopen($data['map_archive'], 'r'));
-                file_put_contents(public_path('maps') . '/preview/' . $imageName, fopen($data['url_img'], 'r'));
-
-                //логика генерации хеша файлов
-                $hash = $this->getHash('maps', $archiveName);
-                if (!$hash) {
-                    $hash = [];
-                }
-
-                //рассчитываем рейтинг карты исходя из количества игр на карте
-                $rate = 0;
-                if ($data['total_game'] > 70000) {
-                    $rate = 4;
-                } else if ($data['total_game'] > 10000) {
-                    $rate = 3;
-                } else if ($data['total_game'] > 6000) {
-                    $rate = 2;
-                } else if ($data['total_game'] > 2000) {
-                    $rate = 1;
-                }
-
-                $response = Map::create([
-                    'url_img' => $imageName,
-                    'url_name' => $archiveName,
-                    'name' => $data['name'],
-                    'author' => request()->user()->name,
-                    'author_id' => request()->user()->id,
-                    'version' => $data['version'],
-                    'total_player' => $data['total_player'],
-                    'rate' => $data['rate'],
-                    'size' => $data['map_size'],
-                    'ch' => json_encode($hash),
-                    'map_rate' => $rate,
-                ]);
-
-                if ($response) {
-                    $this->status = 'success';
-                }
-
-            }
-            else{
-                $this->text = 'колчисетво игр '.$data['total_game'];
-            }
-
-        }
-
-        return $this->responseJsonApi();
-
-    }
-
 
     /**
-     * удаление карт
+     * deleting maps
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
@@ -280,13 +203,10 @@ class MapsController extends HashFileGenerated
             $fileDataBase = Map::where('id',  $data['id'])->first();
             if ( $fileDataBase ){
 
-                //удаление архива с картой
                 $removeArchive = File::delete(public_path('/maps/'.$fileDataBase->url_name));
                 if ( $removeArchive ){
-                    //удаление записи из базы
                     $removeDataBase = Map::where('id', $data['id'])->delete();
 
-                    //удаление картинки превьюшки
                     if ($removeDataBase ) {
                         $removePreview = File::delete(public_path('/maps/preview/'.$fileDataBase->url_img));
 
