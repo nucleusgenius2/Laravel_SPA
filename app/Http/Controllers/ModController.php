@@ -77,6 +77,7 @@ class ModController extends HashFileGenerated
             if (count( $mapsList) > 0) {
                 $this->status = 'success';
                 $this->json =  $mapsList;
+                $this->code = 200;
             } else {
                 $this->text = 'Запрашиваемой страницы не существует';
             }
@@ -135,6 +136,7 @@ class ModController extends HashFileGenerated
             ]);
 
             if( $response ) {
+                $this->code = 200;
                 $this->status = 'success';
             }
 
@@ -173,6 +175,7 @@ class ModController extends HashFileGenerated
 
                         if ($removePreview ) {
                             $this->status = 'success';
+                            $this->code = 200;
                         }
                     }
                 }

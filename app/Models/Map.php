@@ -29,15 +29,7 @@ class Map extends Model
 
     protected array $whereFilterFields = ['name'];
     protected array $whereStrong = ['size'];
-
-   // protected array $whereInFilterFields = ['status', 'user_id', 'type'];
-
-    //protected array $whereBetweenFilterFields = ['total_player'];
-
     protected array $whereInterval = ['total_player_from', 'total_player_to'];
-
-   //protected array $whereDateFields = ['date_fixed' ];
-
 }
 
 

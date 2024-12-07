@@ -80,6 +80,7 @@ class MapsController extends HashFileGenerated
 
             if (count( $mapsList) > 0) {
                 $this->status = 'success';
+                $this->code = 200;
                 $this->json =  $mapsList;
             } else {
                 $this->text = 'Запрашиваемой страницы не существует';
@@ -111,6 +112,7 @@ class MapsController extends HashFileGenerated
 
             if ($map) {
                 $this->status = 'success';
+                $this->code = 200;
                 $this->json = $map ;
             } else {
                 $this->text = 'Запрашиваемой страницы не существует';
@@ -124,7 +126,7 @@ class MapsController extends HashFileGenerated
 
 
     /**
-     * загружаем новую карту
+     * uploading a new map
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -175,6 +177,7 @@ class MapsController extends HashFileGenerated
 
             if( $response ) {
                 $this->status = 'success';
+                $this->code = 200;
             }
 
         }
@@ -212,6 +215,7 @@ class MapsController extends HashFileGenerated
 
                         if ($removePreview ) {
                             $this->status = 'success';
+                            $this->code = 200;
                         }
                     }
                 }
