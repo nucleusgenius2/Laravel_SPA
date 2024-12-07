@@ -71,7 +71,7 @@
                 <div class="mods-el">Удаление</div>
             </div>
 
-            <div class="post-el" v-for="(mods) in arrayPostEl">
+            <div class="post-el" v-for="(mods) in arrayMods">
                 <div class="mods-img mods-el "><img :src="'/preview_mods/'+mods.url_img" alt=""></div>
                 <div class="mods-name mods-el">{{ mods.name }}</div>
                 <div class="mods-el description">{{ mods.description }}</div>
@@ -93,7 +93,6 @@
 
 <script setup>
 import {onMounted, ref} from 'vue';
-import router from "@/router/router";
 import { useRoute } from "vue-router";
 import {authRequest} from "@/api.js";
 import ButtonSave from "@/components/admin/ButtonSave.vue";
@@ -101,15 +100,12 @@ import Pagination from 'v-pagination-3';
 import {convertTime} from '@/script/convertTime.js'
 let errors = ref(false)
 const route = useRoute();
-let imgPreview = ref('');
 let showUploadPanel = ref(false);
 let saveButtonRef = ref(null)
-
 let pageModel = ref(1)
 let pageTotal = ref(1)
+let arrayMods = ref([]);
 
-let arrayPostEl = ref([]);
-let arrayPagination = ref([]);
 let mod = ref({
     'name' : '',
     'version' : '',
@@ -124,7 +120,7 @@ async function myCallback(){
     let response = await authRequest('/api/mods?page='+ pageModel.value, 'get' );
 
     if ( response.data.status === 'success' ) {
-        arrayPostEl.value  = response.data.json.data;
+        arrayMods.value  = response.data.json.data;
     }
     else {
         errors.value = response.data;
@@ -145,10 +141,8 @@ function onChangeFileMod(event) {
 }
 
 
-//update post
 async function saveMods(){
 
-    //save or update
     let formData = new FormData();
     formData.append('name', mod.value.name);
     formData.append('name_dir', mod.value.dir);
@@ -157,7 +151,7 @@ async function saveMods(){
     formData.append('type', mod.value.type);
     formData.append('url_img',  mod.value.url_img);
     formData.append('mod_archive',  mod.value.mod_archive);
-    //create post
+
     let response = await authRequest('/api/mods', 'post', formData);
 
     if ( response.data.status  === 'success') {
@@ -176,8 +170,8 @@ onMounted(
         let response = await authRequest('/api/mods?page=1', 'get' );
 
         if ( response.data.status === 'success' ) {
-            pageTotal.value = response.data.json.last_page * 8;
-            arrayPostEl.value  = response.data.json.data;
+            pageTotal.value = response.data.json.last_page * 10;
+            arrayMods.value  = response.data.json.data;
         }
         else {
           //  errors.value =  response.data.text;
@@ -187,8 +181,6 @@ onMounted(
 
 
 
-
-//remove post
 async function removeMods(e){
     let id = e.target.getAttribute('data-id');
 

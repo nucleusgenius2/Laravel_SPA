@@ -162,7 +162,7 @@
                 <div class="maps-el">Удаление</div>
             </div>
 
-            <div class="post-el" v-for="(maps) in arrayPostEl">
+            <div class="post-el" v-for="(maps) in arrayMaps">
                 <div class="maps-img maps-el "><img :src="'/maps/preview/'+maps.url_img" alt=""></div>
                 <div class="maps-name maps-el">{{ maps.name }}</div>
                 <div class="maps-el">{{ maps.total_player }}</div>
@@ -187,15 +187,13 @@
 
 
 <script setup>
-import {onMounted, ref} from 'vue';
-import router from "@/router/router";
+import {ref} from 'vue';
 import { useRoute } from "vue-router";
 import {authRequest} from "@/api.js";
 import ButtonSave from "@/components/admin/ButtonSave.vue";
 import Pagination from 'v-pagination-3';
 import {convertTime} from '@/script/convertTime.js'
 const route = useRoute();
-let imgPreview = ref('');
 let error = ref('');
 let showUploadPanel = ref(false);
 let saveButtonRef = ref(null)
@@ -216,11 +214,11 @@ let map = ref({
     'url_img' : '',
     'map_archive' : ''
 });
+let arrayMaps = ref([]);
 
 function openUploadPanel(){
     showUploadPanel.value = true;
 }
-
 
 function onChangeFileImg(event) {
     map.value.url_img = event.target.files[0];
@@ -232,10 +230,7 @@ function onChangeFileMap(event) {
 }
 
 
-//update post
 async function saveMap(){
-
-    //save or update
     let formData = new FormData();
     formData.append('name', map.value.name);
     formData.append('map_size', map.value.map_size);
@@ -244,7 +239,7 @@ async function saveMap(){
     formData.append('rate', map.value.rate);
     formData.append('url_img',  map.value.url_img);
     formData.append('map_archive',  map.value.map_archive);
-    //create post
+
     let response = await authRequest('/api/maps', 'post', formData);
 
     if ( response.data.status  === 'success') {
@@ -261,24 +256,19 @@ async function saveMap(){
 }
 
 
-let arrayPostEl = ref([]);
-let arrayPagination = ref([]);
+
 
 async function getPostsList (page){
     let response = await authRequest('/api/maps?page='+page, 'get' );
     if ( response.data.status === 'success' ){
-        pageTotal.value = response.data.json.last_page * 50;
-        let arrayPost = response.data.json.data;
-        let arrayLink = response.data.json.links;
+        pageTotal.value = response.data.json.last_page * 15;
 
-        arrayPagination.value = arrayLink;
-        arrayPostEl.value = arrayPost;
+        arrayMaps.value = response.data.json.data;
     }
 }
 getPostsList(1);
 
 async function paginationListing(filterClick = '') {
-    //задать первую страницу пагинации когда был клик по фильтру
     if (filterClick === 'filter') {
         pageModel.value = 1;
     }
@@ -298,13 +288,12 @@ async function paginationListing(filterClick = '') {
     let response = await authRequest('/api/maps?page=' + pageModel.value + stringFilter, 'get');
 
     if (response.data.status === 'success') {
-        arrayPostEl.value = response.data.json.data;
+        arrayMaps.value = response.data.json.data;
         pageTotal.value = response.data.json.last_page * 50;
     }
 }
 
 
-//remove post
 async function removeMaps(e){
     let id = e.target.getAttribute('data-id');
 

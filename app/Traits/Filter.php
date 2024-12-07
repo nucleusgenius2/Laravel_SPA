@@ -7,15 +7,13 @@ use Illuminate\Support\Facades\Log;
 
 trait Filter
 {
-
-
     public function filterCustom($filters = [])
     {
 
         $tableName = $this->getTable();
         $query = $this;
         foreach ($filters as $field => $value) {
-            //поиск конкретного значения, например имя
+            //поиск по фрагменту значения
             if (in_array($field, $this->whereFilterFields)) {
                 $query = $query->where($tableName . '.' . $field, 'LIKE', '%'.$value.'%');
             }
@@ -31,7 +29,7 @@ trait Filter
            if (in_array($field, $this->whereInFilterFields)) {
                $query = $query->whereIn($tableName . '.' . $field, $value);
            }
-           //поиск нитервла между значениями
+           //поиск интервала между значениями
            if (in_array($field, $this->whereBetweenFilterFields)) {
                $query = $query->whereBetween($tableName . '.' . $field, $value);
            }
