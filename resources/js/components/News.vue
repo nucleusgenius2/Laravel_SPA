@@ -1,8 +1,69 @@
 <template>
     <div class="wrap-news">
-        <div class="news-list">
+        <!-- фильтр -->
+        <div class="wrap-filter">
+            <div class="wrap-field">
+                <div class="heading-field text">Название</div>
+                <input class='field-admin' v-model="filter.name">
+            </div>
 
-            <div class="post-el" v-for="(post) in arrayPostEl">
+            <div class="wrap-field">
+                <div class="heading-field text">Дата публикации от</div>
+                <VueDatePicker
+                    v-model="filter.created_at_from"
+                    :max-date="new Date()"
+                    prevent-min-max-navigation
+                    model-type="dd.MM.yyyy"
+                    auto-apply
+                    placeholder="ДД - MM - ГГГГ"
+                    :enable-time-picker="false"
+                    locale="ru"
+                    format="dd/MM/yyyy"
+                />
+            </div>
+
+
+            <div class="wrap-field">
+                <div class="heading-field text">Дата публикации до</div>
+                <VueDatePicker  v-model="filter.created_at_to"
+                                :max-date="new Date()"
+                                prevent-min-max-navigation
+                                model-type="dd.MM.yyyy"
+                                auto-apply
+                                placeholder="ДД - MM - ГГГГ"
+                                :enable-time-picker="false"
+                                format="dd/MM/yyyy"
+                                locale="ru"
+                />
+            </div>
+
+            <div class="wrap-field">
+                <div class="heading-field text">Выборка</div>
+                <select class='field-admin' v-model="filter.date_fixed">
+                    <option value="day">Новости за день</option>
+                    <option value="week">Новости за неделю</option>
+                    <option value="month">Новости за месяц</option>
+                    <option value="year">новости за год</option>
+                </select>
+            </div>
+
+
+            <div class="wrap-button-submit" style="margin-right:20px;">
+                <div class="button-blue-all button-admin"  style="margin-bottom: 10px;" @click="paginationListing('filter')" >
+                    Применить фильтр
+                </div>
+            </div>
+
+            <div class="wrap-button-submit">
+                <div class="button-blue-all-style-2 button-admin" style="margin-bottom: 10px;"  @click="clearFilter" >
+                    Очистить
+                </div>
+            </div>
+        </div>
+
+
+        <div class="news-list">
+            <div class="post-el" v-for="(post) in arrayPosts">
                 <div class="heading-post">{{ post.name }}</div>
                 <div class="wrap-section-post">
                     <div class="thumb-post"><img :src="post.img" alt="new-thumb"></div>
@@ -15,11 +76,7 @@
 
         </div>
 
-        <div class="pagination-post" v-if="props.pagination === 'true' ">
-            <div class="pagination-el" v-for="(pagination) in arrayPagination">
-                <a :href="pagination.url">{{ pagination.label }}</a>
-            </div>
-        </div>
+        <pagination v-model="pageModel" :records="pageTotal" :per-page="10" @paginate="paginationListing"/>
 
         <div class="empty-list" v-if="emptyPage">По вашему запросу не найдено новостей</div>
 
@@ -30,11 +87,12 @@
 
 
 <script setup>
-import {onMounted, ref} from 'vue';
+import {ref} from 'vue';
 import {useRoute} from "vue-router";
 import {authRequest} from "@/api.js";
-import router from "@/router/router";
-
+import VueDatePicker from "@vuepic/vue-datepicker";
+import '@vuepic/vue-datepicker/dist/main.css'
+import Pagination from "v-pagination-3";
 let props = defineProps({
     total: String,
     page: String,
@@ -43,66 +101,58 @@ let props = defineProps({
 
 const route = useRoute();
 
-let arrayPostEl = ref([]);
-let arrayPagination = ref([]);
-let emptyPage = ref(null);
+let arrayPosts = ref([]);
+let emptyPage = ref(false);
 
-onMounted(
-    async () => {
+let pageModel = ref(1)
+let pageTotal = ref(1)
+let filter = ref({
+    'name' : '',
+    'created_at_from' : '',
+    'created_at_to' : '',
+    'date_fixed' : ''
+});
 
-        let page = route.params.page;
-        if (typeof props.page !=='undefined'){
-            page = props.page;
-        }
-
-        let response = await authRequest('/api/posts?page='+page, 'get' );
-
-        if ( response.data.status === 'success' ){
-
-            let arrayPost = response.data.json.data;
-            //total post for page
-            if (typeof props.total !=='undefined'){
-                if ( arrayPost.length >props.total ){
-                    arrayPost.splice(props.total);
-                }
-            }
-            let arrayLink = response.data.json.links;
-
-            //short description post
-            for (let i = 0; i < arrayPost.length; i++) {
-                if (arrayPost[i]['short_description'].length > 30) {
-                    arrayPost[i]['short_description'] = arrayPost[i]['short_description'].slice(0, 80) + '...';
-                }
-            }
-
-            //pagination array localization
-            arrayLink[0]['label'] = 'В начало';
-            arrayLink[arrayLink.length - 1]['label'] = 'В конец';
-
-            for (let i = 0; i < arrayLink.length; i++) {
-                let page = i;
-                //first link pagination
-                if (page === 0) {
-                    page = 1;
-                }
-                //last link pagination
-                else if (page === arrayLink.length - 1) {
-                    page = arrayLink.length - 2;
-                }
-
-                arrayLink[i]['url'] = '/post-list/' + page;
-            }
-
-            arrayPagination.value = arrayLink;
-            arrayPostEl.value = arrayPost;
-        }
-        else {
-            emptyPage.value = true;
-        }
-
+async function paginationListing(filterClick = '') {
+    if (filterClick === 'filter') {
+        pageModel.value = 1;
     }
-);
+    let stringFilter = '';
+    if (filter.value.name !== '') {
+        stringFilter += '&name=' + filter.value.name;
+    }
+    if (filter.value.created_at_from && filter.value.created_at_from !== '') {
+        stringFilter += '&created_at_from=' + filter.value.created_at_from;
+    }
+    if (filter.value.created_at_to && filter.value.created_at_to !== '') {
+        stringFilter += '&created_at_to=' + filter.value.created_at_to;
+    }
+    if (filter.value.date_fixed!== '') {
+        stringFilter += '&date_fixed=' + filter.value.date_fixed;
+    }
 
+
+    let response = await authRequest('/api/posts?page=' + pageModel.value + stringFilter, 'get');
+
+    if (response.data.status === 'success') {
+        emptyPage.value = false;
+        arrayPosts.value = response.data.json.data;
+        pageTotal.value = response.data.json.last_page * 10;
+    }
+    else{
+        arrayPosts.value = []
+        emptyPage.value = true;
+    }
+}
+paginationListing();
+
+function clearFilter (){
+    filter.value.name = '';
+    filter.value.created_at_from = '';
+    filter.value.created_at_to = '';
+    filter.value.chunk = '';
+    paginationListing();
+}
 </script>
 
 

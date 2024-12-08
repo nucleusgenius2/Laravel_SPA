@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\Filter;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model{
+class Post extends Model
+{
+    use Filter;
 
     /**
      * @var string[]
@@ -19,6 +22,10 @@ class Post extends Model{
         'category_id',
         'author',
     ];
+
+    protected array $intervalSearch = ['created_at_from', 'created_at_to'];
+
+    protected array $dateFixed = ['date_fixed'];
 
     public const cashSecond = 300;
 

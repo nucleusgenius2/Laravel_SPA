@@ -27,7 +27,7 @@ class Map extends Model
         'map_rate',
     ];
 
-    protected array $whereFilterFields = ['name'];
+    protected array $whereSearch = ['name'];
     protected array $whereStrong = ['size'];
     protected array $whereInterval = ['total_player_from', 'total_player_to'];
 }

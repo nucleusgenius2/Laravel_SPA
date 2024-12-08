@@ -3,6 +3,66 @@
         <div class="news-list">
             <a class="add-new" href="/admin/posts/add">Добавить новость</a>
 
+            <!-- фильтр -->
+            <div class="wrap-filter">
+                <div class="wrap-field">
+                    <div class="heading-field text">Название</div>
+                    <input class='field-admin' v-model="filter.name">
+                </div>
+
+                <div class="wrap-field">
+                    <div class="heading-field text">Дата публикации от</div>
+                    <VueDatePicker
+                        v-model="filter.created_at_from"
+                        :max-date="new Date()"
+                        prevent-min-max-navigation
+                        model-type="dd.MM.yyyy"
+                        auto-apply
+                        placeholder="ДД - MM - ГГГГ"
+                        :enable-time-picker="false"
+                        locale="ru"
+                        format="dd/MM/yyyy"
+                    />
+                </div>
+
+
+                <div class="wrap-field">
+                    <div class="heading-field text">Дата публикации до</div>
+                    <VueDatePicker  v-model="filter.created_at_to"
+                                    :max-date="new Date()"
+                                    prevent-min-max-navigation
+                                    model-type="dd.MM.yyyy"
+                                    auto-apply
+                                    placeholder="ДД - MM - ГГГГ"
+                                    :enable-time-picker="false"
+                                    format="dd/MM/yyyy"
+                                    locale="ru"
+                    />
+                </div>
+
+                <div class="wrap-field">
+                    <div class="heading-field text">Выборка</div>
+                    <select class='field-admin' v-model="filter.date_fixed">
+                        <option value="day">Новости за день</option>
+                        <option value="week">Новости за неделю</option>
+                        <option value="month">Новости за месяц</option>
+                        <option value="year">новости за год</option>
+                    </select>
+                </div>
+
+                <div class="wrap-button-submit" style="margin-right:20px;">
+                    <div class="button-blue-all button-admin"  style="margin-bottom: 10px;" @click="paginationListing('filter')" >
+                        Применить фильтр
+                    </div>
+                </div>
+
+                <div class="wrap-button-submit">
+                    <div class="button-blue-all-style-2 button-admin" style="margin-bottom: 10px;"  @click="clearFilter" >
+                        Очистить
+                    </div>
+                </div>
+            </div>
+
             <div class="post-heading-block">
                 <div class="post-name">Название новости</div>
                 <div class="post-author">Автор</div>
@@ -11,21 +71,18 @@
                 </div>
             </div>
 
-            <div class="post-el" v-for="(post) in arrayPostEl">
+            <div class="post-el" v-for="(post) in arrayPosts">
                 <a :href="'/admin/posts/'+post.id" class="post-name">{{ post.name }}</a>
                 <div class="post-author">{{ post.author }}</div>
                 <div class="wrap-date">
-                    <div class="post-date-c"><span>Дата создания:</span> <span>{{ post.created_at }}</span></div>
-                    <div class="post-date-u"><span>Дата обновления:</span> <span>{{ post.updated_at }}</span></div>
+                    <div class="post-date-c"><span>Дата создания:</span> <span>{{ convertTime(post.created_at) }}</span></div>
+                    <div class="post-date-u"><span>Дата обновления:</span> <span>{{ convertTime(post.updated_at) }}</span></div>
                 </div>
                 <div class="remove-post" @click="removePost" :data-id="post.id">Удалить</div>
             </div>
 
-            <div class="pagination-post">
-                <div class="pagination-el" v-for="(pagination) in arrayPagination">
-                    <div @click="getPostsList(pagination.url)" >{{ pagination.label }}</div>
-                </div>
-            </div>
+
+            <pagination v-model="pageModel" :records="pageTotal" :per-page="10" @paginate="paginationListing"/>
 
         </div>
     </div>
@@ -34,61 +91,65 @@
 
 <script setup>
 
-import {onMounted, ref} from 'vue';
-import router from "@/router/router";
+import {ref} from 'vue';
 import { useRoute } from "vue-router";
 import {authRequest} from "@/api.js";
-
-let props = defineProps({
-    total: String,
-})
+import Pagination from "v-pagination-3";
+import {convertTime} from "@/script/convertTime";
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+let pageModel = ref(1)
+let pageTotal = ref(1)
+let filter = ref({
+    'name' : '',
+    'created_at_from' : '',
+    'created_at_to' : '',
+    'date_fixed' : ''
+});
 
 const route = useRoute();
+let arrayPosts = ref([]);
 
-let arrayPostEl = ref([]);
-let arrayPagination = ref([]);
+async function paginationListing(filterClick = '') {
+    if (filterClick === 'filter') {
+        pageModel.value = 1;
+    }
+    let stringFilter = '';
+    if (filter.value.name !== '') {
+        stringFilter += '&name=' + filter.value.name;
+    }
+    if (filter.value.created_at_from && filter.value.created_at_from !== '') {
+        stringFilter += '&created_at_from=' + filter.value.created_at_from;
+    }
+    if (filter.value.created_at_to && filter.value.created_at_to !== '') {
+        stringFilter += '&created_at_to=' + filter.value.created_at_to;
+    }
+    if (filter.value.date_fixed!== '') {
+        stringFilter += '&date_fixed=' + filter.value.date_fixed;
+    }
 
-async function getPostsList (page){
-        let response = await authRequest('/api/posts?page='+page, 'get' );
 
-        if ( response.data.status === 'success' ){
-            let arrayPost = response.data.json.data;
-            let arrayLink = response.data.json.links;
+    let response = await authRequest('/api/posts?page=' + pageModel.value + stringFilter, 'get');
 
-            //short description post
-            for (let i = 0; i < arrayPost.length; i++) {
-                //converting date
-                arrayPost[i]['created_at'] = new Date(arrayPost[i]['created_at']).toLocaleString();
-                arrayPost[i]['updated_at'] = new Date(arrayPost[i]['updated_at']).toLocaleString();
-            }
-
-            //pagination array localization
-            arrayLink[0]['label'] = 'В начало';
-            arrayLink[arrayLink.length - 1]['label'] = 'В конец';
-
-            for (let i = 0; i < arrayLink.length; i++) {
-                let page = i;
-                //first link pagination
-                if (page === 0) {
-                    page = 1;
-                }
-                //last link pagination
-                else if (page === arrayLink.length - 1) {
-                    page = arrayLink.length - 2;
-                }
-
-                arrayLink[i]['url'] = page;
-            }
-
-            arrayPagination.value = arrayLink;
-            arrayPostEl.value = arrayPost;
-        }
-
+    if (response.data.status === 'success') {
+        arrayPosts.value = response.data.json.data;
+        pageTotal.value = response.data.json.last_page * 10;
+    }
+    else{
+        arrayPosts.value = []
+    }
 }
-getPostsList(1);
+paginationListing();
+
+function clearFilter (){
+    filter.value.name = '';
+    filter.value.created_at_from = '';
+    filter.value.created_at_to = '';
+    filter.value.chunk = '';
+    paginationListing();
+}
 
 
-//remove post
 async function removePost(e){
     let id = e.target.getAttribute('data-id');
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Events\UserLogin;
+use App\Models\Map;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -140,10 +141,14 @@ class PostController
      *  )
      * )
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, Post $post): JsonResponse
     {
-        $validated = Validator::make(['page' => $request->page], [
+        $validated = Validator::make($request->all(), [
             'page' => 'required|integer|min:1',
+            'created_at_from' => 'string|date',
+            'created_at_to' => 'string|date',
+            'name' => 'string|min:1|max:50',
+            'date_fixed' => 'string|in:day,week,month,year',
         ]);
 
         if ($validated->fails()) {
@@ -151,13 +156,21 @@ class PostController
         } else {
             $data = $validated->valid();
 
-            $postList = Cache::remember('post_index_page_'.$data['page'], Post::cashSecond, function () use ($data) {
-                return Post::orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
-            });
+            if ( isset($data['name']) || isset($data['created_at_to']) || isset($data['created_at_from']) || isset($data['date_fixed']) ){
+                $query = $post->filterCustom($data);
+
+                $postList = $query->orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
+            }
+            else{
+                $postList = Cache::remember('post_index_page_'.$data['page'], Post::cashSecond, function () use ($data) {
+                    return Post::orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
+                });
+            }
+
+            $this->code = 200;
 
             if (count($postList) > 0) {
                 $this->status = 'success';
-                $this->code = 200;
                 $this->json = $postList;
             } else {
                 $this->text = 'Запрашиваемой страницы не существует';

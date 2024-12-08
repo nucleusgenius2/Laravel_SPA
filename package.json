@@ -26,6 +26,7 @@
         "@tiptap/starter-kit": "^2.0.0-beta.220",
         "@tiptap/vue-3": "^2.0.0-beta.220",
         "@unhead/vue": "^1.11.6",
+        "@vuepic/vue-datepicker": "^10.0.0",
         "@vueup/vue-quill": "^1.1.1",
         "v-pagination-3": "^0.1.7",
         "vue-axios": "^3.5.2",

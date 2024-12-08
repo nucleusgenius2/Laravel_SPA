@@ -23,7 +23,7 @@ const router = createRouter({
         {
             path: "/post-list/:page",
             name: "ListPost",
-            component: () => import("@/views/ListPost.vue"),
+            component: () => import("@/views/PostsList.vue"),
             meta: {
                 layout : "mainLayout"
             }
