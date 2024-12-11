@@ -5,16 +5,16 @@
             <div class="max">
 
                 <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit" v-if="status === 'noAuth'">
-                    <div class="heading-form">{{ $t('Вход') }}</div>
+                    <div class="heading-form">{{ $t('auth_entry') }}</div>
                     <!-- Email Address -->
                     <div class="wrap-field">
-                        <input id="email" v-model="email" class="field-style" autocomplete="off" :placeholder="$t('Ваш e-mail')" type="email" name="email"  required />
+                        <input id="email" v-model="email" class="field-style" autocomplete="off" :placeholder="$t('auth_your_email')" type="email" name="email"  required />
                     </div>
 
                     <!-- Password -->
                     <div class="wrap-field">
 
-                        <input id="password" v-model="password"  :placeholder="$t('Пароль')" class="field-style"
+                        <input id="password" v-model="password"  :placeholder="$t('auth_possword')" class="field-style"
                                type="password"
                                name="password"
                                required autocomplete="new-password" />
@@ -22,14 +22,14 @@
 
                     <div class="wrap-button-submit">
                         <button class="button-style-1">
-                            {{ $t('Войти') }}
+                            {{ $t('auth_login_2') }}
                         </button>
                     </div>
 
-                    <div class="reset-password"><router-link to="/reset-email">{{ $t('Забыли пароль?') }}</router-link></div>
+                    <div class="reset-password"><router-link to="/reset-email">{{ $t('register_page_5') }}</router-link></div>
                 </form>
 
-                <div class="auth-text form-auth-true"  v-if="status === 'auth'">{{ $t('Вы авторезированы') }}</div>
+                <div class="auth-text form-auth-true"  v-if="status === 'auth'">{{ $t('register_page_6') }}</div>
                 <div class="auth-text form-auth-false"  v-if="error !== ''">{{ error }}</div>
             </div>
 
@@ -44,7 +44,7 @@ import {useRoute} from "vue-router";
 import {notAuthRequest} from "@/api.js";
 const route = useRoute();
 import {useI18n} from "vue-i18n";
-const { t, locale } = useI18n({ useScope: 'global' })
+const { t} = useI18n({ useScope: 'global' })
 
 
 let email = ref('');

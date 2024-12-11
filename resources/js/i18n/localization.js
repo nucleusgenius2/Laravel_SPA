@@ -66,12 +66,13 @@ export const messages = {
         "news_page_8" : "новости за год",
         "news_page_9" : "Читать далее",
         "news_page_10" : "По вашему запросу не найдено новостей",
-
+        "news_header" : "Новости",
         "apply_filter" : "Применить фильтр",
         "clear_filter" : "Очистить",
         "DD - MM - YYYY" : "ДД - MM - ГГГГ",
 
-
+        "profile_auth_menu" : "Профиль",
+        "admin_panel_auth_menu" : "Перейти в админ панель",
         "help.resolve" : "Решение",
         "help.discord" : "По всем вопросам пишите в",
         ...reset.ru,
@@ -105,8 +106,8 @@ export const messages = {
         "home_page_13" : "If you have any problems, write to",
         "home_page_14" : "RU server",
         "localization.discord" : "discord",
+        "in.discord" : "discord",
         "localization.ru_server" : "RU server",
-        "Последние новости" : "Last news",
         "qestion_page_1" : "If you have any problems with the game or the game client, or you just don't know how to install, write to",
 
         "qestion_page_2" : "they will help you with any questions.",
@@ -141,11 +142,12 @@ export const messages = {
         "news_page_8" : "news for the year",
         "news_page_9" : "Read more",
         "news_page_10" : "No news found matching your request",
-
+        "news_header" : "News",
         "apply_filter" : "Apply filter",
         "clear_filter" : "Clear",
         "DD - MM - YYYY" : "DD - MM - YYYY",
-
+        "profile_auth_menu" : "Profile",
+        "admin_panel_auth_menu" : "Go to admin panel",
         "help.resolve" : "Solution",
         "help.discord" : "For all questions, please write to",
         ...auth.en,

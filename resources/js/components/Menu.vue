@@ -44,11 +44,11 @@
                     </div>
 
                     <div class="menu-el">
-                        <router-link to="/login">{{ $t('Логин') }} </router-link>
+                        <router-link to="/login">{{  $t('login') }} </router-link>
                     </div>
 
                     <div class="menu-el">
-                        <router-link to="/registration">{{ $t('Регистрация') }}</router-link>
+                        <router-link to="/registration">{{ $t('registration') }}</router-link>
                     </div>
 
                 </div>

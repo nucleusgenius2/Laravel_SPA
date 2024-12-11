@@ -2,12 +2,12 @@
     <div class="wrap-admin-link" v-if="auth.status==='success'">
         <div class="max">
             <div class="admin-link-text">
-                <span>Вы авторизованы: <span>{{ userEmail }}</span></span>
+                <span>{{ $t('register_page_6') }}: <span>{{ userEmail }}</span></span>
                 <div class="wrap-menu">
-                    <span class="menu"><a class="link" href='/profile'>Профиль</a> </span>
-                    <span class="menu" v-if="auth.permission==='admin'"><a class="admin-link" href='/admin'>Перейти в админ панель</a> </span>
+                    <span class="menu"><a class="link" href='/profile'>{{ $t('profile_auth_menu') }}</a> </span>
+                    <span class="menu" v-if="auth.permission==='admin'"><a class="admin-link" href='/admin'>{{ $t('admin_panel_auth_menu') }}</a> </span>
                 </div>
-                <span class="logout link" @click="logout">Выйти из аккаунта </span>
+                <span class="logout link" @click="logout">{{ $t('auth_logout') }} </span>
             </div>
         </div>
     </div>

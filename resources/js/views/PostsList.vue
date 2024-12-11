@@ -3,7 +3,7 @@
         <template #content>
 
             <div class="max m-top">
-                <h1> Новости </h1>
+                <h1>  {{ $t('news_header') }} </h1>
                 <News total="10" pagination="true"/>
             </div>
 

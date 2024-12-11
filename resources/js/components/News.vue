@@ -17,7 +17,7 @@
                     auto-apply
                     :placeholder="$t('DD - MM - YYYY')"
                     :enable-time-picker="false"
-                    locale="ru"
+                    :locale="locale"
                     format="dd/MM/yyyy"
                 />
             </div>
@@ -25,15 +25,16 @@
 
             <div class="wrap-field">
                 <div class="heading-field text">{{ $t('news_page_3') }}</div>
-                <VueDatePicker  v-model="filter.created_at_to"
-                                :max-date="new Date()"
-                                prevent-min-max-navigation
-                                model-type="dd.MM.yyyy"
-                                auto-apply
-                                :placeholder="$t('DD - MM - YYYY')"
-                                :enable-time-picker="false"
-                                format="dd/MM/yyyy"
-                                locale="ru"
+                <VueDatePicker
+                    v-model="filter.created_at_to"
+                    :max-date="new Date()"
+                    prevent-min-max-navigation
+                    model-type="dd.MM.yyyy"
+                    auto-apply
+                    :placeholder="$t('DD - MM - YYYY')"
+                    :enable-time-picker="false"
+                    format="dd/MM/yyyy"
+                    :locale="locale"
                 />
             </div>
 
@@ -93,6 +94,8 @@ import {authRequest} from "@/api.js";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import '@vuepic/vue-datepicker/dist/main.css'
 import Pagination from "v-pagination-3";
+import {useI18n} from "vue-i18n";
+const { t, locale } = useI18n({ useScope: 'global' })
 
 const route = useRoute();
 let arrayPosts = ref([]);

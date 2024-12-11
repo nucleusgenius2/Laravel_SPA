@@ -6,21 +6,21 @@
 
                 <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit" v-if="status === 'noAuth'">
                     <div class="wrap-form">
-                        <div class="heading-form">{{ $t('Регистрация') }}</div>
+                        <div class="heading-form">{{ $t('auth_registration') }}</div>
                         <!-- Name -->
                         <div class="wrap-field">
-                            <input id="name" v-model="name"  class="field-style" autocomplete="off" :placeholder="$t('Никнейм')" type="text" name="name"  required autofocus />
+                            <input id="name" v-model="name"  class="field-style" autocomplete="off" :placeholder="$t('auth_nickname')" type="text" name="name"  required autofocus />
                         </div>
 
                         <!-- Email Address -->
                         <div class="wrap-field">
-                            <input id="email" v-model="email" class="field-style" autocomplete="off" :placeholder="$t('Ваш e-mail')" type="email" name="email"  required />
+                            <input id="email" v-model="email" class="field-style" autocomplete="off" :placeholder="$t('auth_your_email')" type="email" name="email"  required />
                         </div>
 
                         <!-- Password -->
                         <div class="wrap-field">
 
-                            <input id="password" v-model="password" :placeholder="$t('Пароль')" class="field-style"
+                            <input id="password" v-model="password" :placeholder="$t('auth_possword')" class="field-style"
                                    type="password"
                                    name="password"
                                    required autocomplete="new-password" />
@@ -28,7 +28,7 @@
 
                         <!-- Confirm Password -->
                         <div class="wrap-field">
-                            <input id="password_confirmation" v-model="passwordConfirm" :placeholder="$t('Пароль еще раз')" class="field-style"
+                            <input id="password_confirmation" v-model="passwordConfirm" :placeholder="$t('auth_repeat_password')" class="field-style"
                                    type="password"
                                    name="password_confirmation" required />
                         </div>
@@ -40,33 +40,33 @@
 
                     <div class="wrap-button-submit">
                         <button class="button-style-1">
-                            {{ $t('Зарегистрироваться') }}
+                            {{ $t('auth_registration_send') }}
                         </button>
                     </div>
 
-                    <div class="auth-text form-auth-true"  v-if="status === 'auth'">{{ $t('Вы авторезированы') }}</div>
+                    <div class="auth-text form-auth-true"  v-if="status === 'auth'">{{ $t('register_page_6') }}</div>
                     <div class="auth-text form-auth-false"  v-if="error !== ''">{{ error }}</div>
 
                     <div class="wrap-already-reg">
 
-                        <span>{{ $t('Уже есть аккаунт?') }}</span>
+                        <span>{{ $t('auth_already_account?') }}</span>
 
                         <a class="already-reg" style="margin-left: 5px;" href="/login">
-                            {{ $t('Войти') }}
+                            {{ $t('auth_login_2') }}
                         </a>
                     </div>
 
                     <div class="rule-register">
-                        <p class="warning"> {{ $t('Обратите внимание') }}:</p>
-                        <p>{{ $t('Запрещено создавать больше 1 аккаунта') }}</p>
-                        <p>{{ $t('Запрещено регистрировать чужие ники известных игроков') }}</p>
-                        <p>{{ $t('За нарушение вы получите бан с вероятностью 100%') }}</p>
+                        <p class="warning"> {{ $t('register_page_1') }}:</p>
+                        <p>{{ $t('register_page_2') }}</p>
+                        <p>{{ $t('register_page_3') }}</p>
+                        <p>{{ $t('register_page_4') }}</p>
                     </div>
                 </form>
 
                 <div class="auth-text form-auth-true" v-if="status === 'auth'">
-                    <p>Вы зарегистрированы</p>
-                    <p>На вашу почту было отправлено письмо с подтверждением. Без этого ваш аккаунт будет не активен. </p>
+                    <p>{{ $t('register_page_8') }}</p>
+                    <p>{{ $t('register_page_9') }}</p>
                 </div>
 
 
@@ -82,10 +82,7 @@ import {notAuthRequest} from "@/api.js";
 import {useRoute} from "vue-router";
 import {Checkbox} from 'vue-recaptcha'
 
-
 const route = useRoute();
-
-
 let name = ref('');
 let email = ref('');
 let password = ref('');
@@ -117,7 +114,6 @@ async function formSubmit() {
         localStorage.setItem('token', JSON.stringify(response.data.json))
     } else {
         status.value = 'noAuth';
-        console.log(response.data.text)
         error.value = response.data.text;
         if (!response.data.text) {
             error.value = response.data.message
