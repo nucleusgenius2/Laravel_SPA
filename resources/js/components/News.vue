@@ -3,19 +3,19 @@
         <!-- фильтр -->
         <div class="wrap-filter">
             <div class="wrap-field">
-                <div class="heading-field text">Название</div>
+                <div class="heading-field text">{{ $t('news_page_1') }}</div>
                 <input class='field-admin' v-model="filter.name">
             </div>
 
             <div class="wrap-field">
-                <div class="heading-field text">Дата публикации от</div>
+                <div class="heading-field text">{{ $t('news_page_2') }}</div>
                 <VueDatePicker
                     v-model="filter.created_at_from"
                     :max-date="new Date()"
                     prevent-min-max-navigation
                     model-type="dd.MM.yyyy"
                     auto-apply
-                    placeholder="ДД - MM - ГГГГ"
+                    :placeholder="$t('DD - MM - YYYY')"
                     :enable-time-picker="false"
                     locale="ru"
                     format="dd/MM/yyyy"
@@ -24,13 +24,13 @@
 
 
             <div class="wrap-field">
-                <div class="heading-field text">Дата публикации до</div>
+                <div class="heading-field text">{{ $t('news_page_3') }}</div>
                 <VueDatePicker  v-model="filter.created_at_to"
                                 :max-date="new Date()"
                                 prevent-min-max-navigation
                                 model-type="dd.MM.yyyy"
                                 auto-apply
-                                placeholder="ДД - MM - ГГГГ"
+                                :placeholder="$t('DD - MM - YYYY')"
                                 :enable-time-picker="false"
                                 format="dd/MM/yyyy"
                                 locale="ru"
@@ -38,25 +38,25 @@
             </div>
 
             <div class="wrap-field">
-                <div class="heading-field text">Выборка</div>
+                <div class="heading-field text">{{ $t('news_page_4') }}</div>
                 <select class='field-admin' v-model="filter.date_fixed">
-                    <option value="day">Новости за день</option>
-                    <option value="week">Новости за неделю</option>
-                    <option value="month">Новости за месяц</option>
-                    <option value="year">новости за год</option>
+                    <option value="day">{{ $t('news_page_5') }}</option>
+                    <option value="week">{{ $t('news_page_6') }}</option>
+                    <option value="month">{{ $t('news_page_7') }}</option>
+                    <option value="year">{{ $t('news_page_8') }}</option>
                 </select>
             </div>
 
 
             <div class="wrap-button-submit" style="margin-right:20px;">
                 <div class="button-blue-all button-admin"  style="margin-bottom: 10px;" @click="paginationListing('filter')" >
-                    Применить фильтр
+                    {{ $t('apply_filter') }}
                 </div>
             </div>
 
             <div class="wrap-button-submit">
                 <div class="button-blue-all-style-2 button-admin" style="margin-bottom: 10px;"  @click="clearFilter" >
-                    Очистить
+                    {{ $t('clear_filter') }}
                 </div>
             </div>
         </div>
@@ -71,14 +71,14 @@
                         <div class="content-short-post">{{ post.short_description }}</div>
                     </div>
                 </div>
-                <a :href="'/posts/'+post.id">Читать далее</a>
+                <a :href="'/posts/'+post.id"> {{ $t('news_page_9') }}</a>
             </div>
 
         </div>
 
         <pagination v-model="pageModel" :records="pageTotal" :per-page="10" @paginate="paginationListing"/>
 
-        <div class="empty-list" v-if="emptyPage">По вашему запросу не найдено новостей</div>
+        <div class="empty-list" v-if="emptyPage">{{ $t('news_page_10') }}</div>
 
     </div>
 </template>
@@ -93,17 +93,10 @@ import {authRequest} from "@/api.js";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import '@vuepic/vue-datepicker/dist/main.css'
 import Pagination from "v-pagination-3";
-let props = defineProps({
-    total: String,
-    page: String,
-    pagination : String,
-});
 
 const route = useRoute();
-
 let arrayPosts = ref([]);
 let emptyPage = ref(false);
-
 let pageModel = ref(1)
 let pageTotal = ref(1)
 let filter = ref({
@@ -201,19 +194,5 @@ function clearFilter (){
     .heading-post {
         font-size: 20px;
     }
-
-    .pagination-post {
-        display: flex;
-    }
-
-    .pagination-el {
-        margin-left: 10px;
-        margin-right: 10px;
-    }
-
-    .pagination-el:first-child {
-        margin-left: 0px;
-    }
-
 
 </style>

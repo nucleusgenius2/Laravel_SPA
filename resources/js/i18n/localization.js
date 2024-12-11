@@ -56,7 +56,22 @@ export const messages = {
         "qestion_page_21" : "Полезные ссылки",
         "qestion_page_22" : "Ссылка на инструкцию (яндекс диск)",
 
-        "Скачайте игровой клиент и авторезируйтесь в нем. После сможете авторизоваться на сайте, если это будет нужно." : "Скачайте игровой клиент и авторезируйтесь в нем. После сможете авторизоваться на сайте, если это будет нужно",
+        "news_page_1" : "Название",
+        "news_page_2" : "Дата публикации от",
+        "news_page_3" : "Дата публикации до",
+        "news_page_4" : "Выборка",
+        "news_page_5" : "новости за день",
+        "news_page_6" : "новости за неделю",
+        "news_page_7" : "новости за месяц",
+        "news_page_8" : "новости за год",
+        "news_page_9" : "Читать далее",
+        "news_page_10" : "По вашему запросу не найдено новостей",
+
+        "apply_filter" : "Применить фильтр",
+        "clear_filter" : "Очистить",
+        "DD - MM - YYYY" : "ДД - MM - ГГГГ",
+
+
         "help.resolve" : "Решение",
         "help.discord" : "По всем вопросам пишите в",
         ...reset.ru,
@@ -116,7 +131,20 @@ export const messages = {
         "qestion_page_21" : "Useful links",
         "qestion_page_22" : "Link to instructions (yandex disk)",
 
-        "Скачайте игровой клиент и авторезируйтесь в нем. После сможете авторизоваться на сайте, если это будет нужно." : "Download the game client and log in to it. Then you can log in to the site if needed",
+        "news_page_1" : "Name",
+        "news_page_2" : "Publication date from",
+        "news_page_3" : "Publication date before",
+        "news_page_4" : "Sample",
+        "news_page_5" : "news of the day",
+        "news_page_6" : "news of the week",
+        "news_page_7" : "news for the month",
+        "news_page_8" : "news for the year",
+        "news_page_9" : "Read more",
+        "news_page_10" : "No news found matching your request",
+
+        "apply_filter" : "Apply filter",
+        "clear_filter" : "Clear",
+        "DD - MM - YYYY" : "DD - MM - YYYY",
 
         "help.resolve" : "Solution",
         "help.discord" : "For all questions, please write to",
