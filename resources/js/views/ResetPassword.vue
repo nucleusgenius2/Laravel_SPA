@@ -5,12 +5,12 @@
             <div class="max">
 
                 <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit">
-                    <div class="heading-form">Введите новый пароль</div>
+                    <div class="heading-form">{{ $t('reset_password_1') }}</div>
 
                     <!-- Password -->
                     <div class="wrap-field">
 
-                        <input id="password" v-model="password"  placeholder="Пароль" class="field-style"
+                        <input id="password" v-model="password" :placeholder="$t('auth_possword')" class="field-style"
                                type="password"
                                name="password"
                                required autocomplete="new-password" />
@@ -18,20 +18,20 @@
 
                     <!-- Confirm Password -->
                     <div class="wrap-field">
-                        <input id="password_confirmation" v-model="passwordConfirm" placeholder="Пароль еще раз" class="field-style"
+                        <input id="password_confirmation" v-model="passwordConfirm" :placeholder="$t('auth_repeat_password')" class="field-style"
                                type="password"
                                name="password_confirmation" required />
                     </div>
 
                     <div class="wrap-button-submit">
                         <button class="button-style-1">
-                            Войти
+                            {{ $t('auth_login_2') }}
                         </button>
                     </div>
                 </form>
 
-                <div class="auth-text form-auth-true"  v-if="status">Пароль обновлен</div>
-                <div class="auth-text form-auth-false"  v-if="error !== ''">{{ error }}</div>
+                <div class="auth-text form-auth-true"  v-if="status"> {{ $t('reset_password_2') }} </div>
+                <showing-errors :errors="error" />
             </div>
 
         </template>
@@ -43,8 +43,9 @@
 import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
 import {notAuthRequest} from "@/api.js";
+import {useI18n} from "vue-i18n";
+import ShowingErrors from "@/components/ShowingErrors.vue";
 const route = useRoute();
-
 let email = ref('');
 let password = ref('');
 let passwordConfirm = ref('');

@@ -45,11 +45,11 @@
                     </div>
 
                     <div class="auth-text form-auth-true"  v-if="status === 'auth'">{{ $t('register_page_6') }}</div>
-                    <div class="auth-text form-auth-false"  v-if="error !== ''">{{ error }}</div>
+                    <showing-errors :errors="error" />
 
                     <div class="wrap-already-reg">
 
-                        <span>{{ $t('auth_already_account?') }}</span>
+                        <span>{{ $t('auth_already_account') }}</span>
 
                         <a class="already-reg" style="margin-left: 5px;" href="/login">
                             {{ $t('auth_login_2') }}
@@ -81,6 +81,7 @@ import {onMounted, ref} from 'vue';
 import {notAuthRequest} from "@/api.js";
 import {useRoute} from "vue-router";
 import {Checkbox} from 'vue-recaptcha'
+import ShowingErrors from "@/components/ShowingErrors.vue";
 
 const route = useRoute();
 let name = ref('');

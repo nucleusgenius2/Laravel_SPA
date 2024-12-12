@@ -30,7 +30,7 @@
                 </form>
 
                 <div class="auth-text form-auth-true"  v-if="status === 'auth'">{{ $t('register_page_6') }}</div>
-                <div class="auth-text form-auth-false"  v-if="error !== ''">{{ error }}</div>
+                <showing-errors :errors="error" />
             </div>
 
         </template>
@@ -44,7 +44,8 @@ import {useRoute} from "vue-router";
 import {notAuthRequest} from "@/api.js";
 const route = useRoute();
 import {useI18n} from "vue-i18n";
-const { t} = useI18n({ useScope: 'global' })
+import ShowingErrors from "@/components/ShowingErrors.vue";
+const {t} = useI18n({ useScope: 'global' })
 
 
 let email = ref('');
@@ -71,7 +72,7 @@ async function formSubmit(){
         console.log('успех')
     }
     else {
-        error.value = t('localization.'+response.data.text);
+        error.value = response.data.text;
     }
 
 }

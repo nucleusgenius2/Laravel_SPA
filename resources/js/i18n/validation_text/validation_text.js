@@ -1,10 +1,13 @@
 export const validation_text ={
     ru: {
-        'localization.Email не найден': 'Email не найден',
-        'localization.Пароль не совпадает' : 'Пароль не совпадает'
+        'Пароль не совпадает' : 'Пароль не совпадает',
+        'Поле Электронная почта должно быть действительным электронным адресом.' : 'Поле Электронная почта должно быть действительным электронным адресом',
+        'Email не найден' : 'Email не найден',
+
     },
     en: {
-        'localization.Email не найден': 'Email not found',
-        'localization.Пароль не совпадает' : 'The password does not match'
+        'Пароль не совпадает' : 'The password does not match',
+        'Поле Электронная почта должно быть действительным электронным адресом.' : 'The email field must be a valid email address',
+        'Email не найден' : 'Email not found',
     },
 }

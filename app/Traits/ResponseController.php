@@ -36,7 +36,7 @@ trait ResponseController
         $response = [
             'data' => [
                 'status' => $this->status,
-                'text' => $this->text,
+                'text' => json_encode($this->text, JSON_UNESCAPED_UNICODE),
                 'json' => $this->json
             ],
             'code' => $this->code

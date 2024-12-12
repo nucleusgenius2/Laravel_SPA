@@ -5,12 +5,12 @@
             <div class="max">
 
                 <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit">
-                    <div class="heading-form">Введите ваш email</div>
+                    <div class="heading-form">{{ $t('reset_password_3') }} </div>
 
                     <!-- Password -->
                     <div class="wrap-field">
 
-                        <input id="email" v-model="email"  placeholder="Ваш email" class="field-style"
+                        <input id="email" v-model="email" :placeholder="$t('auth_your_email')" class="field-style"
                                name="email"
                                required />
                     </div>
@@ -18,13 +18,13 @@
 
                     <div class="wrap-button-submit">
                         <button class="button-style-1">
-                            Отправить письмо
+                            {{ $t('reset_password_4') }}
                         </button>
                     </div>
                 </form>
 
                 <div class="auth-text form-auth-true" v-if="status !== ''">{{ status }}</div>
-                <div class="auth-text form-auth-false" v-if="error !== ''">{{ error }}</div>
+                <showing-errors :errors="error" />
             </div>
 
         </template>
@@ -36,7 +36,10 @@
 import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
 import {notAuthRequest} from "@/api.js";
+import {useI18n} from "vue-i18n";
+import ShowingErrors from "@/components/ShowingErrors.vue"
 const route = useRoute();
+const {t} = useI18n({ useScope: 'global' })
 
 let email = ref('');
 let status = ref('');
@@ -47,16 +50,29 @@ if (localStorage.getItem("token") !== null) {
 }
 
 async function formSubmit(){
-console.log('23')
     let response = await notAuthRequest('/api/reset_password', 'post', {
         'email' : email.value
     });
     if (response.data.status === 'success') {
-        status.value = 'Письмо отправлено вам на почту';
+        status.value = t('reset_password_5');
         error.value ='';
     }
     else {
-        error.value = response.data.text;
+
+        console.log(response.data);
+        try {
+            console.log('2')
+            // Проверка, можно ли распарсить строку как JSON
+
+            error.value = JSON.parse(response.data.text);
+        } catch (e) {
+            error.value = response.data.text;
+        }
+
+            // Если строка валидный JSON, парсим её и возвращаем результат
+                // error.value = JSON.parse(response.data.text);
+
+        console.log(typeof(error.value))
         status.value = '';
     }
 

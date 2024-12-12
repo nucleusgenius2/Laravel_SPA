@@ -1,17 +1,17 @@
 export const reset ={
     ru: {
-        'localization.Введите ваш email': 'Введите ваш email',
-        'localization.Отправить письмо': 'Отправить письмо',
-        'localization.Письмо отправлено вам на почту': 'Письмо отправлено вам на почту',
-        'localization.Ваш email': 'Ваш email',
-        'ошибка': 'ошибка',
+        'reset_password_1': 'Введите новый пароль',
+        'reset_password_2': 'Пароль обновлен',
+        'reset_password_3': 'Введите ваш email',
+        'reset_password_4': 'Отправить письмо',
+        'reset_password_5': 'Письмо отправлено вам на почту',
 
     },
     en: {
-        'localization.Введите ваш email': 'Enter your email',
-        'localization.Отправить письмо': 'Send letter',
-        'localization.Письмо отправлено вам на почту': 'The letter has been sent to your email',
-        'localization.Ваш email': 'The letter has been sent to your email',
-        'ошибка': 'error',
+        'reset_password_1': 'Enter a new password',
+        'reset_password_2': 'The password has been updated',
+        'reset_password_3': 'Enter your email address',
+        'reset_password_4': 'Send an email',
+        'reset_password_5': 'The letter has been sent to your email address',
     },
 }

@@ -21,7 +21,7 @@ class ResetPasswordController
     use ResponseController;
 
     /**
-     * отправка на почту ссылки для восстановления пароля
+     * sending an email link to recover your password
      * @param Request $request
      * @return JsonResponse
      */
@@ -67,7 +67,7 @@ class ResetPasswordController
     }
 
     /**
-     * установка нового пароля
+     * setting a new password
      * @param Request $request
      * @return JsonResponse
      */
