@@ -1,6 +1,9 @@
 <?php
 
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\ModController;
 use App\Http\Controllers\ResetPasswordController;
@@ -35,8 +38,8 @@ Route::get('/connect', function () {
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{id}', [PostController::class, 'show']);
 
-Route::post('login', [UserController::class, 'login']);
-Route::post('registration', [UserController::class, 'registration']);
+Route::post('login', [LoginController::class, 'login']);
+Route::post('registration', [RegistrationController::class, 'registration']);
 
 Route::post('/reset_password', [ResetPasswordController::class, 'resetEmailMessage']);
 Route::patch('/reset_password', [ResetPasswordController::class, 'reset']);
@@ -44,7 +47,7 @@ Route::patch('/reset_password', [ResetPasswordController::class, 'reset']);
 //user api
 Route::middleware(['auth:sanctum', 'user_active'])->group(function () {
     Route::get('/authorization', [UserController::class, 'checkStatusUser']);
-    Route::get('/logout', [UserController::class, 'logout']);
+    Route::get('/logout', [LogoutController::class, 'logout']);
 
     Route::get('/profile', [ProfileController::class, 'index']);
     Route::patch('/profile', [ProfileController::class, 'update']);
