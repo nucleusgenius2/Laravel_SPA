@@ -8,6 +8,7 @@ namespace App\Http\Controllers;
 use App\Models\Mod;
 use App\Services\HashFileGenerated;
 use App\Traits\ResponseController;
+use App\Traits\UploadsImages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ModController extends HashFileGenerated
 {
-    use ResponseController;
+    use ResponseController, UploadsImages;
 
 
     /**
@@ -109,35 +110,39 @@ class ModController extends HashFileGenerated
         } else {
             $data = $validated->valid();
 
-            $imageName = $data['name'] . '.' . $data['url_img']->extension();
-            $data['url_img']->move(public_path('preview_mods'), $imageName);
+            $imgUpload = $this->uploadImage($data['url_img'],'preview_mods');
+            if ( $imgUpload['status'] =='success' ) {
 
-            $archiveName = str_replace(" ", "", $data['name']) . '.' . $data['mod_archive']->extension();
+                $archiveName = str_replace(" ", "", $data['name']) . '.' . $data['mod_archive']->extension();
 
-            $data['mod_archive']->move(public_path('mods'), $archiveName);
+                $data['mod_archive']->move(public_path('mods'), $archiveName);
 
-            $hash = $this->getHash('mods', $archiveName);
-            if (!$hash){
-                $hash = [];
+                $hash = $this->getHash('mods', $archiveName);
+                if (!$hash) {
+                    $hash = [];
+                }
+
+                $response = Mod::create([
+                    'url_img' => $imgUpload['img'],
+                    'url_name' => $archiveName,
+                    'name' => $data['name'],
+                    'name_dir' => $data['name_dir'],
+                    'description' => $data['description'],
+                    'author' => request()->user()->name,
+                    'author_id' => request()->user()->id,
+                    'version' => $data['version'],
+                    'type' => $data['type'],
+                    'ch' => json_encode($hash),
+                    'mod_rate' => 0,
+                ]);
+
+                if ($response) {
+                    $this->code = 200;
+                    $this->status = 'success';
+                }
             }
-
-            $response = Mod::create([
-                'url_img' => $imageName,
-                'url_name' => $archiveName,
-                'name' => $data['name'],
-                'name_dir' =>  $data['name_dir'],
-                'description' => $data['description'],
-                'author' => request()->user()->name,
-                'author_id' => request()->user()->id,
-                'version' => $data['version'],
-                'type' => $data['type'],
-                'ch' =>  json_encode($hash),
-                'mod_rate' => 0,
-            ]);
-
-            if( $response ) {
-                $this->code = 200;
-                $this->status = 'success';
+            else{
+                $this->text = $imgUpload['text'];
             }
 
         }

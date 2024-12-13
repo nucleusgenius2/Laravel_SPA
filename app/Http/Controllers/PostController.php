@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ResponseController;
-
+use App\Traits\UploadsImages;
 class PostController
 {
-    use ResponseController;
+    use ResponseController, UploadsImages;
 
 
     /**
@@ -293,6 +293,123 @@ class PostController
                 $this->json = $contentPostSingle;
             } else {
                 $this->text = 'Запрашиваемой новости не существует';
+            }
+        }
+
+        return $this->responseJsonApi();
+    }
+
+
+    /**
+     * create post
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validated = Validator::make($request->all(), [
+            'name' => 'required|string|min:3|max:255',
+            'content' => 'nullable|string',
+            'short_description' => 'nullable|string|max:300',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:255',
+            'img' => 'nullable|image|mimes:png,jpg,jpeg',
+            'category_id' => 'nullable|int',
+            'author' => 'required|string|max:100',
+        ]);
+
+        if ($validated->fails()) {
+            $this->text = $validated->errors();
+        } else {
+            $data = $validated->valid();
+
+            $imgUpload = $this->uploadImage($data['img']);
+            if ( $imgUpload['status'] =='success' ) {
+
+                $arraySavePost = [
+                    'name' => $data['name'],
+                    'content' => $data['content'] ?? '',
+                    'short_description' => $data['short_description'] ?? '',
+                    'seo_title' => $data['seo_title'] ?? '',
+                    'seo_description' => $data['seo_description'] ?? '',
+                    'img' => $imgUpload['img'] ?? '',
+                    'category_id' => $data['category_id'] ?? 0,
+                    'author' => $data['author']
+                ];
+
+                $post = Post::create($arraySavePost);
+
+                if ($post) {
+                    $this->status = 'success';
+                    $this->code = 200;
+                    $this->text = 'Запись создана';
+                    $this->json = $post->id;
+                } else {
+                    $this->text = 'Запись не была создана';
+                }
+            }
+            else{
+                $this->text = $imgUpload['text'];
+            }
+        }
+
+        return $this->responseJsonApi();
+    }
+
+    /**
+     * update post
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function update(Request $request): JsonResponse
+
+    {
+        $validated = Validator::make($request->all(), [
+            'id' => 'required|int',
+            'name' => 'required|string|min:3|max:255',
+            'content' => 'nullable|string',
+            'short_description' => 'nullable|string|max:255',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:300',
+            'category_id' => 'nullable|int',
+        ]);
+
+
+        if ($validated->fails()) {
+            $this->text = $validated->errors();
+        } else {
+            $data = $validated->valid();
+
+            if (gettype($data['img']) == 'object') {
+                $imgUpload = $this->uploadImage($data['img']);
+            }
+            else {
+                $imgUpload['img'] = $data['img'];
+            }
+
+            if ($validated->fails()) {
+                $this->text = $validated->errors();
+            } else {
+                $arraySavePost = Post::where('id', '=', $data['id'])->update([
+                    'name' => $data['name'],
+                    'content' => $data['content'] ?? '',
+                    'short_description' => $data['short_description'] ?? '',
+                    'seo_title' => $data['seo_title'] ?? '',
+                    'seo_description' => $data['seo_description'] ?? '',
+                    'img' => $imgUpload['img'] ?? '',
+                    'category_id' => $data['category_id'] ?? 0,
+                ]);
+
+                Cache::forget('post_id_'.$data['id']);
+
+                if ($arraySavePost) {
+                    $this->status = 'success';
+                    $this->code = 200;
+                    $this->text = 'Запись создана';
+                }
+                else {
+                    $this->text = 'Запрашиваемой страницы не существует';
+                }
             }
         }
 

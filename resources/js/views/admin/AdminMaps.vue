@@ -163,7 +163,7 @@
             </div>
 
             <div class="post-el" v-for="(maps) in arrayMaps">
-                <div class="maps-img maps-el "><img :src="'/maps/preview/'+maps.url_img" alt=""></div>
+                <div class="maps-img maps-el "><img :src="maps.url_img" alt=""></div>
                 <div class="maps-name maps-el">{{ maps.name }}</div>
                 <div class="maps-el">{{ maps.total_player }}</div>
                 <div v-if="maps.rate===0" class="maps-el">Нет</div>

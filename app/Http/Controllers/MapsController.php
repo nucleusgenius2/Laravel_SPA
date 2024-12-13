@@ -8,6 +8,7 @@ namespace App\Http\Controllers;
 use App\Models\Map;
 use App\Services\HashFileGenerated;
 use App\Traits\ResponseController;
+use App\Traits\UploadsImages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -18,7 +19,7 @@ use ZipArchive;
 
 class MapsController extends HashFileGenerated
 {
-    use ResponseController;
+    use ResponseController, UploadsImages;
 
 
     /**
@@ -149,35 +150,35 @@ class MapsController extends HashFileGenerated
         } else {
             $data = $validated->valid();
 
-            $imageName = $data['name'] . '.' . $data['url_img']->extension();
-            $data['url_img']->move(public_path('maps/preview'), $imageName);
+            $imgUpload = $this->uploadImage($data['url_img'],'maps/preview');
+            if ( $imgUpload['status'] =='success' ) {
 
-            //upload zip archive in dir
-            $archiveName = $data['name'] . '.' . $data['map_archive']->extension();
-            $data['map_archive']->move(public_path('maps'), $archiveName);
+                $archiveName = $data['name'] . '.' . $data['map_archive']->extension();
+                $data['map_archive']->move(public_path('maps'), $archiveName);
 
-            $hash = $this->getHash('maps', $archiveName);
-            if (!$hash){
-                $hash = [];
-            }
+                $hash = $this->getHash('maps', $archiveName);
+                if (!$hash) {
+                    $hash = [];
+                }
 
-            $response = Map::create([
-                'url_img' => $imageName,
-                'url_name' => $archiveName,
-                'name' => $data['name'],
-                'author' => request()->user()->name,
-                'author_id' => request()->user()->id,
-                'version' => $data['version'],
-                'total_player' => $data['total_player'],
-                'rate' => $data['rate'],
-                'size' => $data['map_size'],
-                'ch' => json_encode($hash),
-                'map_rate' => 0,
-            ]);
+                $response = Map::create([
+                    'url_img' => $imgUpload['img'],
+                    'url_name' => $archiveName,
+                    'name' => $data['name'],
+                    'author' => request()->user()->name,
+                    'author_id' => request()->user()->id,
+                    'version' => $data['version'],
+                    'total_player' => $data['total_player'],
+                    'rate' => $data['rate'],
+                    'size' => $data['map_size'],
+                    'ch' => json_encode($hash),
+                    'map_rate' => 0,
+                ]);
 
-            if( $response ) {
-                $this->status = 'success';
-                $this->code = 200;
+                if ($response) {
+                    $this->status = 'success';
+                    $this->code = 200;
+                }
             }
 
         }

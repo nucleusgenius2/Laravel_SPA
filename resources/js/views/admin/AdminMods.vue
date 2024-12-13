@@ -72,7 +72,7 @@
             </div>
 
             <div class="post-el" v-for="(mods) in arrayMods">
-                <div class="mods-img mods-el "><img :src="'/preview_mods/'+mods.url_img" alt=""></div>
+                <div class="mods-img mods-el "><img :src="mods.url_img" alt=""></div>
                 <div class="mods-name mods-el">{{ mods.name }}</div>
                 <div class="mods-el description">{{ mods.description }}</div>
                 <div v-if="mods.type===0" class="mods-el">SIM Мод</div>
