@@ -8,12 +8,12 @@
                 <!-- фильтр -->
                 <div class="wrap-filter">
                     <div class="wrap-field">
-                        <div class="heading-field text">Название карты</div>
+                        <div class="heading-field text">{{ $t('maps_page_1') }}</div>
                         <input class='field-admin' v-model="filter.name">
                     </div>
 
                     <div class="wrap-field">
-                        <div class="heading-field text">Количество игроков мин</div>
+                        <div class="heading-field text">{{ $t('maps_page_2') }}</div>
                         <select class='field-admin' v-model="filter.total_player_from">
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="wrap-field">
-                        <div class="heading-field text">Количество игроков макс</div>
+                        <div class="heading-field text">{{ $t('maps_page_3') }}</div>
                         <select class='field-admin' v-model="filter.total_player_to">
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -47,7 +47,7 @@
                     </div>
 
                     <div class="wrap-field">
-                        <div class="heading-field text">Размер карты</div>
+                        <div class="heading-field text">{{ $t('maps_page_4') }}</div>
                         <select class='field-admin' v-model="filter.size">
                             <option value="256x256">5 x 5</option>
                             <option value="512x512">10 x 10</option>
@@ -59,7 +59,13 @@
 
                     <div class="wrap-button-submit" style="margin-right:20px;">
                         <div class="button-blue-all button-admin"  style="margin-bottom: 10px;" @click="paginationListing('filter')" >
-                            Применить фильтр
+                            {{ $t('apply_filter') }}
+                        </div>
+                    </div>
+
+                    <div class="wrap-button-submit">
+                        <div class="button-blue-all-style-2 button-admin" style="margin-bottom: 10px;"  @click="clearFilter" >
+                            {{ $t('clear_filter') }}
                         </div>
                     </div>
                 </div>
@@ -94,19 +100,19 @@
                             </div>
 
                             <div class="wrap-rate author">
-                                <div style="margin-right:6px;">{{ $t('Рейтинговая') }}:</div>
-                                <div v-if="map.rate===0" class="maps-el not-rate">{{ $t('Нет') }}</div>
-                                <div v-else class="maps-el">{{ $t('Да') }}</div>
+                                <div style="margin-right:6px;">{{ $t('maps_page_5') }}:</div>
+                                <div v-if="map.rate===0" class="maps-el not-rate">{{ $t('maps_page_6') }}</div>
+                                <div v-else class="maps-el">{{ $t('maps_page_7') }}</div>
                             </div>
 
-                            <div class="maps-el author" style="display:none"><span style="margin-right:6px;">{{ $t('Автор') }}:</span>{{ map.author }}</div>
+                            <div class="maps-el author" style="display:none"><span style="margin-right:6px;">{{ $t('maps_page_8') }}:</span>{{ map.author }}</div>
 
                         </div>
                     </div>
 
                 </div>
 
-                <div v-if="errors" class="text">По вашему запросу нет результатов</div>
+                <div v-if="errors" class="text">{{ $t('not_result') }}</div>
 
                 <pagination v-model="pageModel" :records="pageTotal" :per-page="15" @paginate="paginationListing"/>
             </div>
@@ -160,7 +166,13 @@ async function paginationListing(filterClick = '') {
 }
 paginationListing();
 
-
+function clearFilter (){
+    filter.value.name = '';
+    filter.value.total_player_from = '';
+    filter.value.total_player_to = '';
+    filter.value.size = '';
+    paginationListing();
+}
 </script>
 
 <style scoped>

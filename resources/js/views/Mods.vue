@@ -24,8 +24,8 @@
                                         <p>{{ mod.description }} </p>
                                     </div>
                                     <div class="maps-el">
-                                        <span v-if="mod.type === 1">{{ $t('UI Мод') }}</span>
-                                        <span v-else>{{ $t('UI Мод') }}</span>
+                                        <span v-if="mod.type === 1">{{ $t('mod_page_1') }}</span>
+                                        <span v-else>{{ $t('mod_page_2') }}</span>
                                     </div>
 
                                     <div class="rate-block">

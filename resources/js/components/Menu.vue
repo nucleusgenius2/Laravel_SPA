@@ -14,7 +14,7 @@
              </div>
 
             <div class="menu-el sub-menu adaptive-menu">
-                <span class="menu-el">{{ $t('Прочее') }} </span>
+                <span class="menu-el">{{ $t('other-menu') }} </span>
                 <div class="wrap-sub-menu">
                     <div class="menu-el">
                         <router-link to="/mods_l">{{ $t('mods-menu') }}</router-link>
