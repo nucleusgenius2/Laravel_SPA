@@ -23,7 +23,7 @@ class MapsController extends HashFileGenerated
 
 
     /**
-     * download the map, only authorized
+     * download the map
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */

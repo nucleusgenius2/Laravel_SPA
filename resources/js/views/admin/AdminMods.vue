@@ -85,7 +85,7 @@
             </div>
 
 
-            <pagination v-model="pageModel" :records="pageTotal" :per-page="10" @paginate="myCallback"/>
+            <pagination v-model="pageModel" :records="pageTotal" :per-page="10" @paginate="paginationListing"/>
         </div>
     </div>
 </template>
@@ -116,16 +116,18 @@ let mod = ref({
     'dir' : ''
 });
 
-async function myCallback(){
+async function paginationListing(){
     let response = await authRequest('/api/mods?page='+ pageModel.value, 'get' );
 
     if ( response.data.status === 'success' ) {
         arrayMods.value  = response.data.json.data;
+        pageTotal.value = response.data.json.last_page * 10;
     }
     else {
         errors.value = response.data;
     }
 }
+paginationListing();
 
 function openUploadPanel(){
     showUploadPanel.value = true;
@@ -162,22 +164,6 @@ async function saveMods(){
         errors.value = response.data.text;
     }
 }
-
-
-onMounted(
-    async () => {
-
-        let response = await authRequest('/api/mods?page=1', 'get' );
-
-        if ( response.data.status === 'success' ) {
-            pageTotal.value = response.data.json.last_page * 10;
-            arrayMods.value  = response.data.json.data;
-        }
-        else {
-          //  errors.value =  response.data.text;
-        }
-    }
-);
 
 
 

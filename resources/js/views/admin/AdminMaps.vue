@@ -148,8 +148,6 @@
             </div>
 
 
-
-
             <div class="post-heading-block">
                 <div class="maps-img maps-el">Превью</div>
                 <div class="maps-name maps-el">Название карты</div>
@@ -256,18 +254,6 @@ async function saveMap(){
 }
 
 
-
-
-async function getPostsList (page){
-    let response = await authRequest('/api/maps?page='+page, 'get' );
-    if ( response.data.status === 'success' ){
-        pageTotal.value = response.data.json.last_page * 15;
-
-        arrayMaps.value = response.data.json.data;
-    }
-}
-getPostsList(1);
-
 async function paginationListing(filterClick = '') {
     if (filterClick === 'filter') {
         pageModel.value = 1;
@@ -289,10 +275,10 @@ async function paginationListing(filterClick = '') {
 
     if (response.data.status === 'success') {
         arrayMaps.value = response.data.json.data;
-        pageTotal.value = response.data.json.last_page * 50;
+        pageTotal.value = response.data.json.last_page * 15;
     }
 }
-
+paginationListing();
 
 async function removeMaps(e){
     let id = e.target.getAttribute('data-id');

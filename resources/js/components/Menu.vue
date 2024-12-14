@@ -13,6 +13,18 @@
                  <router-link to="/post-list/1">{{ $t('news-menu') }}</router-link>
              </div>
 
+            <div class="menu-el sub-menu adaptive-menu">
+                <span class="menu-el">{{ $t('Прочее') }} </span>
+                <div class="wrap-sub-menu">
+                    <div class="menu-el">
+                        <router-link to="/mods_l">{{ $t('mods-menu') }}</router-link>
+                    </div>
+                    <div class="menu-el">
+                        <router-link to="/maps_l">{{ $t('maps-menu') }}</router-link>
+                    </div>
+                </div>
+            </div>
+
             <div class="menu-el adaptive-menu">
                 <router-link to="/registration">{{ $t('registration') }} </router-link>
             </div>
@@ -97,6 +109,7 @@ const { t, locale } = useI18n({ useScope: 'global' })
     left: 0px;
     border-top: 2px solid #999;
     box-shadow: 0 1px 6px rgb(0 0 0 / 40%);
+    z-index:1
 }
 .sub-menu:hover  .wrap-sub-menu {
     display:flex;

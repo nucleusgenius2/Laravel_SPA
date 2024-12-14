@@ -77,6 +77,22 @@ const router = createRouter({
             }
         },
         {
+            path: "/mods_l",
+            name: "Mods",
+            component: () => import("@/views/Mods.vue"),
+            meta: {
+                layout : "mainLayout"
+            }
+        },
+        {
+            path: "/maps_l",
+            name: "Maps",
+            component: () => import("@/views/Maps.vue"),
+            meta: {
+                layout : "mainLayout"
+            }
+        },
+        {
             path: "/admin",
             name: "admin",
             component: () => import("@/views/admin/Admin.vue"),

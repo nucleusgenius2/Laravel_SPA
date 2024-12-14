@@ -44,6 +44,13 @@ Route::post('registration', [RegistrationController::class, 'registration']);
 Route::post('/reset_password', [ResetPasswordController::class, 'resetEmailMessage']);
 Route::patch('/reset_password', [ResetPasswordController::class, 'reset']);
 
+Route::get('/map/{name}', [MapsController::class, 'hasMap']);
+Route::get('/maps', [MapsController::class, 'index']);
+Route::get('/maps/downland', [MapsController::class, 'downlandMap']);
+
+Route::get('/mods', [ModController::class, 'index']);
+Route::get('/mods/downland', [ModController::class, 'downlandMod']);
+
 //user api
 Route::middleware(['auth:sanctum', 'user_active'])->group(function () {
     Route::get('/authorization', [UserController::class, 'checkStatusUser']);
@@ -51,13 +58,6 @@ Route::middleware(['auth:sanctum', 'user_active'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'index']);
     Route::patch('/profile', [ProfileController::class, 'update']);
-
-    Route::get('/map/{name}', [MapsController::class, 'hasMap']);
-    Route::get('/maps', [MapsController::class, 'index']);
-    Route::get('/maps/downland', [MapsController::class, 'downlandMap']);
-
-    Route::get('/mods', [ModController::class, 'index']);
-    Route::get('/mods/downland', [ModController::class, 'downlandMod']);
 });
 
 //admin api
