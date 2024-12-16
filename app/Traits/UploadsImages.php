@@ -6,9 +6,11 @@ use Illuminate\Support\Facades\Validator;
 
 trait UploadsImages
 {
+
     /**
-     * @param object $img
-     * @return array
+     * @param object|string $img
+     * @param string $path
+     * @return string[]
      */
     protected function uploadImage(object|string $img, string $path=''): array
     {

@@ -41,10 +41,8 @@ const route = useRoute();
 
 //check auth user
 onMounted(async () => {
-    //check local store
     if (localStorage.getItem("token") !== null) {
 
-        //set token in axios header
         let response = await authRequest('/api/authorization', 'get');
 
         auth.value = response.data;

@@ -8,6 +8,7 @@ namespace App\Http\Controllers;
 use App\Models\Mod;
 use App\Services\HashFileGenerated;
 use App\Traits\ResponseController;
+use App\Traits\UploadFiles;
 use App\Traits\UploadsImages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ModController extends HashFileGenerated
 {
-    use ResponseController, UploadsImages;
+    use ResponseController, UploadsImages, UploadFiles;
 
 
     /**
@@ -113,32 +114,35 @@ class ModController extends HashFileGenerated
             $imgUpload = $this->uploadImage($data['url_img'],'preview_mods');
             if ( $imgUpload['status'] =='success' ) {
 
-                $archiveName = str_replace(" ", "", $data['name']) . '.' . $data['mod_archive']->extension();
+                $fileUpload = $this->uploadFile($data['mod_archive'],'file|mimes:zip|max:204800', $data['name'],'mods');
+                if ( $fileUpload['status'] =='success' ) {
 
-                $data['mod_archive']->move(public_path('mods'), $archiveName);
+                    $hash = $this->getHash('mods', $fileUpload['url']);
+                    if (!$hash) {
+                        $hash = [];
+                    }
 
-                $hash = $this->getHash('mods', $archiveName);
-                if (!$hash) {
-                    $hash = [];
+                    $response = Mod::create([
+                        'url_img' => $imgUpload['img'],
+                        'url_name' => $fileUpload['url'],
+                        'name' => $data['name'],
+                        'name_dir' => $data['name_dir'],
+                        'description' => $data['description'],
+                        'author' => request()->user()->name,
+                        'author_id' => request()->user()->id,
+                        'version' => $data['version'],
+                        'type' => $data['type'],
+                        'ch' => json_encode($hash),
+                        'mod_rate' => 0,
+                    ]);
+
+                    if ($response) {
+                        $this->code = 200;
+                        $this->status = 'success';
+                    }
                 }
-
-                $response = Mod::create([
-                    'url_img' => $imgUpload['img'],
-                    'url_name' => $archiveName,
-                    'name' => $data['name'],
-                    'name_dir' => $data['name_dir'],
-                    'description' => $data['description'],
-                    'author' => request()->user()->name,
-                    'author_id' => request()->user()->id,
-                    'version' => $data['version'],
-                    'type' => $data['type'],
-                    'ch' => json_encode($hash),
-                    'mod_rate' => 0,
-                ]);
-
-                if ($response) {
-                    $this->code = 200;
-                    $this->status = 'success';
+                else{
+                    $this->text = $fileUpload['text'];
                 }
             }
             else{
@@ -158,6 +162,7 @@ class ModController extends HashFileGenerated
      */
     function destroy(int $id): JsonResponse
     {
+
         $validated = Validator::make(['id' => $id], [
             'id' => 'integer|min:1',
         ]);
@@ -169,19 +174,15 @@ class ModController extends HashFileGenerated
 
             $fileDataBase = Mod::where('id',  $data['id'])->first();
             if ( $fileDataBase ){
+                $removeArchive = File::delete(public_path($fileDataBase->url_name));
 
-                $removeArchive = File::delete(public_path('/mods/'.$fileDataBase->url_name));
                 if ( $removeArchive ){
+                    $fileDataBase->delete();
 
-                    $removeDataBase = Mod::where('id', $data['id'])->delete();
-
-                    if ($removeDataBase ) {
-                        $removePreview = File::delete(public_path('/preview_mods/'.$fileDataBase->url_img));
-
-                        if ($removePreview ) {
-                            $this->status = 'success';
-                            $this->code = 200;
-                        }
+                    $removePreview = File::delete(public_path($fileDataBase->url_img));
+                    if ($removePreview ) {
+                        $this->status = 'success';
+                        $this->code = 200;
                     }
                 }
 

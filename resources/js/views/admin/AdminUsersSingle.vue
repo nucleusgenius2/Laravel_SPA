@@ -1,6 +1,6 @@
 <template>
-    <div className="wrap-single-news">
-        <div className="wrap-news">
+    <div class="wrap-single-news">
+        <div class="wrap-news">
 
             <div class="wrap-field">
                 <div class="heading-field">Имя</div>

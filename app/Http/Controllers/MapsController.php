@@ -8,6 +8,7 @@ namespace App\Http\Controllers;
 use App\Models\Map;
 use App\Services\HashFileGenerated;
 use App\Traits\ResponseController;
+use App\Traits\UploadFiles;
 use App\Traits\UploadsImages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ use ZipArchive;
 
 class MapsController extends HashFileGenerated
 {
-    use ResponseController, UploadsImages;
+    use ResponseController, UploadsImages, UploadFiles;
 
 
     /**
@@ -118,7 +119,6 @@ class MapsController extends HashFileGenerated
             } else {
                 $this->text = 'Запрашиваемой страницы не существует';
             }
-
         }
 
         return $this->responseJsonApi();
@@ -153,31 +153,32 @@ class MapsController extends HashFileGenerated
             $imgUpload = $this->uploadImage($data['url_img'],'maps/preview');
             if ( $imgUpload['status'] =='success' ) {
 
-                $archiveName = $data['name'] . '.' . $data['map_archive']->extension();
-                $data['map_archive']->move(public_path('maps'), $archiveName);
+                $fileUpload = $this->uploadFile($data['mod_archive'], 'file|mimes:zip|max:25600', $data['name'], 'maps');
+                if ($fileUpload['status'] == 'success') {
 
-                $hash = $this->getHash('maps', $archiveName);
-                if (!$hash) {
-                    $hash = [];
-                }
+                    $hash = $this->getHash('maps', $fileUpload['url']);
+                    if (!$hash) {
+                        $hash = [];
+                    }
 
-                $response = Map::create([
-                    'url_img' => $imgUpload['img'],
-                    'url_name' => $archiveName,
-                    'name' => $data['name'],
-                    'author' => request()->user()->name,
-                    'author_id' => request()->user()->id,
-                    'version' => $data['version'],
-                    'total_player' => $data['total_player'],
-                    'rate' => $data['rate'],
-                    'size' => $data['map_size'],
-                    'ch' => json_encode($hash),
-                    'map_rate' => 0,
-                ]);
+                    $response = Map::create([
+                        'url_img' => $imgUpload['img'],
+                        'url_name' => $fileUpload['url'],
+                        'name' => $data['name'],
+                        'author' => request()->user()->name,
+                        'author_id' => request()->user()->id,
+                        'version' => $data['version'],
+                        'total_player' => $data['total_player'],
+                        'rate' => $data['rate'],
+                        'size' => $data['map_size'],
+                        'ch' => json_encode($hash),
+                        'map_rate' => 0,
+                    ]);
 
-                if ($response) {
-                    $this->status = 'success';
-                    $this->code = 200;
+                    if ($response) {
+                        $this->status = 'success';
+                        $this->code = 200;
+                    }
                 }
             }
 
@@ -209,15 +210,12 @@ class MapsController extends HashFileGenerated
 
                 $removeArchive = File::delete(public_path('/maps/'.$fileDataBase->url_name));
                 if ( $removeArchive ){
-                    $removeDataBase = Map::where('id', $data['id'])->delete();
+                    $fileDataBase->delete();
 
-                    if ($removeDataBase ) {
-                        $removePreview = File::delete(public_path('/maps/preview/'.$fileDataBase->url_img));
-
-                        if ($removePreview ) {
-                            $this->status = 'success';
-                            $this->code = 200;
-                        }
+                    $removePreview = File::delete(public_path('/maps/preview/'.$fileDataBase->url_img));
+                    if ($removePreview ) {
+                        $this->status = 'success';
+                        $this->code = 200;
                     }
                 }
 
