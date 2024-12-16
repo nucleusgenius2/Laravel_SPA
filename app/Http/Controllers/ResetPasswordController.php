@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\LimitResetPassword;
-use App\Models\User;
 use App\Rules\ValidEmail;
-use App\Traits\ResponseController;
+use App\Traits\StructuredResponse;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +17,7 @@ use Illuminate\Support\Str;
 
 class ResetPasswordController
 {
-    use ResponseController;
+    use StructuredResponse;
 
     /**
      * sending an email link to recover your password

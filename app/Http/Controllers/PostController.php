@@ -3,20 +3,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Events\UserLogin;
-use App\Models\Map;
 use App\Models\Post;
+use App\Traits\StructuredResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Traits\ResponseController;
 use App\Traits\UploadsImages;
 class PostController
 {
-    use ResponseController, UploadsImages;
+    use StructuredResponse, UploadsImages;
 
 
     /**

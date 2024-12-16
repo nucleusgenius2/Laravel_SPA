@@ -15,6 +15,7 @@ trait Filter
         foreach ($filters as $field => $value) {
             //поиск по фрагменту значения
             if (isset($this->whereSearch) && in_array($field, $this->whereSearch)) {
+                log::info('2222');
                 $query = $query->where($tableName . '.' . $field, 'LIKE', '%' . $value . '%');
             }
 

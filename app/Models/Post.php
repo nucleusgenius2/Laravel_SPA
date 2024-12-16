@@ -23,6 +23,7 @@ class Post extends Model
         'author',
     ];
 
+    protected array $whereSearch = ['name'];
     protected array $intervalSearch = ['created_at_from', 'created_at_to'];
 
     protected array $dateFixed = ['date_fixed'];

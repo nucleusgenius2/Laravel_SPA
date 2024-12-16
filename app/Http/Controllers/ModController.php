@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mod;
 use App\Services\HashFileGenerated;
-use App\Traits\ResponseController;
+use App\Traits\StructuredResponse;
 use App\Traits\UploadFiles;
 use App\Traits\UploadsImages;
 use Illuminate\Http\JsonResponse;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ModController extends HashFileGenerated
 {
-    use ResponseController, UploadsImages, UploadFiles;
+    use StructuredResponse, UploadsImages, UploadFiles;
 
 
     /**

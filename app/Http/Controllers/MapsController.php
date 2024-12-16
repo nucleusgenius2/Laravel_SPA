@@ -153,7 +153,7 @@ class MapsController extends HashFileGenerated
             $imgUpload = $this->uploadImage($data['url_img'],'maps/preview');
             if ( $imgUpload['status'] =='success' ) {
 
-                $fileUpload = $this->uploadFile($data['mod_archive'], 'file|mimes:zip|max:25600', $data['name'], 'maps');
+                $fileUpload = $this->uploadFile($data['map_archive'], 'file|mimes:zip|max:25600', $data['name'], 'maps');
                 if ($fileUpload['status'] == 'success') {
 
                     $hash = $this->getHash('maps', $fileUpload['url']);

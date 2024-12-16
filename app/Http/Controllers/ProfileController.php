@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\UserBalanceOperations;
-use App\Traits\ResponseController;
+use App\Traits\StructuredResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -14,7 +14,7 @@ use Illuminate\Http\JsonResponse;
 
 class ProfileController
 {
-    use ResponseController;
+    use StructuredResponse;
 
     /**
      * get data from user profile

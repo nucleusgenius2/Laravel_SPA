@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 
 use App\Events\UserLogin;
 use App\Jobs\SendMail;
-use App\Models\Post;
-use App\Models\UserBalance;
 use App\Rules\ReCaptcha;
-use App\Traits\ResponseController;
+use App\Traits\StructuredResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -19,7 +17,7 @@ use Illuminate\Auth\Events\Registered;
 
 class UserController
 {
-    use ResponseController;
+    use StructuredResponse;
 
     /**
      * check admin permission user
