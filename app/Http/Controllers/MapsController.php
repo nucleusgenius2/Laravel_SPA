@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Map;
 use App\Services\HashFileGenerated;
-use App\Traits\ResponseController;
+use App\Traits\StructuredResponse;
 use App\Traits\UploadFiles;
 use App\Traits\UploadsImages;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +20,7 @@ use ZipArchive;
 
 class MapsController extends HashFileGenerated
 {
-    use ResponseController, UploadsImages, UploadFiles;
+    use StructuredResponse, UploadsImages, UploadFiles;
 
 
     /**
@@ -208,11 +208,11 @@ class MapsController extends HashFileGenerated
             $fileDataBase = Map::where('id',  $data['id'])->first();
             if ( $fileDataBase ){
 
-                $removeArchive = File::delete(public_path('/maps/'.$fileDataBase->url_name));
+                $removeArchive = File::delete(public_path($fileDataBase->url_name));
                 if ( $removeArchive ){
                     $fileDataBase->delete();
 
-                    $removePreview = File::delete(public_path('/maps/preview/'.$fileDataBase->url_img));
+                    $removePreview = File::delete(public_path($fileDataBase->url_img));
                     if ($removePreview ) {
                         $this->status = 'success';
                         $this->code = 200;
