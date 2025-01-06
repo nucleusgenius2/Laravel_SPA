@@ -13,21 +13,17 @@
                 <div class="wrap-icons">Иконки</div>
             </div>
 
-            <div class="post-el table-users" v-for="(user) in arrayPostEl">
+            <div class="post-el table-users" v-for="(user) in arrayUsers">
                 <div><a :href="'/admin/users/'+user.id" class="post-name">{{ user.name }}</a></div>
                 <div class="user-email">{{ user.email }}</div>
                 <div class="user-ip">сделать вывод</div>
                 <div class="user-status">{{ user.status }}</div>
-                <div class="wrap-date">{{ user.created_at  }}</div>
+                <div class="wrap-date">{{ convertTime(user.created_at ) }}</div>
                 <div class="wrap-rate">сделать вывод</div>
                 <div class="wrap-icons">сделать вывод</div>
             </div>
 
-            <div class="pagination-post">
-                <div class="pagination-el" v-for="(pagination) in arrayPagination">
-                    <div @click="getPostsList(pagination.url)" >{{ pagination.label }}</div>
-                </div>
-            </div>
+            <pagination v-model="pageModel" :records="pageTotal" :per-page="1" @paginate="paginationListing"/>
 
         </div>
     </div>
@@ -36,59 +32,30 @@
 
 <script setup>
 
-import {onMounted, ref} from 'vue';
-import router from "@/router/router";
+import {ref} from 'vue';
 import { useRoute } from "vue-router";
 import {authRequest} from "@/api.js";
+import Pagination from "v-pagination-3";
+import {convertTime} from "../../script/convertTime";
 
-let props = defineProps({
-    total: String,
-})
 
 const route = useRoute();
+let pageModel = ref(1)
+let pageTotal = ref(1)
+let arrayUsers = ref([]);
 
-let arrayPostEl = ref([]);
-let arrayPagination = ref([]);
+async function paginationListing() {
+    let response = await authRequest('/api/users?page=' + pageModel.value, 'get');
 
-async function getPostsList (page){
-    let response = await authRequest('/api/users?page='+page, 'get' );
-
-    if ( response.data.status === 'success' ){
-        let arrayPost = response.data.json.data;
-        let arrayLink = response.data.json.links;
-
-        //short description post
-        for (let i = 0; i < arrayPost.length; i++) {
-            //converting date
-            arrayPost[i]['created_at'] = new Date(arrayPost[i]['created_at']).toLocaleString();
-            arrayPost[i]['updated_at'] = new Date(arrayPost[i]['updated_at']).toLocaleString();
-        }
-
-        //pagination array localization
-        arrayLink[0]['label'] = 'В начало';
-        arrayLink[arrayLink.length - 1]['label'] = 'В конец';
-
-        for (let i = 0; i < arrayLink.length; i++) {
-            let page = i;
-            //first link pagination
-            if (page === 0) {
-                page = 1;
-            }
-            //last link pagination
-            else if (page === arrayLink.length - 1) {
-                page = arrayLink.length - 2;
-            }
-
-            arrayLink[i]['url'] = page;
-        }
-
-        arrayPagination.value = arrayLink;
-        arrayPostEl.value = arrayPost;
+    if (response.data.status === 'success') {
+        arrayUsers.value = response.data.json.data;
+        pageTotal.value = response.data.json.last_page;
     }
-
+    else{
+        arrayUsers.value = []
+    }
 }
-getPostsList(1);
-
+paginationListing();
 
 </script>
 

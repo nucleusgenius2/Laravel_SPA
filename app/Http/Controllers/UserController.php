@@ -19,38 +19,7 @@ class UserController
 {
     use StructuredResponse;
 
-    /**
-     * check admin permission user
-     * @param User $user
-     * @return bool
-     */
-    public function isAdminPermission(User $user): bool
-    {
-        if ($user->status === 2) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    /**
-     * show link for admin page
-     * @return JsonResponse
-     */
-    public function checkStatusUser(): JsonResponse
-    {
-        $user = request()->user();
-
-        if ($user->tokenCan('permission:admin')) {
-            $data = ['status' => 'success', 'permission' => 'admin'];
-        } else {
-            $data = ['status' => 'success', 'permission' => 'user'];
-        }
-
-        return response()->json($data, 200);
-    }
-
+    public int $perPageFrontend = 10;
 
     /**
      * get user list
@@ -68,7 +37,7 @@ class UserController
         } else {
             $data = $validated->valid();
 
-            $postUser = User::orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
+            $postUser = User::orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
 
             if (count($postUser) > 0) {
                 $this->status = 'success';
@@ -109,5 +78,37 @@ class UserController
         }
 
         return $this->responseJsonApi();
+    }
+
+    /**
+     * check admin permission user
+     * @param User $user
+     * @return bool
+     */
+    public function isAdminPermission(User $user): bool
+    {
+        if ($user->status === 2) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * show link for admin page
+     * @return JsonResponse
+     */
+    public function checkStatusUser(): JsonResponse
+    {
+        $user = request()->user();
+
+        if ($user->tokenCan('permission:admin')) {
+            $data = ['status' => 'success', 'permission' => 'admin'];
+        } else {
+            $data = ['status' => 'success', 'permission' => 'user'];
+        }
+
+        return response()->json($data, 200);
     }
 }
