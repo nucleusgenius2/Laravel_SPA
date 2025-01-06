@@ -22,7 +22,7 @@ class MapsController extends HashFileGenerated
 {
     use StructuredResponse, UploadsImages, UploadFiles;
 
-
+    public int $perPageFrontend = 15;
     /**
      * download the map
      * @param Request $request
@@ -74,10 +74,10 @@ class MapsController extends HashFileGenerated
             if ( isset($data['name']) || isset($data['total_player_from']) || isset($data['total_player_to']) || isset($data['size']) ){
                 $query = $map->filterCustom($data);
 
-                $mapsList = $query->orderBy('map_rate', 'desc')->paginate(15, ['*'], 'page', $data['page']);
+                $mapsList = $query->orderBy('map_rate', 'desc')->paginate($this->perPageFrontend , ['*'], 'page', $data['page']);
             }
             else {
-                $mapsList = Map::orderBy('map_rate', 'desc')->paginate(15, ['*'], 'page', $data['page']);
+                $mapsList = Map::orderBy('map_rate', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
             }
 
             if (count( $mapsList) > 0) {

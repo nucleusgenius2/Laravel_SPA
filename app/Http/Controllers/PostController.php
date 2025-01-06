@@ -14,6 +14,7 @@ class PostController
 {
     use StructuredResponse, UploadsImages;
 
+    public int $perPageFrontend = 10;
 
     /**
      * @OA\Get(
@@ -155,11 +156,11 @@ class PostController
             if ( isset($data['name']) || isset($data['created_at_to']) || isset($data['created_at_from']) || isset($data['date_fixed']) ){
                 $query = $post->filterCustom($data);
 
-                $postList = $query->orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
+                $postList = $query->orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
             }
             else{
                 $postList = Cache::remember('post_index_page_'.$data['page'], Post::cashSecond, function () use ($data) {
-                    return Post::orderBy('id', 'desc')->paginate(10, ['*'], 'page', $data['page']);
+                    return Post::orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
                 });
             }
 

@@ -41,7 +41,7 @@
 
                     <div v-if="errors" class="text">По вашему запросу нет результатов</div>
 
-                    <pagination v-model="pageModel" :records="pageTotal" :per-page="10" @paginate="paginationListing"/>
+                    <pagination v-model="pageModel" :records="pageTotal" :per-page="1" @paginate="paginationListing"/>
                 </div>
             </div>
 
@@ -66,7 +66,7 @@ async function paginationListing(){
     let response = await authRequest('/api/mods?page='+ pageModel.value, 'get' );
     if ( response.data.status === 'success' ) {
         arrayMods.value  = response.data.json.data;
-        pageTotal.value = response.data.json.last_page * 10;
+        pageTotal.value = response.data.json.last_page;
     }
     else {
         errors.value = response.data;

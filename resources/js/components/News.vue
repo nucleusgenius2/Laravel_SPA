@@ -77,7 +77,7 @@
 
         </div>
 
-        <pagination v-model="pageModel" :records="pageTotal" :per-page="10" @paginate="paginationListing"/>
+        <pagination v-model="pageModel" :records="pageTotal" :per-page="1" @paginate="paginationListing"/>
 
         <div class="empty-list" v-if="emptyPage">{{ $t('news_page_10') }}</div>
 
@@ -133,7 +133,7 @@ async function paginationListing(filterClick = '') {
     if (response.data.status === 'success') {
         emptyPage.value = false;
         arrayPosts.value = response.data.json.data;
-        pageTotal.value = response.data.json.last_page * 10;
+        pageTotal.value = response.data.json.last_page;
     }
     else{
         arrayPosts.value = []

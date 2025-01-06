@@ -18,6 +18,7 @@ class ModController extends HashFileGenerated
 {
     use StructuredResponse, UploadsImages, UploadFiles;
 
+    public int $perPageFrontend = 10;
 
     /**
      * download the mod, only authorized
@@ -72,7 +73,7 @@ class ModController extends HashFileGenerated
         } else {
             $data = $validated->valid();
 
-            $mapsList = Mod::orderBy('mod_rate', 'desc')->paginate(10, ['*'], 'page', $data['page']);
+            $mapsList = Mod::orderBy('mod_rate', 'desc')->paginate($this->perPageFrontend , ['*'], 'page', $data['page']);
 
             if (count( $mapsList) > 0) {
                 $this->status = 'success';

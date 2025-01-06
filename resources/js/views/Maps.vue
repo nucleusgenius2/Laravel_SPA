@@ -114,7 +114,7 @@
 
                 <div v-if="errors" class="text">{{ $t('not_result') }}</div>
 
-                <pagination v-model="pageModel" :records="pageTotal" :per-page="15" @paginate="paginationListing"/>
+                <pagination v-model="pageModel" :records="pageTotal" :per-page="1" @paginate="paginationListing"/>
             </div>
 
         </template>
@@ -161,7 +161,7 @@ async function paginationListing(filterClick = '') {
 
     if (response.data.status === 'success') {
         arrayMaps.value = response.data.json.data;
-        pageTotal.value = response.data.json.last_page * 15;
+        pageTotal.value = response.data.json.last_page;
     }
 }
 paginationListing();
