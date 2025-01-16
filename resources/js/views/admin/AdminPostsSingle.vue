@@ -1,6 +1,6 @@
 <template>
-    <div className="wrap-single-news">
-        <div className="wrap-news">
+    <div class="wrap-single-news">
+        <div class="wrap-news">
 
             <div class="wrap-field">
                 <div class="heading-field">Название новости</div>
@@ -123,7 +123,7 @@ let editorConfig = {
     }
 
 }
-//get post info
+
 onMounted(
     async () => {
         if (route.params.id !== 'add') {
@@ -141,17 +141,18 @@ onMounted(
     }
 );
 
-//update post
+
 async function save(){
 
-    //save or update
+ console.log(typeof(array.value.img));
     let formData = new FormData();
     formData.append('id', route.params.id)
     formData.append('name', array.value.name)
-    formData.append('img', array.value.img)
+    if (typeof(array.value.img) !=='string') {
+        formData.append('img', array.value.img)
+    }
     formData.append('content', textEditor.value)
     formData.append('short_description', array.value.short_description)
-    formData.append('author', JSON.parse(localStorage.getItem('token')).user);
     formData.append('seo_title', '');
     formData.append('seo_description', '');
     formData.append('id_category', '');

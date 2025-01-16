@@ -83,7 +83,7 @@ class MapsController extends HashFileGenerated
             if (count( $mapsList) > 0) {
                 $this->status = 'success';
                 $this->code = 200;
-                $this->json =  $mapsList;
+                $this->dataJson =  $mapsList;
             } else {
                 $this->text = 'Запрашиваемой страницы не существует';
             }
@@ -115,7 +115,7 @@ class MapsController extends HashFileGenerated
             if ($map) {
                 $this->status = 'success';
                 $this->code = 200;
-                $this->json = $map ;
+                $this->dataJson = $map ;
             } else {
                 $this->text = 'Запрашиваемой страницы не существует';
             }

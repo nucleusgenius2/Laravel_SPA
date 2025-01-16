@@ -26,7 +26,7 @@ trait StructuredResponse
     /**
      * @var mixed|null
      */
-    public mixed $json = null;
+    public mixed $dataJson = null;
 
     /**
      * @return JsonResponse
@@ -36,8 +36,9 @@ trait StructuredResponse
         $response = [
             'data' => [
                 'status' => $this->status,
-                'text' => json_encode($this->text, JSON_UNESCAPED_UNICODE),
-                'json' => $this->json
+                //'text' => json_encode($this->text, JSON_UNESCAPED_UNICODE),
+                'text' => $this->text,
+                'json' => $this->dataJson
             ],
             'code' => $this->code
         ];
