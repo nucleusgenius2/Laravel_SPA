@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FetchByIdRequest;
 use App\Http\Requests\PostRequest;
+use App\Http\Requests\PostSearchRequest;
 use App\Models\Post;
 use App\Traits\StructuredResponse;
 use Illuminate\Http\JsonResponse;
@@ -140,40 +142,28 @@ class PostController
      *  )
      * )
      */
-    public function index(Request $request, Post $post): JsonResponse
+    public function index(PostSearchRequest $request, Post $post): JsonResponse
     {
-        $validated = Validator::make($request->all(), [
-            'page' => 'required|integer|min:1',
-            'created_at_from' => 'string|date',
-            'created_at_to' => 'string|date',
-            'name' => 'string|min:1|max:50',
-            'date_fixed' => 'string|in:day,week,month,year',
-        ]);
+        $data = $request->validated();
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
+        if ( isset($data['name']) || isset($data['created_at_to']) || isset($data['created_at_from']) || isset($data['date_fixed']) ){
+            $query = $post->filterCustom($data);
+
+            $postList = $query->orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
+        }
+        else{
+            $postList = Cache::remember('post_index_page_'.$data['page'], Post::cashSecond, function () use ($data) {
+                return Post::orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
+            });
+        }
+
+        $this->code = 200;
+
+        if (count($postList) > 0) {
+            $this->status = 'success';
+            $this->dataJson = $postList;
         } else {
-            $data = $validated->valid();
-
-            if ( isset($data['name']) || isset($data['created_at_to']) || isset($data['created_at_from']) || isset($data['date_fixed']) ){
-                $query = $post->filterCustom($data);
-
-                $postList = $query->orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
-            }
-            else{
-                $postList = Cache::remember('post_index_page_'.$data['page'], Post::cashSecond, function () use ($data) {
-                    return Post::orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
-                });
-            }
-
-            $this->code = 200;
-
-            if (count($postList) > 0) {
-                $this->status = 'success';
-                $this->dataJson = $postList;
-            } else {
-                $this->text = 'Запрашиваемой страницы не существует';
-            }
+            $this->text = 'Запрашиваемой страницы не существует';
         }
 
         return $this->responseJsonApi();
@@ -422,27 +412,19 @@ class PostController
      *  )
      * )
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(FetchByIdRequest $request, int $id): JsonResponse
     {
-        $validated = Validator::make(['id' => $id], [
-            'id' => 'required|integer|min:1',
-        ]);
+        $data = $request->validated();
+        log::info($data);
+        $post = Post::where('id', '=', $id)->delete();
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
+        Cache::forget('post_id_'.$id);
+
+        if ($post) {
+            $this->status = 'success';
+            $this->code = 200;
         } else {
-            $data = $validated->valid();
-
-            $post = Post::where('id', '=', $data['id'])->delete();
-
-            Cache::forget('post_id_'.$data['id']);
-
-            if ($post) {
-                $this->status = 'success';
-                $this->code = 200;
-            } else {
-                $this->text = 'Запрашиваемого ресурса не существует';
-            }
+            $this->text = 'Запрашиваемого ресурса не существует';
         }
 
         return $this->responseJsonApi();

@@ -2,9 +2,10 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
-
+use Illuminate\Validation\ValidationException;
 class Handler extends ExceptionHandler
 {
     /**
@@ -43,6 +44,17 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // Обработка ошибок валидации
+        $this->renderable(function (ValidationException $e, Request $request) {
+            if ($request->expectsJson()) {
+                // Если запрос ожидает JSON, возвращаем ошибку валидации в формате JSON
+                return response()->json([
+                    'message' => 'Ошибка валидации',
+                    'errors' => $e->errors(),
+                ], 422);  // Статус 422 - Unprocessable Entity
+            }
         });
     }
 }

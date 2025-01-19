@@ -153,8 +153,8 @@ function clearFilter (){
 async function removePost(e){
     let id = e.target.getAttribute('data-id');
 
-    let response = await authRequest('/api/posts/'+id, 'delete');
-
+   // let response = await authRequest('/api/posts/'+id, 'delete');
+    let response = await authRequest('/api/posts/-1', 'delete');
     if ( response.data.status==='success' ){
         e.target.closest('.post-el').remove();
     }
