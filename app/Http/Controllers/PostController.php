@@ -42,6 +42,7 @@ class PostController
             $this->dataJson = $postList;
         } else {
             $this->text = 'Запрашиваемой страницы не существует';
+            $this->code = 404;
         }
 
         return $this->responseJsonApi();
@@ -70,6 +71,7 @@ class PostController
                 $this->dataJson = $contentPostSingle;
             } else {
                 $this->text = 'Запрашиваемой новости не существует';
+                $this->code = 404;
             }
         }
 
@@ -121,7 +123,6 @@ class PostController
     {
         $data = $request->validated();
 
-
         isset($data['img']) ? $imgUpload = $this->uploadImage($data['img']) : $imgUpload['status'] ='empty';
         if ( $imgUpload['status'] !='error' ) {
 
@@ -148,6 +149,7 @@ class PostController
             }
             else {
                 $this->text = 'Запрашиваемой страницы не существует';
+                $this->code = 404;
             }
         }
         else{
@@ -158,19 +160,20 @@ class PostController
     }
 
 
-    public function destroy(FetchByIdRequest $request, int $id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $data = $request->validated();
-        log::info($data);
-        $post = Post::where('id', '=', $id)->delete();
+        if($id > 0) {
+            $post = Post::where('id', '=', $id)->delete();
 
-        Cache::forget('post_id_'.$id);
+            Cache::forget('post_id_' . $id);
 
-        if ($post) {
-            $this->status = 'success';
-            $this->code = 200;
-        } else {
-            $this->text = 'Запрашиваемого ресурса не существует';
+            if ($post) {
+                $this->status = 'success';
+                $this->code = 200;
+            } else {
+                $this->text = 'Запрашиваемого ресурса не существует';
+                $this->code = 404;
+            }
         }
 
         return $this->responseJsonApi();

@@ -72,7 +72,8 @@ class ModController extends HashFileGenerated
                 $this->json =  $mapsList;
                 $this->code = 200;
             } else {
-                $this->text = 'Запрашиваемой страницы не существует';
+                $this->text = 'Запрашиваемого мода не существует';
+                $this->code = 404;
             }
 
         }

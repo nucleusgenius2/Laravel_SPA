@@ -86,6 +86,7 @@ class MapsController extends HashFileGenerated
                 $this->dataJson =  $mapsList;
             } else {
                 $this->text = 'Запрашиваемой страницы не существует';
+                $this->code = 404;
             }
 
         }
@@ -117,7 +118,8 @@ class MapsController extends HashFileGenerated
                 $this->code = 200;
                 $this->dataJson = $map ;
             } else {
-                $this->text = 'Запрашиваемой страницы не существует';
+                $this->text = 'Запрашиваемой карты не существует';
+                $this->code = 404;
             }
         }
 
