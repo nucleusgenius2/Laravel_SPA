@@ -36,7 +36,6 @@ trait StructuredResponse
         $response = [
             'data' => [
                 'status' => $this->status,
-                //'text' => json_encode($this->text, JSON_UNESCAPED_UNICODE),
                 'text' => $this->text,
                 'json' => $this->dataJson
             ],

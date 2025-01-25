@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 
 
 
+use App\Http\Requests\MapRequest;
+use App\Http\Requests\MapSearchRequest;
+use App\Http\Requests\SearchByNameRequest;
 use App\Models\Map;
 use App\Services\HashFileGenerated;
 use App\Traits\StructuredResponse;
@@ -28,67 +31,41 @@ class MapsController extends HashFileGenerated
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downlandMap(Request $request)
+    public function downlandMap(SearchByNameRequest $request)
     {
-        $validated = Validator::make($request->all(), [
-            'name' => 'required|string|min:4|max:100|regex:/(^[A-Za-z0-9.-_(?!\S*\s\S*\s)]+$)+/',
-        ]);
+        $data =  $request->validated();
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
-        } else {
-            $data = $validated->valid();
+        $headers = [
+            'Content-Type' => 'application/zip',
+        ];
 
-            $headers = [
-                'Content-Type' => 'application/zip',
-            ];
+        $file = public_path() . "/maps/".$data['name'];
 
-            $file = public_path() . "/maps/".$data['name'];
-
-            return response()->download($file, $data['name'], $headers);
-
-        }
+        return response()->download($file, $data['name'], $headers);
     }
 
-    /**
-     * We get a list of maps
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function index(Request $request, Map $map): JsonResponse
+
+    public function index(MapSearchRequest $request, Map $map): JsonResponse
     {
-        $validated = Validator::make($request->all(), [
-            'page' => 'required|integer|min:1',
-            'name' => 'string|min:1|max:50|regex:/(^[A-Za-z0-9.-_(?!\S*\s\S*\s)]+$)+/',
-            'total_player_from' => 'integer|min:1',
-            'total_player_to' => 'integer|min:1',
-            'size' => 'string|min:4|max:50|regex:/(^[A-Za-z0-9]+$)+/',
-        ]);
+        $data = $request->validated();
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
+        //ветка фильтра
+        if ( isset($data['name']) || isset($data['total_player_from']) || isset($data['total_player_to']) || isset($data['size']) ){
+            $query = $map->filterCustom($data);
+
+            $mapsList = $query->orderBy('map_rate', 'desc')->paginate($this->perPageFrontend , ['*'], 'page', $data['page']);
+        }
+        else {
+            $mapsList = Map::orderBy('map_rate', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
+        }
+
+        if (count($mapsList) > 0) {
+            $this->status = 'success';
+            $this->code = 200;
+            $this->dataJson =  $mapsList;
         } else {
-            $data = $validated->valid();
-
-            //ветка фильтра
-            if ( isset($data['name']) || isset($data['total_player_from']) || isset($data['total_player_to']) || isset($data['size']) ){
-                $query = $map->filterCustom($data);
-
-                $mapsList = $query->orderBy('map_rate', 'desc')->paginate($this->perPageFrontend , ['*'], 'page', $data['page']);
-            }
-            else {
-                $mapsList = Map::orderBy('map_rate', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
-            }
-
-            if (count( $mapsList) > 0) {
-                $this->status = 'success';
-                $this->code = 200;
-                $this->dataJson =  $mapsList;
-            } else {
-                $this->text = 'Запрашиваемой страницы не существует';
-                $this->code = 404;
-            }
-
+            $this->text = 'Запрашиваемой страницы не существует';
+            $this->code = 404;
         }
 
         return $this->responseJsonApi();
@@ -127,63 +104,40 @@ class MapsController extends HashFileGenerated
     }
 
 
-
-    /**
-     * uploading a new map
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(Request $request) : JsonResponse
+    public function store(MapRequest $request) : JsonResponse
     {
+        $data = $request->validated();
 
-        $validated = Validator::make($request->all(), [
-            'name' => 'required|string|unique:maps|min:4|max:50|regex:/(^[a-z0-9-_. ]+$)+/',
-            'map_size' => 'required|string|max:20|regex:/(^[a-z0-9-]+$)+/',
-            'version' => 'required|integer|min:1',
-            'total_player' => 'required|integer|min:1|max:16',
-            'rate' => 'required|integer|min:0|max:1',
-            'url_img' => 'required|image|mimes:png|max:10000',
-            'map_archive' => 'required|file|mimes:zip|max:25600',
-        ]);
+        $imgUpload = $this->uploadImage($data['url_img'],'maps/preview');
+        if ( $imgUpload['status'] =='success' ) {
 
+            $fileUpload = $this->uploadFile($data['map_archive'], 'file|mimes:zip|max:25600', $data['name'], 'maps');
+            if ($fileUpload['status'] == 'success') {
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
-        } else {
-            $data = $validated->valid();
+                $hash = $this->getHash('maps', $fileUpload['url']);
+                if (!$hash) {
+                    $hash = [];
+                }
 
-            $imgUpload = $this->uploadImage($data['url_img'],'maps/preview');
-            if ( $imgUpload['status'] =='success' ) {
+                $response = Map::create([
+                    'url_img' => $imgUpload['img'],
+                    'url_name' => $fileUpload['url'],
+                    'name' => $data['name'],
+                    'author' => request()->user()->name,
+                    'author_id' => request()->user()->id,
+                    'version' => $data['version'],
+                    'total_player' => $data['total_player'],
+                    'rate' => $data['rate'],
+                    'size' => $data['map_size'],
+                    'ch' => json_encode($hash),
+                    'map_rate' => 0,
+                ]);
 
-                $fileUpload = $this->uploadFile($data['map_archive'], 'file|mimes:zip|max:25600', $data['name'], 'maps');
-                if ($fileUpload['status'] == 'success') {
-
-                    $hash = $this->getHash('maps', $fileUpload['url']);
-                    if (!$hash) {
-                        $hash = [];
-                    }
-
-                    $response = Map::create([
-                        'url_img' => $imgUpload['img'],
-                        'url_name' => $fileUpload['url'],
-                        'name' => $data['name'],
-                        'author' => request()->user()->name,
-                        'author_id' => request()->user()->id,
-                        'version' => $data['version'],
-                        'total_player' => $data['total_player'],
-                        'rate' => $data['rate'],
-                        'size' => $data['map_size'],
-                        'ch' => json_encode($hash),
-                        'map_rate' => 0,
-                    ]);
-
-                    if ($response) {
-                        $this->status = 'success';
-                        $this->code = 200;
-                    }
+                if ($response) {
+                    $this->status = 'success';
+                    $this->code = 200;
                 }
             }
-
         }
 
         return $this->responseJsonApi();
@@ -198,16 +152,9 @@ class MapsController extends HashFileGenerated
      */
     function destroy(int $id)
     {
-        $validated = Validator::make(['id' => $id], [
-            'id' => 'integer|min:1',
-        ]);
+        if ( $id > 0){
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
-        } else {
-            $data = $validated->valid();
-
-            $fileDataBase = Map::where('id',  $data['id'])->first();
+            $fileDataBase = Map::where('id',  $id)->first();
             if ( $fileDataBase ){
 
                 $removeArchive = File::delete(public_path($fileDataBase->url_name));

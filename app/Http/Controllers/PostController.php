@@ -35,9 +35,8 @@ class PostController
             });
         }
 
-        $this->code = 200;
-
         if (count($postList) > 0) {
+            $this->code = 200;
             $this->status = 'success';
             $this->dataJson = $postList;
         } else {
@@ -52,17 +51,9 @@ class PostController
 
     public function show(int $id): JsonResponse
     {
-        $validated = Validator::make(['id' => $id], [
-            'id' => 'required|integer|min:1',
-        ]);
-
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
-        } else {
-            $data = $validated->valid();
-
-            $contentPostSingle = Cache::rememberForever('post_id_'.$data['id'], function () use ($data) {
-                return Post::where('id', '=', $data['id'])->get();
+        if ($id > 0){
+            $contentPostSingle = Cache::rememberForever('post_id_'.$id , function () use ($id ) {
+                return Post::where('id', '=', $id )->get();
             });
 
             if (count($contentPostSingle) > 0) {

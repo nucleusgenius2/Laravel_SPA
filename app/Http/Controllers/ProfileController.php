@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileRequest;
 use App\Models\UserBalanceOperations;
 use App\Traits\StructuredResponse;
 use Illuminate\Http\Request;
@@ -36,44 +37,33 @@ class ProfileController
     }
 
 
-    public function update(Request $request): JsonResponse
+    public function update(ProfileRequest $request): JsonResponse
     {
-        $validated = Validator::make($request->all(), [
-            'name' => 'required|string|max:30',
-            'email' => 'required|email|max:30|unique:users,email,' . request()->user()->id,
-            'password' => 'required|string|max:30',
-            'newPassword' => 'string|max:30'
-        ]);
+        $data = $request -> validated();
 
-        if ($validated->fails()) {
-            $this->text = $validated ->errors();
-        } else {
-            $data = $validated->valid();
+        $user = request()->user();
 
-            $user = request()->user();
+        if (Hash::check($data['password'], $user->password)) {
 
-            //check password user
-            if (Hash::check($data['password'], $user->password)) {
-
-                if ($request->newPassword === 'none') {
-                    $user->update([
-                        'name' => $data['name'],
-                        'email' => $data['email'],
-                    ]);
-                } else {
-                    $user->update([
-                        'name' => $data['name'],
-                        'email' => $data['email'],
-                        'password' => $data['newPassword']
-                    ]);
-                }
-
-                $this->text = 'Данные успешно обновлены';
-                $this->status = 'success';
-                $this->code = 200;
+            if ($request->newPassword === 'none') {
+                $user->update([
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                ]);
             } else {
-                $this->text = 'Не верно указан пароль';
+                $user->update([
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'password' => $data['newPassword']
+                ]);
             }
+
+            $this->text = 'Данные успешно обновлены';
+            $this->status = 'success';
+            $this->code = 200;
+        } else {
+            $this->text = 'Не верно указан пароль';
+            $this->code = 401;
         }
 
         return $this->responseJsonApi();

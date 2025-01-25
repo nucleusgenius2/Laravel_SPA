@@ -42,7 +42,7 @@ class LoginController extends UserController
 
                     $this->status = 'success';
                     $this->code = 200;
-                    $this->json = $dataUser;
+                    $this->dataJson = $dataUser;
                     $this->text = 'Вход успешен';
 
                     //UserLogin::dispatch($user);

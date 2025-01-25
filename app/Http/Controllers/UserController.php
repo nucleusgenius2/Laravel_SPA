@@ -74,6 +74,7 @@ class UserController
                 $this->json = $contentUserSingle;
             } else {
                 $this->text = 'юзера не существует';
+                $this->code = 401;
             }
         }
 

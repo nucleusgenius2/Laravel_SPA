@@ -3,6 +3,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ModRequest;
+use App\Http\Requests\PageRequest;
+use App\Http\Requests\PostRequest;
+use App\Http\Requests\SearchByNameRequest;
 use App\Models\Mod;
 use App\Services\HashFileGenerated;
 use App\Traits\StructuredResponse;
@@ -20,127 +24,90 @@ class ModController extends HashFileGenerated
 
     public int $perPageFrontend = 10;
 
-
-    public function downlandMod(Request $request)
+    public function downlandMod(SearchByNameRequest $request)
     {
-        $validated = Validator::make($request->all(), [
-            'name' => 'required|string|min:4|max:50|regex:/(^[A-Za-z0-9-_.]+$)+/',
-        ]);
+        $data = $request->validated();
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
-        } else {
-            $mapName = $validated->valid();
+        $headers = [
+            'Content-Type' => 'application/zip',
+        ];
 
-            $headers = [
-                'Content-Type' => 'application/zip',
-            ];
+        $file = public_path() . "/mods/".$data['name'] ;
 
-            $file = public_path() . "/mods/".$mapName['name'] ;
-
-            //стратегические иконки
-            if ( $mapName['name'] ==='icons1' ) {
-                $file = public_path() . "/mods/targe_icons_1/Advanced strategic icons.nxt";
-            }
-            if ( $mapName['name'] ==='icons2' ) {
-                $file = public_path() . "/mods/targe_icons_2/Advanced strategic icons.nxt";
-            }
-            if ( $mapName['name'] ==='icons3' ) {
-                $file = public_path() . "/mods/targe_icons_3/Advanced strategic icons.nxt";
-            }
-
-            return response()->download($file, $mapName['name'], $headers);
+        //стратегические иконки
+        if ( $data ['name'] ==='icons1' ) {
+            $file = public_path() . "/mods/targe_icons_1/Advanced strategic icons.nxt";
         }
+        if ( $data ['name'] ==='icons2' ) {
+            $file = public_path() . "/mods/targe_icons_2/Advanced strategic icons.nxt";
+        }
+        if ($data ['name'] ==='icons3' ) {
+            $file = public_path() . "/mods/targe_icons_3/Advanced strategic icons.nxt";
+        }
+
+        return response()->download($file, $data ['name'], $headers);
     }
 
 
-    public function index(Request $request) : JsonResponse
+    public function index(PageRequest $request) : JsonResponse
     {
-        $validated = Validator::make($request->all(), [
-            'page' => 'required|integer|min:1',
-        ]);
+        $data = $request->validated();
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
+        $mapsList = Mod::orderBy('mod_rate', 'desc')->paginate($this->perPageFrontend , ['*'], 'page', $data['page']);
+
+        if (count($mapsList) > 0) {
+            $this->status = 'success';
+            $this->dataJson = $mapsList;
+            $this->code = 200;
         } else {
-            $data = $validated->valid();
-
-            $mapsList = Mod::orderBy('mod_rate', 'desc')->paginate($this->perPageFrontend , ['*'], 'page', $data['page']);
-
-            if (count( $mapsList) > 0) {
-                $this->status = 'success';
-                $this->json =  $mapsList;
-                $this->code = 200;
-            } else {
-                $this->text = 'Запрашиваемого мода не существует';
-                $this->code = 404;
-            }
-
+            $this->text = 'Запрашиваемого мода не существует';
+            $this->code = 404;
         }
 
         return $this->responseJsonApi();
     }
 
-    /**
-     * downloading a new mod
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(Request $request) : JsonResponse
+
+    public function store(ModRequest $request) : JsonResponse
     {
-        $validated = Validator::make($request->all(), [
-            'name' => 'required|string|unique:maps|min:4|max:50|regex:/(^[A-Za-z0-9-_. ]+$)+/',
-            'name_dir' => 'required|string|unique:mods|min:4|max:50|regex:/(^[A-Za-z0-9-_. ]+$)+/',
-            'description' => 'required|string|max:255',
-            'version' => 'required|integer|min:1',
-            'type' => 'required|integer|min:0|max:1',
-            'url_img' => 'required|image|mimes:png,jpg,jpeg|max:10000',
-            'mod_archive' => 'required|file|mimes:zip|max:204800',
-        ]);
+        $data = $request->validated();
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
-        } else {
-            $data = $validated->valid();
+        $imgUpload = $this->uploadImage($data['url_img'],'preview_mods');
+        if ( $imgUpload['status'] =='success' ) {
 
-            $imgUpload = $this->uploadImage($data['url_img'],'preview_mods');
-            if ( $imgUpload['status'] =='success' ) {
+            $fileUpload = $this->uploadFile($data['mod_archive'],'file|mimes:zip|max:204800', $data['name'],'mods');
+            if ( $fileUpload['status'] =='success' ) {
 
-                $fileUpload = $this->uploadFile($data['mod_archive'],'file|mimes:zip|max:204800', $data['name'],'mods');
-                if ( $fileUpload['status'] =='success' ) {
-
-                    $hash = $this->getHash('mods', $fileUpload['url']);
-                    if (!$hash) {
-                        $hash = [];
-                    }
-
-                    $response = Mod::create([
-                        'url_img' => $imgUpload['img'],
-                        'url_name' => $fileUpload['url'],
-                        'name' => $data['name'],
-                        'name_dir' => $data['name_dir'],
-                        'description' => $data['description'],
-                        'author' => request()->user()->name,
-                        'author_id' => request()->user()->id,
-                        'version' => $data['version'],
-                        'type' => $data['type'],
-                        'ch' => json_encode($hash),
-                        'mod_rate' => 0,
-                    ]);
-
-                    if ($response) {
-                        $this->code = 200;
-                        $this->status = 'success';
-                    }
+                $hash = $this->getHash('mods', $fileUpload['url']);
+                if (!$hash) {
+                    $hash = [];
                 }
-                else{
-                    $this->text = $fileUpload['text'];
+
+                $response = Mod::create([
+                    'url_img' => $imgUpload['img'],
+                    'url_name' => $fileUpload['url'],
+                    'name' => $data['name'],
+                    'name_dir' => $data['name_dir'],
+                    'description' => $data['description'],
+                    'author' => request()->user()->name,
+                    'author_id' => request()->user()->id,
+                    'version' => $data['version'],
+                    'type' => $data['type'],
+                    'ch' => json_encode($hash),
+                    'mod_rate' => 0,
+                ]);
+
+                if ($response) {
+                    $this->code = 200;
+                    $this->status = 'success';
                 }
             }
             else{
-                $this->text = $imgUpload['text'];
+                $this->text = $fileUpload['text'];
             }
-
+        }
+        else{
+            $this->text = $imgUpload['text'];
         }
 
         return $this->responseJsonApi();
@@ -154,17 +121,9 @@ class ModController extends HashFileGenerated
      */
     function destroy(int $id): JsonResponse
     {
+        if( $id > 0) {
+            $fileDataBase = Mod::where('id', $id)->first();
 
-        $validated = Validator::make(['id' => $id], [
-            'id' => 'integer|min:1',
-        ]);
-
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
-        } else {
-            $data = $validated->valid();
-
-            $fileDataBase = Mod::where('id',  $data['id'])->first();
             if ( $fileDataBase ){
                 $removeArchive = File::delete(public_path($fileDataBase->url_name));
 

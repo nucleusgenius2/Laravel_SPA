@@ -19,10 +19,8 @@ class ResetPasswordController
 {
     use StructuredResponse;
 
-
     public function resetEmailMessage(Request $request): JsonResponse
     {
-
         $validated = Validator::make($request->all(), [
             'email' => ['required', 'email', new ValidEmail],
         ]);
@@ -35,8 +33,7 @@ class ResetPasswordController
             $ip = request()->ip();
             $ip2 = request()->getClientIp();
 
-            isset($ip) && $ip !=='' ? $ipFinal = $ip :  $ipFinal = $ip2;
-
+            isset($ip) && $ip !=='' ? $ipFinal = $ip : $ipFinal = $ip2;
 
             $limit = LimitResetPassword::where('user_email', '=', $data['email'])->orWhere('user_ip', '=', $ipFinal )->orderBy('id', 'desc')->first();
 
