@@ -20,11 +20,7 @@ class ModController extends HashFileGenerated
 
     public int $perPageFrontend = 10;
 
-    /**
-     * download the mod, only authorized
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
+
     public function downlandMod(Request $request)
     {
         $validated = Validator::make($request->all(), [
@@ -57,11 +53,7 @@ class ModController extends HashFileGenerated
         }
     }
 
-    /**
-     * We get a list of mods
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function index(Request $request) : JsonResponse
     {
         $validated = Validator::make($request->all(), [

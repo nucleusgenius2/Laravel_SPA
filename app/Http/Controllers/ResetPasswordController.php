@@ -19,11 +19,7 @@ class ResetPasswordController
 {
     use StructuredResponse;
 
-    /**
-     * sending an email link to recover your password
-     * @param Request $request
-     * @return JsonResponse
-     */
+
     public function resetEmailMessage(Request $request): JsonResponse
     {
 
@@ -65,11 +61,7 @@ class ResetPasswordController
         return $this->responseJsonApi();
     }
 
-    /**
-     * setting a new password
-     * @param Request $request
-     * @return JsonResponse
-     */
+
     public function reset(Request $request): JsonResponse
     {
 

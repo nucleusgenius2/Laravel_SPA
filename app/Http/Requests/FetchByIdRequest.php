@@ -38,9 +38,6 @@ class FetchByIdRequest extends FormRequest
     {
         $errors = $validator->errors();
 
-        // Используем кастомное исключение для ошибок валидации
         throw new ValidationExceptionResponse($errors);
-
-
     }
 }
