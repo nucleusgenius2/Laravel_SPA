@@ -28,13 +28,11 @@ class MapSearchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|unique:maps|min:4|max:50|regex:/(^[a-z0-9-_. ]+$)+/',
-            'map_size' => 'required|string|max:20|regex:/(^[a-z0-9-]+$)+/',
-            'version' => 'required|integer|min:1',
-            'total_player' => 'required|integer|min:1|max:16',
-            'rate' => 'required|integer|min:0|max:1',
-            'url_img' => 'required|image|mimes:png|max:10000',
-            'map_archive' => 'required|file|mimes:zip|max:25600',
+            'page' => 'required|integer|min:1',
+            'name' => 'string|min:1|max:50|regex:/(^[A-Za-z0-9.-_(?!\S*\s\S*\s)]+$)+/',
+            'total_player_from' => 'integer|min:1',
+            'total_player_to' => 'integer|min:1',
+            'size' => 'string|min:4|max:50|regex:/(^[A-Za-z0-9]+$)+/',
         ];
     }
 

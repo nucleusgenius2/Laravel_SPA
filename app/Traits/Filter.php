@@ -15,7 +15,6 @@ trait Filter
         foreach ($filters as $field => $value) {
             //поиск по фрагменту значения
             if (isset($this->whereSearch) && in_array($field, $this->whereSearch)) {
-                log::info('2222');
                 $query = $query->where($tableName . '.' . $field, 'LIKE', '%' . $value . '%');
             }
 
@@ -38,6 +37,20 @@ trait Filter
                     }
 
                     $query = $query->where($tableName . '.' . $field, '<=', Carbon::parse($value));
+                }
+            }
+
+            //поиск в интервале
+            if ( isset($this->whereInterval)) {
+                if (in_array($field, $this->whereInterval)) {
+                    if (str_ends_with($field, 'from')) {
+                        $field = str_replace('_from', '', $field);
+                        $query = $query->where($tableName . '.' . $field, '>=', $value);
+                    }
+                    if (str_ends_with($field, 'to')) {
+                        $field = str_replace('_to', '', $field);
+                        $query = $query->where($tableName . '.' . $field, '<=', $value);
+                    }
                 }
             }
 
