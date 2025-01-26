@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Requests\RegistrationRequest;
 use App\Models\User;
 use App\Rules\ReCaptcha;
+use App\Services\UserService;
 use App\Traits\StructuredResponse;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
@@ -14,37 +16,32 @@ class RegistrationController
 {
     use StructuredResponse;
 
-
-    public function registration(Request $request): JsonResponse
+    public UserService $service;
+    function __construct(UserService $service)
     {
-        $validated = Validator::make($request->all(), [
-            'name' => 'required|string|max:16|regex:/(^[A-Za-z0-9-_]+$)+/',
-            'email' => 'required|email|unique:users|max:30',
-            'password' => 'required|string|confirmed|min:6|max:30',
-            'g-recaptcha-response' => ['required', new ReCaptcha]
-        ]);
+        $this->service = $service;
+    }
 
-        if ($validated->fails()) {
-            $this->text = $validated ->errors();
-        } else {
-            $data = $validated->valid();
+    public function registration(RegistrationRequest $request): JsonResponse
+    {
+        $data = $request->validated();
 
-            $user = User::create($data);
+        $userData = $this->service->createUser($data);
 
-            $token = $user->createToken('token', ['permission:user'])->plainTextToken;
-
-            $dataUser = [
-                'token' => $token,
-                'user' => $user->email,
-            ];
-
+        if($userData['status']) {
             $this->status = 'success';
             $this->code = 200;
-            $this->json = $dataUser;
+            $this->json = [
+                'token' => $userData['token'],
+                'user' => $userData['user']->email,
+            ];
             $this->text = 'Регистрация прошла успешно';
-
-            event(new Registered($user));
         }
+        else{
+            $this->code = 500;
+            $this->text= 'Ошибка при регистрации: ' .  $userData['error'];
+        }
+
 
         return $this->responseJsonApi();
     }
