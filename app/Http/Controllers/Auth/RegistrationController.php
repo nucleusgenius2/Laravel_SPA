@@ -31,7 +31,7 @@ class RegistrationController
         if($userData['status']) {
             $this->status = 'success';
             $this->code = 200;
-            $this->json = [
+            $this->dataJson = [
                 'token' => $userData['token'],
                 'user' => $userData['user']->email,
             ];
@@ -39,7 +39,7 @@ class RegistrationController
         }
         else{
             $this->code = 500;
-            $this->text= 'Ошибка при регистрации: ' .  $userData['error'];
+            $this->text = 'Ошибка при регистрации: ' .  $userData['error'];
         }
 
 
