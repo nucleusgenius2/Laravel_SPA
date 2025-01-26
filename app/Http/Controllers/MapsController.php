@@ -21,11 +21,19 @@ use Illuminate\Support\Facades\Validator;
 
 use ZipArchive;
 
-class MapsController extends HashFileGenerated
+class MapsController extends Controller
 {
-    use StructuredResponse, UploadsImages, UploadFiles;
+    use UploadsImages, UploadFiles;
 
     public int $perPageFrontend = 15;
+
+    private HashFileGenerated $hashFileGenerated;
+
+    function __construct(HashFileGenerated $hashFileGenerated)
+    {
+        $this->hashFileGenerated = $hashFileGenerated;
+    }
+
     /**
      * download the map
      * @param Request $request

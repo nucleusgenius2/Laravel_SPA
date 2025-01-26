@@ -18,11 +18,19 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class ModController extends HashFileGenerated
+class ModController extends Controller
 {
-    use StructuredResponse, UploadsImages, UploadFiles;
+    use UploadsImages, UploadFiles;
 
     public int $perPageFrontend = 10;
+
+    private HashFileGenerated $hashFileGenerated;
+
+    function __construct(HashFileGenerated $hashFileGenerated)
+    {
+        $this->hashFileGenerated = $hashFileGenerated;
+    }
+
 
     public function downlandMod(SearchByNameRequest $request)
     {
@@ -78,7 +86,7 @@ class ModController extends HashFileGenerated
             $fileUpload = $this->uploadFile($data['mod_archive'],'file|mimes:zip|max:204800', $data['name'],'mods');
             if ( $fileUpload['status'] =='success' ) {
 
-                $hash = $this->getHash('mods', $fileUpload['url']);
+                $hash = $this->hashFileGenerated->getHash('mods', $fileUpload['url']);
                 if (!$hash) {
                     $hash = [];
                 }

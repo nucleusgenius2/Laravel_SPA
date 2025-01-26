@@ -13,7 +13,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 
-class ProfileController
+class ProfileController extends Controller
 {
     use StructuredResponse;
 

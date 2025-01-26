@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FetchByIdRequest;
 use App\Http\Requests\PostRequest;
 use App\Http\Requests\PostSearchRequest;
 use App\Models\Post;
@@ -14,9 +13,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\UploadsImages;
-class PostController
+class PostController extends Controller
 {
-    use StructuredResponse, UploadsImages;
+    use UploadsImages;
 
     public int $perPageFrontend = 10;
 

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-class ResetPasswordController
+class ResetPasswordController extends Controller
 {
     use StructuredResponse;
 

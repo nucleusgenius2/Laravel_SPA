@@ -10,10 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
-class UserController
+class UserController extends Controller
 {
-    use StructuredResponse;
-
     public int $perPageFrontend = 10;
 
     /**
