@@ -28,6 +28,6 @@ class Post extends Model
 
     protected array $dateFixed = ['date_fixed'];
 
-    public const cashSecond = 300;
+    public const cashSecond = 100;
 
 }

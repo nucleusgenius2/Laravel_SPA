@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PostRequest;
 use App\Http\Requests\PostSearchRequest;
 use App\Models\Post;
+use App\Services\PostService;
 use App\Traits\StructuredResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -17,27 +18,25 @@ class PostController extends Controller
 {
     use UploadsImages;
 
-    public int $perPageFrontend = 10;
+    protected PostService $service;
+
+    public function __construct(PostService $service)
+    {
+        $this->service = $service;
+    }
+
+    public int $perPageFrontend = 2;
 
     public function index(PostSearchRequest $request, Post $post): JsonResponse
     {
         $data = $request->validated();
 
-        if ( isset($data['name']) || isset($data['created_at_to']) || isset($data['created_at_from']) || isset($data['date_fixed']) ){
-            $query = $post->filterCustom($data);
+        $dataPaginatorDTO = $this->service->getPosts(data: $data, modelPost: $post, perPage: $this->perPageFrontend);
 
-            $postList = $query->orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
-        }
-        else{
-            $postList = Cache::remember('post_index_page_'.$data['page'], Post::cashSecond, function () use ($data) {
-                return Post::orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
-            });
-        }
-
-        if (count($postList) > 0) {
+        if ( $dataPaginatorDTO->status) {
             $this->code = 200;
             $this->status = 'success';
-            $this->dataJson = $postList;
+            $this->dataJson = $dataPaginatorDTO->data;
         } else {
             $this->text = 'Запрашиваемой страницы не существует';
             $this->code = 404;
