@@ -7,17 +7,13 @@ use App\Http\Requests\PostRequest;
 use App\Http\Requests\PostSearchRequest;
 use App\Models\Post;
 use App\Services\PostService;
-use App\Traits\StructuredResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use App\Traits\UploadsImages;
+use Illuminate\Support\Facades\Log;
+
 class PostController extends Controller
 {
-    use UploadsImages;
-
     protected PostService $service;
 
     public function __construct(PostService $service)
@@ -25,18 +21,23 @@ class PostController extends Controller
         $this->service = $service;
     }
 
-    public int $perPageFrontend = 2;
+    public int $perPageFrontend = 10;
 
+    /**
+     * Возвращает список новостей
+     * @param PostSearchRequest $request
+     * @param Post $post
+     * @return JsonResponse
+     */
     public function index(PostSearchRequest $request, Post $post): JsonResponse
     {
         $data = $request->validated();
+        $dataObjectDTO = $this->service->getPosts(data: $data, modelPost: $post, perPage: $this->perPageFrontend);
 
-        $dataPaginatorDTO = $this->service->getPosts(data: $data, modelPost: $post, perPage: $this->perPageFrontend);
-
-        if ( $dataPaginatorDTO->status) {
+        if ( $dataObjectDTO->status) {
             $this->code = 200;
             $this->status = 'success';
-            $this->dataJson = $dataPaginatorDTO->data;
+            $this->dataJson = $dataObjectDTO->data;
         } else {
             $this->text = 'Запрашиваемой страницы не существует';
             $this->code = 404;
@@ -46,18 +47,21 @@ class PostController extends Controller
     }
 
 
-
+    /**
+     * Возвращает конкретную новость
+     * @param int $id
+     * @return JsonResponse
+     */
     public function show(int $id): JsonResponse
     {
         if ($id > 0){
-            $contentPostSingle = Cache::rememberForever('post_id_'.$id , function () use ($id ) {
-                return Post::where('id', '=', $id )->get();
-            });
 
-            if (count($contentPostSingle) > 0) {
+            $dataObjectDTO = $this->service->getPost(id: $id);
+
+            if ($dataObjectDTO->status) {
                 $this->status = 'success';
                 $this->code = 200;
-                $this->dataJson = $contentPostSingle;
+                $this->dataJson = $dataObjectDTO->data;
             } else {
                 $this->text = 'Запрашиваемой новости не существует';
                 $this->code = 404;
@@ -73,35 +77,15 @@ class PostController extends Controller
     {
         $data = $request->validated();
 
-        isset($data['img']) ? $imgUpload = $this->uploadImage($data['img']) : $imgUpload['status'] ='empty';
-        if ( $imgUpload['status'] !='error' ) {
+        $dataObjectDTO = $this->service->createPost(data: $data, user: $request->user());
 
-            $arraySavePost = [
-                'name' => $data['name'],
-                'content' => $data['content'] ?? '',
-                'short_description' => $data['short_description'] ?? '',
-                'seo_title' => $data['seo_title'] ?? '',
-                'seo_description' => $data['seo_description'] ?? '',
-                'category_id' => $data['category_id'] ?? 0,
-                'author' => $request->user()->id
-            ];
-            if( $imgUpload['status'] =='success' ){
-                $arraySavePost['img'] = $imgUpload['img'];
-            }
-
-            $post = Post::create($arraySavePost);
-
-            if ($post) {
-                $this->status = 'success';
-                $this->code = 200;
-                $this->text = 'Запись создана';
-                $this->dataJson = $post->id;
-            } else {
-                $this->text = 'Запись не была создана';
-            }
-        }
-        else{
-            $this->text = $imgUpload['text'];
+        if ($dataObjectDTO->status) {
+            $this->status = 'success';
+            $this->code = 200;
+            $this->text = 'Новость создана';
+            $this->dataJson = $dataObjectDTO->data->id;
+        } else {
+            $this->text = $dataObjectDTO->error ?? 'Новость не была создана';
         }
 
         return $this->responseJsonApi();
@@ -112,37 +96,16 @@ class PostController extends Controller
     {
         $data = $request->validated();
 
-        isset($data['img']) ? $imgUpload = $this->uploadImage($data['img']) : $imgUpload['status'] ='empty';
-        if ( $imgUpload['status'] !='error' ) {
+        $dataEmptyDTO = $this->service->updatePost(data: $data);
 
-            $arraySavePost = [
-                'name' => $data['name'],
-                'content' => $data['content'] ?? '',
-                'short_description' => $data['short_description'] ?? '',
-                'seo_title' => $data['seo_title'] ?? '',
-                'seo_description' => $data['seo_description'] ?? '',
-                'category_id' => $data['category_id'] ?? 0,
-            ];
-            if( $imgUpload['status'] =='success' ){
-                $arraySavePost['img'] = $imgUpload['img'];
-            }
-
-            $post = Post::where('id', '=', $data['id'])->update($arraySavePost);
-
-            Cache::forget('post_id_'.$data['id']);
-
-            if ($post) {
+        if ($dataEmptyDTO->status) {
                 $this->status = 'success';
                 $this->code = 200;
-                $this->text = 'Запись создана';
-            }
-            else {
-                $this->text = 'Запрашиваемой страницы не существует';
-                $this->code = 404;
-            }
+                $this->text = 'Запись обновлена';
         }
-        else{
-            $this->text = $imgUpload['text'];
+        else {
+            $this->text = $dataEmptyDTO->error ;
+            $this->code = 400;
         }
 
         return $this->responseJsonApi();
@@ -152,16 +115,14 @@ class PostController extends Controller
     public function destroy(int $id): JsonResponse
     {
         if($id > 0) {
-            $post = Post::where('id', '=', $id)->delete();
+            $dataObjectDTO = $this->service->deletePost(id: $id);
 
-            Cache::forget('post_id_' . $id);
-
-            if ($post) {
+            if ($dataObjectDTO->status) {
                 $this->status = 'success';
                 $this->code = 200;
             } else {
-                $this->text = 'Запрашиваемого ресурса не существует';
-                $this->code = 404;
+                $this->text = $dataObjectDTO->error ;
+                $this->code = 400;
             }
         }
 

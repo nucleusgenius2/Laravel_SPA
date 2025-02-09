@@ -114,7 +114,7 @@ async function paginationListing(filterClick = '') {
     if (filterClick === 'filter') {
         pageModel.value = 1;
     }
-    let stringFilter = '';
+    let stringFilter = '&admin=true';
     if (filter.value.name !== '') {
         stringFilter += '&name=' + filter.value.name;
     }
@@ -153,8 +153,7 @@ function clearFilter (){
 async function removePost(e){
     let id = e.target.getAttribute('data-id');
 
-   // let response = await authRequest('/api/posts/'+id, 'delete');
-    let response = await authRequest('/api/posts/-1', 'delete');
+    let response = await authRequest('/api/posts/'+id, 'delete');
     if ( response.data.status==='success' ){
         e.target.closest('.post-el').remove();
     }

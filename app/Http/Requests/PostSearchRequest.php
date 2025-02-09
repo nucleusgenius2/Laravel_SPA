@@ -34,6 +34,7 @@ class PostSearchRequest extends FormRequest
             'created_at_to' => 'string|date',
             'name' => 'string|min:1|max:50',
             'date_fixed' => 'string|in:day,week,month,year',
+            'admin' => 'string',
         ];
 
     }

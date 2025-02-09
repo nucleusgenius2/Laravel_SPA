@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\UserController;
 use App\Http\Requests\LoginRequest;
 use App\Models\User;
@@ -9,6 +10,7 @@ use App\Traits\StructuredResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class LoginController extends UserController
@@ -41,11 +43,11 @@ class LoginController extends UserController
                 $this->text = 'Вход успешен';
             } else {
                 $this->text = 'Пароль не совпадает';
-                $this->code = 401;
+                $this->code = 400;
             }
         } else {
             $this->text = 'Email не найден';
-            $this->code = 404;
+            $this->code = 400;
         }
 
         return $this->responseJsonApi();

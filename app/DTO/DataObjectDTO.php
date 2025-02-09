@@ -5,15 +5,15 @@ namespace App\DTO;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 
-class DataPaginatorDTO
+class DataObjectDTO
 {
     readonly bool $status;
 
     readonly ?string $error;
 
-    readonly ?LengthAwarePaginator $data;
+    readonly ?object $data;
 
-    public function __construct(bool $status, ?string $error=null, ?LengthAwarePaginator $data=null)
+    public function __construct(bool $status, ?string $error=null, ?object $data=null)
     {
         $this->status = $status;
         $this->error = $error;

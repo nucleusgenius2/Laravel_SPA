@@ -39,7 +39,6 @@
 </template>
 
 <script>
-//editor ckeditor
 import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 export default {
     name: 'app',
@@ -143,12 +142,10 @@ onMounted(
 
 
 async function save(){
-
- console.log(typeof(array.value.img));
     let formData = new FormData();
     formData.append('id', route.params.id)
     formData.append('name', array.value.name)
-    if (typeof(array.value.img) !=='string') {
+    if (array.value.img && typeof(array.value.img) !=='string') {
         formData.append('img', array.value.img)
     }
     formData.append('content', textEditor.value)
