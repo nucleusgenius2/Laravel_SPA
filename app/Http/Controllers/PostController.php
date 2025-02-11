@@ -8,9 +8,7 @@ use App\Http\Requests\PostSearchRequest;
 use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
-use App\Traits\UploadsImages;
-use Illuminate\Support\Facades\Log;
+
 
 class PostController extends Controller
 {
@@ -72,7 +70,11 @@ class PostController extends Controller
     }
 
 
-
+    /**
+     * Создание новостей
+     * @param PostRequest $request
+     * @return JsonResponse
+     */
     public function store(PostRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -92,6 +94,11 @@ class PostController extends Controller
     }
 
 
+    /**
+     * Обновление новостей
+     * @param PostRequest $request
+     * @return JsonResponse
+     */
     public function update(PostRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -112,6 +119,11 @@ class PostController extends Controller
     }
 
 
+    /**
+     * Удаление новостей
+     * @param int $id
+     * @return JsonResponse
+     */
     public function destroy(int $id): JsonResponse
     {
         if($id > 0) {
