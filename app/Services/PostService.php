@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\DTO\DataEmptyDTO;
+use App\DTO\DataVoidDTO;
 use App\DTO\DataObjectDTO;
 use App\Models\Mod;
 use App\Models\Post;
@@ -91,7 +91,7 @@ class PostService
 
     }
 
-    public function updatePost(array $data): DataEmptyDTO
+    public function updatePost(array $data): DataVoidDTO
     {
         isset($data['img']) ? $imgUpload = $this->uploadImage($data['img']) : $imgUpload['status'] ='empty';
         if ( $imgUpload['status'] !='error' ) {
@@ -113,14 +113,14 @@ class PostService
             Cache::forget('post_id_'.$data['id']);
 
             if ($post) {
-                return new DataEmptyDTO(status: true);
+                return new DataVoidDTO(status: true);
             }
             else {
-                return new DataEmptyDTO(status: false);
+                return new DataVoidDTO(status: false);
             }
         }
         else{
-            return new DataEmptyDTO(status: false, error: $imgUpload['text']);
+            return new DataVoidDTO(status: false, error: $imgUpload['text']);
         }
     }
 

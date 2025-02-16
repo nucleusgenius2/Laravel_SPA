@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Traits;
 
 
 use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
-class HashFileGenerated
+trait HashFileGenerated
 {
     public function getHash(string $type, string $archiveName ){
         $hash = [];
@@ -29,8 +29,8 @@ class HashFileGenerated
         }
 
 
-        if ($zip->open(public_path($type).'/'.$archiveName) === TRUE) {
-            $newDir = public_path().'/'.request()->user()->name;
+        if ($zip->open(public_path($type) . 'HashFileGenerated.php/' .$archiveName) === TRUE) {
+            $newDir = public_path() . 'HashFileGenerated.php/' .request()->user()->name;
 
             $createDir = mkdir($newDir, 0700);
             if ( $createDir ){

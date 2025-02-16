@@ -2,6 +2,9 @@
 
 namespace App\Traits;
 
+use App\DTO\DataEmptyDto;
+use App\DTO\DataVoidDTO;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
 trait UploadFiles
@@ -52,5 +55,27 @@ trait UploadFiles
         }
 
         return  $fileReturn;
+    }
+
+    protected function deleteFile(string $path): DataVoidDTO
+    {
+        $pathDelete = public_path($path);
+
+        if (!File::exists($pathDelete )) {
+            return new DataVoidDTO(status: false, error: 'Файл не найден' );
+        }
+
+        if (!File::isWritable($pathDelete)) {
+            return new DataVoidDTO(status: false, error: 'Файл недоступен для удаления');
+        }
+
+        $deleteFile = File::delete($pathDelete);
+
+        if ( $deleteFile ) {
+            return new DataVoidDTO(status: true );
+        }
+        else{
+            return new DataVoidDTO(status: false, error: 'Файл не удален');
+        }
     }
 }

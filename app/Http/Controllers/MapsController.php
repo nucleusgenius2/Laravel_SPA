@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 
 
 
+use App\DTO\DataObjectDTO;
+use App\DTO\DataVoidDTO;
 use App\Http\Requests\MapRequest;
 use App\Http\Requests\MapSearchRequest;
 use App\Http\Requests\SearchByNameRequest;
 use App\Models\Map;
-use App\Services\HashFileGenerated;
+use App\Services\MapsService;
+use App\Services\PostService;
+use App\Traits\HashFileGenerated;
 use App\Traits\StructuredResponse;
 use App\Traits\UploadFiles;
 use App\Traits\UploadsImages;
@@ -19,25 +23,27 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use ZipArchive;
 
 class MapsController extends Controller
 {
-    use UploadsImages, UploadFiles;
+    use UploadsImages, UploadFiles, HashFileGenerated;
 
     public int $perPageFrontend = 15;
 
-    private HashFileGenerated $hashFileGenerated;
+    protected MapsService $service;
 
-    function __construct(HashFileGenerated $hashFileGenerated)
+    public function __construct(MapsService $service)
     {
-        $this->hashFileGenerated = $hashFileGenerated;
+        $this->service = $service;
     }
 
+
     /**
-     * download the map
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * Загрузка карт на сервер
+     * @param SearchByNameRequest $request
+     * @return BinaryFileResponse
      */
     public function downlandMap(SearchByNameRequest $request)
     {
@@ -53,27 +59,25 @@ class MapsController extends Controller
     }
 
 
+    /**
+     * Получить список карт
+     * @param MapSearchRequest $request
+     * @param Map $map
+     * @return JsonResponse
+     */
     public function index(MapSearchRequest $request, Map $map): JsonResponse
     {
         $data = $request->validated();
 
-        //ветка фильтра
-        if ( isset($data['name']) || isset($data['total_player_from']) || isset($data['total_player_to']) || isset($data['size']) ){
-            $query = $map->filterCustom($data);
+        $dataObjectDTO = $this->service->getMaps(data: $data, map: $map, perPage: $this->perPageFrontend);
 
-            $mapsList = $query->orderBy('map_rate', 'desc')->paginate($this->perPageFrontend , ['*'], 'page', $data['page']);
-        }
-        else {
-            $mapsList = Map::orderBy('map_rate', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
-        }
-
-        if (count($mapsList) > 0) {
+        if ($dataObjectDTO->status) {
             $this->status = 'success';
             $this->code = 200;
-            $this->dataJson =  $mapsList;
+            $this->dataJson = $dataObjectDTO->data;
         } else {
-            $this->text = 'Запрашиваемой страницы не существует';
-            $this->code = 404;
+            $this->code = $dataObjectDTO->code ?? 400;
+            $this->text = $dataObjectDTO->error;
         }
 
         return $this->responseJsonApi();
@@ -81,71 +85,39 @@ class MapsController extends Controller
 
 
     /**
-     * checking if the card is in the database
+     * Проверка есть ли карта в базе
      * @param string $name
      * @return JsonResponse
      */
     public function hasMap(string $name): JsonResponse
     {
-        $validated = Validator::make(['name' => $name], [
-            'name' => 'string|min:1|max:50|regex:/(^[A-Za-z0-9.-_(?!\S*\s\S*\s)]+$)+/',
-        ]);
+        $dataVoidDTO = $this->service->hasMap(mapName: $name);
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
+        if ($dataVoidDTO->status) {
+            $this->status = 'success';
+            $this->code = 200;
         } else {
-            $data = $validated->valid();
-
-            $map = Map::where('name', '=', $data['name'])->orderBy('map_rate', 'desc')->first();
-
-            if ($map) {
-                $this->status = 'success';
-                $this->code = 200;
-                $this->dataJson = $map ;
-            } else {
-                $this->text = 'Запрашиваемой карты не существует';
-                $this->code = 404;
-            }
+            $this->code = $dataVoidDTO->code ?? 400;
+            $this->text = $dataVoidDTO->error;
         }
 
         return $this->responseJsonApi();
     }
 
 
-    public function store(MapRequest $request) : JsonResponse
+    public function store(MapRequest $request): JsonResponse
     {
         $data = $request->validated();
 
-        $imgUpload = $this->uploadImage($data['url_img'],'maps/preview');
-        if ( $imgUpload['status'] =='success' ) {
+        $dataVoidDTO = $this->service->createMaps(data: $data, user: request()->user());
 
-            $fileUpload = $this->uploadFile($data['map_archive'], 'file|mimes:zip|max:25600', $data['name'], 'maps');
-            if ($fileUpload['status'] == 'success') {
-
-                $hash = $this->getHash('maps', $fileUpload['url']);
-                if (!$hash) {
-                    $hash = [];
-                }
-
-                $response = Map::create([
-                    'url_img' => $imgUpload['img'],
-                    'url_name' => $fileUpload['url'],
-                    'name' => $data['name'],
-                    'author' => request()->user()->name,
-                    'author_id' => request()->user()->id,
-                    'version' => $data['version'],
-                    'total_player' => $data['total_player'],
-                    'rate' => $data['rate'],
-                    'size' => $data['map_size'],
-                    'ch' => json_encode($hash),
-                    'map_rate' => 0,
-                ]);
-
-                if ($response) {
-                    $this->status = 'success';
-                    $this->code = 200;
-                }
-            }
+        if ($dataVoidDTO->status) {
+            $this->status = 'success';
+            $this->code = 200;
+        }
+        else{
+            $this->code = $dataVoidDTO->code ?? 400;
+            $this->text = $dataVoidDTO->error;
         }
 
         return $this->responseJsonApi();
@@ -153,14 +125,11 @@ class MapsController extends Controller
 
 
 
-    /**
-     * deleting maps
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     function destroy(int $id)
     {
         if ( $id > 0){
+
+            $dataVoidDTO = $this->service->deleteMaps(id: $id);
 
             $fileDataBase = Map::where('id',  $id)->first();
             if ( $fileDataBase ){
