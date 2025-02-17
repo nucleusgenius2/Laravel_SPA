@@ -5,32 +5,25 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ModRequest;
 use App\Http\Requests\PageRequest;
-use App\Http\Requests\PostRequest;
 use App\Http\Requests\SearchByNameRequest;
 use App\Models\Mod;
-use App\Services\HashFileGenerated;
-use App\Traits\StructuredResponse;
-use App\Traits\UploadFiles;
-use App\Traits\UploadsImages;
+use App\Services\ModService;
+use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+
 
 class ModController extends Controller
 {
-    use UploadsImages, UploadFiles;
 
-    public int $perPageFrontend = 10;
+    protected ModService $service;
 
-    private HashFileGenerated $hashFileGenerated;
-
-    function __construct(HashFileGenerated $hashFileGenerated)
+    public function __construct(ModService $service)
     {
-        $this->hashFileGenerated = $hashFileGenerated;
+        $this->service = $service;
     }
 
+    public int $perPageFrontend = 10;
 
     public function downlandMod(SearchByNameRequest $request)
     {
@@ -44,13 +37,13 @@ class ModController extends Controller
 
         //стратегические иконки
         if ( $data ['name'] ==='icons1' ) {
-            $file = public_path() . "/mods/targe_icons_1/Advanced strategic icons.nxt";
+            $file = public_path() . "/mods/target_icons_1/Advanced strategic icons.nxt";
         }
         if ( $data ['name'] ==='icons2' ) {
-            $file = public_path() . "/mods/targe_icons_2/Advanced strategic icons.nxt";
+            $file = public_path() . "/mods/target_icons_2/Advanced strategic icons.nxt";
         }
         if ($data ['name'] ==='icons3' ) {
-            $file = public_path() . "/mods/targe_icons_3/Advanced strategic icons.nxt";
+            $file = public_path() . "/mods/target_icons_3/Advanced strategic icons.nxt";
         }
 
         return response()->download($file, $data ['name'], $headers);
@@ -61,15 +54,14 @@ class ModController extends Controller
     {
         $data = $request->validated();
 
-        $mapsList = Mod::orderBy('mod_rate', 'desc')->paginate($this->perPageFrontend , ['*'], 'page', $data['page']);
+        $dataObjectDTO = $this->service->getMods(data: $data, perPage: $this->perPageFrontend);
 
-        if (count($mapsList) > 0) {
+        if ($dataObjectDTO->status) {
             $this->status = 'success';
-            $this->dataJson = $mapsList;
             $this->code = 200;
+            $this->dataJson = $dataObjectDTO->data;
         } else {
-            $this->text = 'Запрашиваемого мода не существует';
-            $this->code = 404;
+            $this->code = $dataObjectDTO->code ?? 400;
         }
 
         return $this->responseJsonApi();
@@ -80,71 +72,36 @@ class ModController extends Controller
     {
         $data = $request->validated();
 
-        $imgUpload = $this->uploadImage($data['url_img'],'preview_mods');
-        if ( $imgUpload['status'] =='success' ) {
+        $dataVoidDTO = $this->service->createMods(data: $data, user: request()->user());
 
-            $fileUpload = $this->uploadFile($data['mod_archive'],'file|mimes:zip|max:204800', $data['name'],'mods');
-            if ( $fileUpload['status'] =='success' ) {
-
-                $hash = $this->hashFileGenerated->getHash('mods', $fileUpload['url']);
-                if (!$hash) {
-                    $hash = [];
-                }
-
-                $response = Mod::create([
-                    'url_img' => $imgUpload['img'],
-                    'url_name' => $fileUpload['url'],
-                    'name' => $data['name'],
-                    'name_dir' => $data['name_dir'],
-                    'description' => $data['description'],
-                    'author' => request()->user()->name,
-                    'author_id' => request()->user()->id,
-                    'version' => $data['version'],
-                    'type' => $data['type'],
-                    'ch' => json_encode($hash),
-                    'mod_rate' => 0,
-                ]);
-
-                if ($response) {
-                    $this->code = 200;
-                    $this->status = 'success';
-                }
-            }
-            else{
-                $this->text = $fileUpload['text'];
-            }
+        if ($dataVoidDTO->status) {
+            $this->status = 'success';
+            $this->code = 200;
         }
         else{
-            $this->text = $imgUpload['text'];
+            $this->code = $dataVoidDTO->code ?? 400;
+            $this->text = $dataVoidDTO->error;
         }
 
         return $this->responseJsonApi();
     }
 
 
-    /**
-     * removing mods
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+
+
     function destroy(int $id): JsonResponse
     {
-        if( $id > 0) {
-            $fileDataBase = Mod::where('id', $id)->first();
+        if ( $id > 0){
 
-            if ( $fileDataBase ){
-                $removeArchive = File::delete(public_path($fileDataBase->url_name));
+            $dataVoidDTO = $this->service->deleteMods(id: $id);
 
-                if ( $removeArchive ){
-                    $fileDataBase->delete();
-
-                    $removePreview = File::delete(public_path($fileDataBase->url_img));
-                    if ($removePreview ) {
-                        $this->status = 'success';
-                        $this->code = 200;
-                    }
-                }
-
+            if ($dataVoidDTO->status) {
+                $this->status = 'success';
+                $this->code = 200;
+            }
+            else{
+                $this->code = $dataVoidDTO->code ?? 400;
+                $this->text = $dataVoidDTO->error;
             }
 
         }
