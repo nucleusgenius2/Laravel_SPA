@@ -10,9 +10,6 @@ use App\Http\Requests\MapSearchRequest;
 use App\Http\Requests\SearchByNameRequest;
 use App\Models\Map;
 use App\Services\MapsService;
-use App\Traits\HashFileGenerated;
-use App\Traits\UploadFiles;
-use App\Traits\UploadsImages;
 use Illuminate\Http\JsonResponse;
 
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -20,8 +17,6 @@ use ZipArchive;
 
 class MapsController extends Controller
 {
-    use UploadsImages, UploadFiles, HashFileGenerated;
-
     public int $perPageFrontend = 15;
 
     protected MapsService $service;
