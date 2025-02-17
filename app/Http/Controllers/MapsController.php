@@ -5,23 +5,15 @@ namespace App\Http\Controllers;
 
 
 
-use App\DTO\DataObjectDTO;
-use App\DTO\DataVoidDTO;
 use App\Http\Requests\MapRequest;
 use App\Http\Requests\MapSearchRequest;
 use App\Http\Requests\SearchByNameRequest;
 use App\Models\Map;
 use App\Services\MapsService;
-use App\Services\PostService;
 use App\Traits\HashFileGenerated;
-use App\Traits\StructuredResponse;
 use App\Traits\UploadFiles;
 use App\Traits\UploadsImages;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use ZipArchive;
@@ -131,20 +123,13 @@ class MapsController extends Controller
 
             $dataVoidDTO = $this->service->deleteMaps(id: $id);
 
-            $fileDataBase = Map::where('id',  $id)->first();
-            if ( $fileDataBase ){
-
-                $removeArchive = File::delete(public_path($fileDataBase->url_name));
-                if ( $removeArchive ){
-                    $fileDataBase->delete();
-
-                    $removePreview = File::delete(public_path($fileDataBase->url_img));
-                    if ($removePreview ) {
-                        $this->status = 'success';
-                        $this->code = 200;
-                    }
-                }
-
+            if ($dataVoidDTO->status) {
+                $this->status = 'success';
+                $this->code = 200;
+            }
+            else{
+                $this->code = $dataVoidDTO->code ?? 400;
+                $this->text = $dataVoidDTO->error;
             }
 
         }
