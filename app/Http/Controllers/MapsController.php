@@ -28,7 +28,7 @@ class MapsController extends Controller
 
 
     /**
-     * Загрузка карт на сервер
+     * Скачивание карт
      * @param SearchByNameRequest $request
      * @return BinaryFileResponse
      */
@@ -92,6 +92,11 @@ class MapsController extends Controller
     }
 
 
+    /**
+     * Добавление карт
+     * @param MapRequest $request
+     * @return JsonResponse
+     */
     public function store(MapRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -111,7 +116,11 @@ class MapsController extends Controller
     }
 
 
-
+    /**
+     * Удаление карт
+     * @param int $id
+     * @return JsonResponse
+     */
     function destroy(int $id)
     {
         if ( $id > 0){

@@ -11,6 +11,7 @@ use App\Services\ModService;
 use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
 class ModController extends Controller
@@ -25,6 +26,11 @@ class ModController extends Controller
 
     public int $perPageFrontend = 10;
 
+    /**
+     * Скачивание модов
+     * @param SearchByNameRequest $request
+     * @return BinaryFileResponse
+     */
     public function downlandMod(SearchByNameRequest $request)
     {
         $data = $request->validated();
@@ -50,6 +56,11 @@ class ModController extends Controller
     }
 
 
+    /**
+     * Получение списка модов
+     * @param PageRequest $request
+     * @return JsonResponse
+     */
     public function index(PageRequest $request) : JsonResponse
     {
         $data = $request->validated();
@@ -68,6 +79,11 @@ class ModController extends Controller
     }
 
 
+    /**
+     * Добавление модов
+     * @param ModRequest $request
+     * @return JsonResponse
+     */
     public function store(ModRequest $request) : JsonResponse
     {
         $data = $request->validated();
@@ -87,8 +103,11 @@ class ModController extends Controller
     }
 
 
-
-
+    /**
+     * Удаление модов
+     * @param int $id
+     * @return JsonResponse
+     */
     function destroy(int $id): JsonResponse
     {
         if ( $id > 0){
@@ -103,7 +122,6 @@ class ModController extends Controller
                 $this->code = $dataVoidDTO->code ?? 400;
                 $this->text = $dataVoidDTO->error;
             }
-
         }
 
         return $this->responseJsonApi();
