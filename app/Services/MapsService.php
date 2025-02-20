@@ -56,20 +56,20 @@ class MapsService
 
     public function createMaps(array $data, User $user): DataVoidDTO
     {
-        $imgUpload = $this->uploadImage($data['url_img'],'maps/preview');
-        if ( $imgUpload['status'] =='success' ) {
+        $dataStringDtoIMG = $this->uploadImage($data['url_img'],'maps/preview');
+        if ($dataStringDtoIMG->status) {
 
-            $fileUpload = $this->uploadFile($data['map_archive'], 'file|mimes:zip|max:25600', $data['name'], 'maps');
-            if ($fileUpload['status'] == 'success') {
+            $dataStringDtoFile = $this->uploadFile($data['map_archive'],'maps');
+            if ( $dataStringDtoFile ->status) {
 
-                $hash = $this->getHash('maps', $fileUpload['url']);
+                $hash = $this->getHash('maps',$dataStringDtoFile->data);
                 if (!$hash) {
                     $hash = [];
                 }
 
                 $map = Map::create([
-                    'url_img' => $imgUpload['img'],
-                    'url_name' => $fileUpload['url'],
+                    'url_img' => $dataStringDtoIMG->data,
+                    'url_name' => $dataStringDtoFile->data,
                     'name' => $data['name'],
                     'author' => $user->name,
                     'author_id' => $user->id,
@@ -89,11 +89,11 @@ class MapsService
                 }
             }
             else{
-                return new DataVoidDTO(status: false, error: $fileUpload['text'], code: 500);
+                return new DataVoidDTO(status: false, error: $dataStringDtoFile->error, code: 500);
             }
         }
         else{
-            return new DataVoidDTO(status: false, error: $imgUpload['text'], code: 500);
+            return new DataVoidDTO(status: false, error: $dataStringDtoIMG->error, code: 500);
         }
     }
 

@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\DTO\DataStringDto;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
 trait UploadsImages
@@ -9,28 +11,28 @@ trait UploadsImages
 
 
     /**
-     * @return array{img: string, status: string, text: string}
+     * Загрузка изображений на сервер
+     * @param object|null $img
+     * @param string $path
+     * @return DataStringDto
      */
-    protected function uploadImage(?object $img, string $path=''): array
+    protected function uploadImage(?object $img, string $path=''): DataStringDto
     {
-        $imageReturn = [
-            'img' =>'',
-            'status' => 'error',
-            'text' => ''
-        ];
-
         $destinationPath = $path ==='' ? public_path('images') : public_path($path);
+
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0755, true);
+        }
 
         $imageName = time() . '.' . $img->extension();
 
         if ($img->move($destinationPath, $imageName)) {
-            $imageReturn['img'] = $path ==='' ? '/images/' . $imageName : '/'.$path .'/'. $imageName;
+            $imgPath = $path ==='' ? '/images/' . $imageName : '/'.$path .'/'. $imageName;
 
-            $imageReturn['status'] = 'success';
+            return new DataStringDto(status: true, data: $imgPath );
         } else {
-            $imageReturn['text'] = 'Не удалось загрузить изображение.';
+            return new DataStringDto(status: false, error: 'Не удалось загрузить изображение.');
         }
 
-        return $imageReturn;
     }
 }

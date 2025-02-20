@@ -22,20 +22,20 @@ class ModService
 
     public function createMods(array $data, User $user): DataVoidDTO
     {
-        $imgUpload = $this->uploadImage($data['url_img'],'preview_mods');
-        if ( $imgUpload['status'] =='success' ) {
+        $dataStringDtoIMG = $this->uploadImage($data['url_img'],'preview_mods');
+        if ($dataStringDtoIMG->status) {
 
-            $fileUpload = $this->uploadFile($data['mod_archive'],'file|mimes:zip|max:204800', $data['name'],'mods');
-            if ( $fileUpload['status'] =='success' ) {
+            $dataStringDtoFile = $this->uploadFile($data['mod_archive'],'mods');
+            if ( $dataStringDtoFile ->status) {
 
-                $hash = $this->getHash('mods', $fileUpload['url']);
+                $hash = $this->getHash('mods',  $dataStringDtoFile->data);
                 if (!$hash) {
                     $hash = [];
                 }
 
                 $mod = Mod::create([
-                    'url_img' => $imgUpload['img'],
-                    'url_name' => $fileUpload['url'],
+                    'url_img' => $dataStringDtoIMG->data,
+                    'url_name' =>  $dataStringDtoFile->data,
                     'name' => $data['name'],
                     'name_dir' => $data['name_dir'],
                     'description' => $data['description'],
@@ -55,11 +55,11 @@ class ModService
                 }
             }
             else{
-                return new DataVoidDTO(status: false, error: $fileUpload['text'], code: 500);
+                return new DataVoidDTO(status: false, error: $dataStringDtoFile->error, code: 500);
             }
         }
         else{
-            return new DataVoidDTO(status: false, error: $imgUpload['text'], code: 500);
+            return new DataVoidDTO(status: false, error: $dataStringDtoIMG->error, code: 500);
         }
     }
 
@@ -75,7 +75,6 @@ class ModService
 
                 $dataImgVoidDTO = $this->deleteFile($fileDataBase->url_img);
                 if( $dataImgVoidDTO->status ) {
-
                     return new DataVoidDTO(status: true);
                 }
                 else{
@@ -87,7 +86,7 @@ class ModService
             }
         }
         else{
-            return new DataVoidDTO(status: false, error: 'Карта не найдена', code: 404);
+            return new DataVoidDTO(status: false, error: 'Мод не найден', code: 404);
         }
     }
 }

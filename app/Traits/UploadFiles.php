@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\DTO\DataEmptyDto;
+use App\DTO\DataStringDto;
 use App\DTO\DataVoidDTO;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
@@ -12,49 +13,29 @@ trait UploadFiles
 
 
     /**
-     * @param object|string $file
-     * @param string $validation
+     * Загрузка файлов на сервер
+     * @param object|null $img
      * @param string $path
-     * @return array|string[]
+     * @return DataStringDto
      */
-    protected function uploadFile(object|string $file, string $validation, string $name, string $path=''): array
+    protected function uploadFile(?object $img, string $path=''): DataStringDto
     {
-        $fileReturn = [
-            'url' =>'',
-            'status' => 'error',
-            'text' => ''
-        ];
+        $destinationPath = $path ==='' ? public_path('files') : public_path($path);
 
-        if (gettype($file) == 'string') {
-            $imageReturn['url'] = $file;
-            $imageReturn['status'] = 'success';
-
-            return $imageReturn;
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0755, true);
         }
 
-        $validated = Validator::make(['file' => $file], [
-            'file' => $validation,
-        ]);
+        $fileName = time() . '.' . $img->extension();
 
-        if ($validated->fails()) {
-            $fileReturn['text'] = $validated->errors();
+        if ($img->move($destinationPath, $fileName)) {
+            $filePath = $path ==='' ? '/files/' . $fileName : '/'.$path .'/'. $fileName;
+
+            return new DataStringDto(status: true, data: $filePath );
         } else {
-            $data = $validated->valid();
-
-            $destinationPath = $path ==='' ? public_path() : public_path($path);
-
-            $imageName = $name . '.' . $data['file']->extension();
-
-            if ($data['file']->move($destinationPath, $imageName)) {
-                $fileReturn['url'] = $path ==='' ? '/' . $imageName : '/'.$path .'/'. $imageName;
-
-                $fileReturn['status'] = 'success';
-            } else {
-                $fileReturn['text'] = 'Не удалось загрузить файл.';
-            }
+            return new DataStringDto(status: false, error: 'Не удалось загрузить файл.');
         }
 
-        return  $fileReturn;
     }
 
     protected function deleteFile(string $path): DataVoidDTO
