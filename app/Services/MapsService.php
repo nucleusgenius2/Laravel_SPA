@@ -89,11 +89,11 @@ class MapsService
                 }
             }
             else{
-                return new DataVoidDTO(status: false, error: $dataStringDtoFile->error, code: 500);
+                return new DataVoidDTO(status: false, error: $dataStringDtoFile->error, code: 400);
             }
         }
         else{
-            return new DataVoidDTO(status: false, error: $dataStringDtoIMG->error, code: 500);
+            return new DataVoidDTO(status: false, error: $dataStringDtoIMG->error, code: 400);
         }
     }
 
@@ -108,7 +108,6 @@ class MapsService
 
                 $dataImgVoidDTO = $this->deleteFile($fileDataBase->url_img);
                 if( $dataImgVoidDTO->status ) {
-
                     return new DataVoidDTO(status: true);
                 }
                 else{
