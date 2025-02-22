@@ -4,17 +4,15 @@ namespace App\Services;
 
 use App\DTO\DataVoidDTO;
 use App\DTO\DataObjectDTO;
-use App\Models\Mod;
 use App\Models\Post;
 use App\Models\User;
+use App\Traits\UploadFiles;
 use App\Traits\UploadsImages;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 
 class PostService
 {
-    use UploadsImages;
+    use UploadsImages, UploadFiles;
 
     public function getPosts(array $data, Post $modelPost, int $perPage): DataObjectDTO
     {
@@ -34,13 +32,7 @@ class PostService
             }
         }
 
-        if ($postList->isNotEmpty()) {
-            return new DataObjectDTO(status: true, data: $postList);
-        }
-        else{
-            return new DataObjectDTO(status: false);
-        }
-
+        return new DataObjectDTO(status: true, data: $postList);
     }
 
     public function getPost(int $id): DataObjectDTO
@@ -54,7 +46,7 @@ class PostService
             return new DataObjectDTO(status: true, data: $postSingle);
         }
         else{
-            return new DataObjectDTO(status: false);
+            return new DataObjectDTO(status: false, error: 'Новости не существует', code: 404);
         }
 
     }
@@ -82,11 +74,11 @@ class PostService
                 return new DataObjectDTO(status: true, data: $post);
             }
             else{
-                return new DataObjectDTO(status: false);
+                return new DataObjectDTO(status: false, error: 'Новость не была создана', code: 500);
             }
         }
         else{
-            return new DataObjectDTO(status: false, error: $imgUpload['text']);
+            return new DataObjectDTO(status: false, error: $imgUpload['text'], code: 400);
         }
 
     }
@@ -116,11 +108,11 @@ class PostService
                 return new DataVoidDTO(status: true);
             }
             else {
-                return new DataVoidDTO(status: false);
+                return new DataVoidDTO(status: false, code: 500);
             }
         }
         else{
-            return new DataVoidDTO(status: false, error: $imgUpload['text']);
+            return new DataVoidDTO(status: false, error: $imgUpload['text'], code: 400);
         }
     }
 
@@ -129,34 +121,22 @@ class PostService
     {
         $post = Post::where('id', '=', $id)->first();
 
-        $status = false;
+        if (!$post) {
+            return new DataObjectDTO(status: false, error: 'Новость не найдена', code: 404);
+        }
 
-        if ($post) {
-            if ($post->img && $post->img!==''){
-                $removeImg = File::delete(public_path($post->img));
-
-                if ( $removeImg ) {
-                    $status = true;
-                }
-                else{
-                    return new DataObjectDTO(status: false, error: 'ошибка при удалении изображения новости');
-                }
-            }
-            else{
-                $status = true;
-            }
-
-            if($status){
-                $post->delete();
-
-                Cache::forget('post_id_' . $id);
-
-                return new DataObjectDTO(status: true);
+        if ($post->img && $post->img!==''){
+            $dataFileVoidDTO = $this->deleteFile($post->img);
+            if( !$dataFileVoidDTO->status ){
+                 return new DataObjectDTO(status: false, error: 'Ошибка при удалении изображения новости', code: 500);
             }
         }
-        else {
-            return new DataObjectDTO(status: false, error: 'новость не найдена ');
-        }
+
+        $post->delete();
+
+        Cache::forget('post_id_' . $id);
+
+        return new DataObjectDTO(status: true);
 
     }
 

@@ -37,8 +37,7 @@ class PostController extends Controller
             $this->status = 'success';
             $this->dataJson = $dataObjectDTO->data;
         } else {
-            $this->text = 'Запрашиваемой страницы не существует';
-            $this->code = 404;
+            $this->code = 400;
         }
 
         return $this->responseJsonApi();
@@ -61,8 +60,8 @@ class PostController extends Controller
                 $this->code = 200;
                 $this->dataJson = $dataObjectDTO->data;
             } else {
-                $this->text = 'Запрашиваемой новости не существует';
-                $this->code = 404;
+                $this->text = $dataObjectDTO->error;
+                $this->code = $dataObjectDTO->code;
             }
         }
 
@@ -87,7 +86,8 @@ class PostController extends Controller
             $this->text = 'Новость создана';
             $this->dataJson = $dataObjectDTO->data->id;
         } else {
-            $this->text = $dataObjectDTO->error ?? 'Новость не была создана';
+            $this->text = $dataObjectDTO->error;
+            $this->code = $dataObjectDTO->code;
         }
 
         return $this->responseJsonApi();
@@ -108,11 +108,11 @@ class PostController extends Controller
         if ($dataEmptyDTO->status) {
                 $this->status = 'success';
                 $this->code = 200;
-                $this->text = 'Запись обновлена';
+                $this->text = 'Новость обновлена';
         }
         else {
             $this->text = $dataEmptyDTO->error ;
-            $this->code = 400;
+            $this->code = $dataEmptyDTO->code;
         }
 
         return $this->responseJsonApi();
@@ -132,9 +132,10 @@ class PostController extends Controller
             if ($dataObjectDTO->status) {
                 $this->status = 'success';
                 $this->code = 200;
+                $this->text = 'Новость удалена';
             } else {
                 $this->text = $dataObjectDTO->error ;
-                $this->code = 400;
+                $this->code = $dataObjectDTO->code;
             }
         }
 
