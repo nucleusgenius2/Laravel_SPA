@@ -19,6 +19,11 @@ class ResetPasswordController extends Controller
         $this->service = $service;
     }
 
+    /**
+     * Отправка письма со ссылкой на восстановление пароля на почту юзеру
+     * @param EmailRequest $request
+     * @return JsonResponse
+     */
     public function resetEmailMessage(EmailRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -26,7 +31,7 @@ class ResetPasswordController extends Controller
         $dataVoidDTO = $this->service->startResetPassword(email: $data['email']);
 
         if($dataVoidDTO->status){
-            $this->text = 'Данные успешно обновлены';
+            $this->text = 'Письмо со ссылкой отправлено на email';
             $this->status = 'success';
             $this->code = 200;
         } else {
@@ -38,6 +43,11 @@ class ResetPasswordController extends Controller
     }
 
 
+    /**
+     * Установка нового пароля юзера
+     * @param ResetEmailRequest $request
+     * @return JsonResponse
+     */
     public function reset(ResetEmailRequest $request): JsonResponse
     {
         $data = $request->validated();
