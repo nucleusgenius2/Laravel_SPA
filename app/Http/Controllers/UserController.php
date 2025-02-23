@@ -3,72 +3,57 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-
-use App\Traits\StructuredResponse;
+use App\Http\Requests\PageRequest;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public int $perPageFrontend = 10;
 
+    protected UserService $service;
+
+    public function __construct(UserService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
-     * get user list
-     * @param Request $request
+     * Получить список юзеров
+     * @param PageRequest $request
      * @return JsonResponse
      */
-    public function index(Request $request): JsonResponse
+    public function index(PageRequest $request): JsonResponse
     {
-        $validated = Validator::make(['page' => $request->page], [
-            'page' => 'integer|min:1',
-        ]);
+        $data = $request->validated();
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
-        } else {
-            $data = $validated->valid();
+        $dataObjectDTO = $this->service->getUsers($data, perPage: $this->perPageFrontend);
 
-            $postUser = User::orderBy('id', 'desc')->paginate($this->perPageFrontend, ['*'], 'page', $data['page']);
-
-            if (count($postUser) > 0) {
-                $this->status = 'success';
-                $this->code = 200;
-                $this->json = $postUser;
-            } else {
-                $this->text = 'таблица юзеров пуста';
-            }
-        }
+        $this->status = 'success';
+        $this->code = 200;
+        $this->dataJson = $dataObjectDTO->data;
 
         return $this->responseJsonApi();
     }
 
+
     /**
+     * Данные о конкретном юзере
      * @param int $id
      * @return JsonResponse
      */
     public function show(int $id): JsonResponse
     {
-        $validated = Validator::make(['id' => $id], [
-            'id' => 'integer|min:1',
-        ]);
+        $dataObjectDTO = $this->service->getUser(id: $id);
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
+        if ($dataObjectDTO->status) {
+            $this->status = 'success';
+            $this->code = 200;
+            $this->dataJson = $dataObjectDTO->data;
         } else {
-            $data = $validated->valid();
-
-            $contentUserSingle = User::where('id', '=', $data['id'])->get();
-
-            if (count($contentUserSingle) > 0) {
-                $this->status = 'success';
-                $this->code = 200;
-                $this->json = $contentUserSingle;
-            } else {
-                $this->text = 'юзера не существует';
-                $this->code = 401;
-            }
+            $this->code = $dataObjectDTO->code;
+            $this->text = $dataObjectDTO->error;
         }
 
         return $this->responseJsonApi();
