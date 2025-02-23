@@ -26,11 +26,7 @@ class LoginController extends UserController
         if($user) {
             if (Hash::check($request->password, $user->password)) {
 
-                if ($this->isAdminPermission($user)) {
-                    $token = $user->createToken('token', ['permission:admin'])->plainTextToken;
-                } else {
-                    $token = $user->createToken('token', ['permission:user'])->plainTextToken;
-                }
+                $token = $user->createToken('token', ['permission:user'])->plainTextToken;
 
                 $dataUser = [
                     'token' => $token,

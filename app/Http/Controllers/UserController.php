@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PageRequest;
 use App\Services\UserService;
+
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -59,32 +61,17 @@ class UserController extends Controller
         return $this->responseJsonApi();
     }
 
-    /**
-     * check admin permission user
-     * @param User $user
-     * @return bool
-     */
-    public function isAdminPermission(User $user): bool
-    {
-        if ($user->status === 2) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 
     /**
-     * show link for admin page
+     * Проверка роли юзера
      * @return JsonResponse
      */
     public function checkStatusUser(): JsonResponse
     {
-        $user = request()->user();
-
-        if ($user->tokenCan('permission:admin')) {
+        if (Gate::allows('is_admin')) {
             $data = ['status' => 'success', 'permission' => 'admin'];
-        } else {
+        }
+        else {
             $data = ['status' => 'success', 'permission' => 'user'];
         }
 
