@@ -16,9 +16,10 @@ class ValidEmail implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $User = User::where('email', '=', $value)->first();
-        if( !$User ){
-            $fail('Email не найден');
+        $exists = User::where('email', $value)->exists();
+
+        if (!$exists) {
+            $fail(__('Email не найден'));
         }
     }
 }

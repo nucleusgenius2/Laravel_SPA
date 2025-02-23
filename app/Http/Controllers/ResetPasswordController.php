@@ -2,93 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LimitResetPassword;
-use App\Rules\ValidEmail;
+use App\Http\Requests\EmailRequest;
+use App\Http\Requests\ResetEmailRequest;
+use App\Services\ResetPasswordService;
 use App\Traits\StructuredResponse;
-use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class ResetPasswordController extends Controller
 {
     use StructuredResponse;
 
-    public function resetEmailMessage(Request $request): JsonResponse
+    protected ResetPasswordService $service;
+
+    public function __construct(ResetPasswordService $service)
     {
-        $validated = Validator::make($request->all(), [
-            'email' => ['required', 'email', new ValidEmail],
-        ]);
+        $this->service = $service;
+    }
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
+    public function resetEmailMessage(EmailRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        $dataVoidDTO = $this->service->startResetPassword(email: $data['email']);
+
+        if($dataVoidDTO->status){
+            $this->text = 'Данные успешно обновлены';
+            $this->status = 'success';
+            $this->code = 200;
         } else {
-            $data = $validated->valid();
-
-            $ip = request()->ip();
-            $ip2 = request()->getClientIp();
-
-            isset($ip) && $ip !=='' ? $ipFinal = $ip : $ipFinal = $ip2;
-
-            $limit = LimitResetPassword::where('user_email', '=', $data['email'])->orWhere('user_ip', '=', $ipFinal )->orderBy('id', 'desc')->first();
-
-            if ( $limit && $limit->created_at > Carbon::today()) {
-                $this->text = 'Вы уже делали восстановление пароля сегодня';
-            }
-            else{
-                LimitResetPassword::create([
-                    'user_email' => $data['email'],
-                    'user_ip' => $ipFinal
-                ]);
-
-                $status = Password::sendResetLink(
-                    $request->only('email')
-                );
-
-                $this->status = 'success';
-            }
-
+            $this->text = $dataVoidDTO->error;
+            $this->code = $dataVoidDTO->code;
         }
 
         return $this->responseJsonApi();
     }
 
 
-    public function reset(Request $request): JsonResponse
+    public function reset(ResetEmailRequest $request): JsonResponse
     {
+        $data = $request->validated();
 
-        $validated = Validator::make($request->all(), [
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:6|confirmed',
-        ]);
+        $dataVoidDTO = $this->service->ResetPassword(data: $data);
 
-        if ($validated->fails()) {
-            $this->text = $validated->errors();
+        if($dataVoidDTO->status){
+            $this->text = 'Данные успешно обновлены';
+            $this->status = 'success';
+            $this->code = 200;
         } else {
-
-            $status = Password::reset(
-                $request->only('email', 'password', 'password_confirmation', 'token'),
-                function ($user, $password) {
-                    $user->forceFill([
-                         //'password' => Hash::make($password)
-                      //  'password' => bcrypt($password)
-                        'password' => $password
-                    ])->setRememberToken(Str::random(60));
-                    $user->save();
-
-                    $this->status = 'success';
-
-                    event(new PasswordReset($user));
-                }
-            );
+            $this->text = $dataVoidDTO->error;
+            $this->code = $dataVoidDTO->code;
         }
-
 
         return $this->responseJsonApi();
     }

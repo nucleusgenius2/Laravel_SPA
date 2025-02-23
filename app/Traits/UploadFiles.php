@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 use App\DTO\DataEmptyDto;
-use App\DTO\DataStringDto;
+use App\DTO\DataStringDTO;
 use App\DTO\DataVoidDTO;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
@@ -16,9 +16,9 @@ trait UploadFiles
      * Загрузка файлов на сервер
      * @param object|null $img
      * @param string $path
-     * @return DataStringDto
+     * @return DataStringDTO
      */
-    protected function uploadFile(?object $img, string $path=''): DataStringDto
+    protected function uploadFile(?object $img, string $path=''): DataStringDTO
     {
         $destinationPath = $path ==='' ? public_path('files') : public_path($path);
 
@@ -31,9 +31,9 @@ trait UploadFiles
         if ($img->move($destinationPath, $fileName)) {
             $filePath = $path ==='' ? '/files/' . $fileName : '/'.$path .'/'. $fileName;
 
-            return new DataStringDto(status: true, data: $filePath );
+            return new DataStringDTO(status: true, data: $filePath );
         } else {
-            return new DataStringDto(status: false, error: 'Не удалось загрузить файл.');
+            return new DataStringDTO(status: false, error: 'Не удалось загрузить файл.');
         }
 
     }

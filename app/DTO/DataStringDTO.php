@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-class DataStringDto
+class DataStringDTO
 {
     readonly public bool $status;
 
