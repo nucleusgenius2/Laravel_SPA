@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Traits\UploadFiles;
 use App\Traits\UploadsImages;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class PostService
 {
@@ -50,62 +51,65 @@ class PostService
 
     public function createPost(array $data, User $user): DataObjectDTO
     {
-        isset($data['img']) ? $imgUpload = $this->uploadImage($data['img']) : $imgUpload['status'] = 'empty';
+        $arraySavePost = [
+            'name' => $data['name'],
+            'content' => $data['content'] ?? '',
+            'short_description' => $data['short_description'] ?? '',
+            'seo_title' => $data['seo_title'] ?? '',
+            'seo_description' => $data['seo_description'] ?? '',
+            'category_id' => $data['category_id'] ?? 0,
+            'author' => $user->id
+        ];
 
-        if ($imgUpload['status'] != 'error') {
-            $arraySavePost = [
-                'name' => $data['name'],
-                'content' => $data['content'] ?? '',
-                'short_description' => $data['short_description'] ?? '',
-                'seo_title' => $data['seo_title'] ?? '',
-                'seo_description' => $data['seo_description'] ?? '',
-                'category_id' => $data['category_id'] ?? 0,
-                'author' => $user->id
-            ];
-            if ($imgUpload['status'] == 'success') {
-                $arraySavePost['img'] = $imgUpload['img'];
-            }
+        if(isset($data['img'])){
+            $dataStringDtoIMG = $this->uploadImage($data['img']);
 
-            $post = Post::create($arraySavePost);
-            if ($post) {
-                return new DataObjectDTO(status: true, data: $post);
-            } else {
-                return new DataObjectDTO(status: false, error: 'Новость не была создана', code: 500);
+            if($dataStringDtoIMG->status){
+                $arraySavePost['img'] = $dataStringDtoIMG->data;
             }
-        } else {
-            return new DataObjectDTO(status: false, error: $imgUpload['text'], code: 400);
+            else{
+                return new DataObjectDTO(status: false, error: $dataStringDtoIMG->error, code: 400);
+            }
         }
 
+        $post = Post::create($arraySavePost);
+        if ($post) {
+            return new DataObjectDTO(status: true, data: $post);
+        } else {
+            return new DataObjectDTO(status: false, error: 'Новость не была создана', code: 500);
+        }
     }
 
     public function updatePost(array $data): DataVoidDTO
     {
-        isset($data['img']) ? $imgUpload = $this->uploadImage($data['img']) : $imgUpload['status'] = 'empty';
-        if ($imgUpload['status'] != 'error') {
+        $arraySavePost = [
+            'name' => $data['name'],
+            'content' => $data['content'] ?? '',
+            'short_description' => $data['short_description'] ?? '',
+            'seo_title' => $data['seo_title'] ?? '',
+            'seo_description' => $data['seo_description'] ?? '',
+            'category_id' => $data['category_id'] ?? 0,
+        ];
 
-            $arraySavePost = [
-                'name' => $data['name'],
-                'content' => $data['content'] ?? '',
-                'short_description' => $data['short_description'] ?? '',
-                'seo_title' => $data['seo_title'] ?? '',
-                'seo_description' => $data['seo_description'] ?? '',
-                'category_id' => $data['category_id'] ?? 0,
-            ];
-            if ($imgUpload['status'] == 'success') {
-                $arraySavePost['img'] = $imgUpload['img'];
+        if(isset($data['img'])){
+            $dataStringDtoIMG = $this->uploadImage($data['img']);
+
+            if($dataStringDtoIMG->status){
+                $arraySavePost['img'] = $dataStringDtoIMG->data;
             }
-
-            $post = Post::where('id', '=', $data['id'])->update($arraySavePost);
-
-            Cache::forget('post_id_' . $data['id']);
-
-            if ($post) {
-                return new DataVoidDTO(status: true);
-            } else {
-                return new DataVoidDTO(status: false, code: 500);
+            else{
+                return new DataVoidDTO(status: false, error: $dataStringDtoIMG->error, code: 400);
             }
+        }
+
+        $post = Post::where('id', '=', $data['id'])->update($arraySavePost);
+
+        Cache::forget('post_id_' . $data['id']);
+
+        if ($post) {
+            return new DataVoidDTO(status: true);
         } else {
-            return new DataVoidDTO(status: false, error: $imgUpload['text'], code: 400);
+            return new DataVoidDTO(status: false, code: 500);
         }
     }
 
@@ -130,7 +134,6 @@ class PostService
         Cache::forget('post_id_' . $id);
 
         return new DataObjectDTO(status: true);
-
     }
 
 }

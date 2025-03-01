@@ -159,7 +159,7 @@ async function save(){
 
         if (response.data.status === 'success'){
             saveStatus.value = response.data.status;
-            window.location.replace("/admin/posts/"+response.data.json);
+            window.location.replace("/admin/posts/"+response.data.json.id);
         }
     }
     //update post

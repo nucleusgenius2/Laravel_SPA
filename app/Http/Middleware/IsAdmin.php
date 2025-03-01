@@ -4,10 +4,11 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class AdminPermission
+class IsAdmin
 {
     /**
      * @param Request $request
@@ -18,7 +19,8 @@ class AdminPermission
     {
         $user = request()->user();
 
-        if ($user->tokenCan('permission:admin')) {
+
+        if (Gate::allows('is_admin')) {
             return $next($request);
         } else {
             return response('Недостаточно прав', 303);

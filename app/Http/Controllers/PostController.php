@@ -8,6 +8,7 @@ use App\Http\Requests\PostSearchRequest;
 use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 
 class PostController extends Controller
@@ -32,13 +33,9 @@ class PostController extends Controller
         $data = $request->validated();
         $dataObjectDTO = $this->service->getPosts(data: $data, modelPost: $post, perPage: $this->perPageFrontend);
 
-        if ($dataObjectDTO->status) {
-            $this->code = 200;
-            $this->status = 'success';
-            $this->dataJson = $dataObjectDTO->data;
-        } else {
-            $this->code = 400;
-        }
+        $this->code = 200;
+        $this->status = 'success';
+        $this->dataJson = $dataObjectDTO->data;
 
         return $this->responseJsonApi();
     }
@@ -83,7 +80,8 @@ class PostController extends Controller
         if ($dataObjectDTO->status) {
             $this->status = 'success';
             $this->code = 200;
-            $this->dataJson = $dataObjectDTO->data->id;
+            $this->dataJson = $dataObjectDTO->data;
+            log::info($dataObjectDTO->data);
         } else {
             $this->text = $dataObjectDTO->error;
             $this->code = $dataObjectDTO->code;

@@ -22,7 +22,7 @@ class UserService
 
             $data = [
                 'token' => $token,
-                'user' => $user
+                'user' => $user->email
             ];
 
             return new DataArrayDTO(status: true, data: $data);
