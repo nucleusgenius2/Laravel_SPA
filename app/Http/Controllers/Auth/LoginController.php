@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-
-use App\DTO\DataArrayDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
-use App\Models\User;
 use App\Services\LoginService;
 use App\Traits\StructuredResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {

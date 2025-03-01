@@ -83,7 +83,6 @@ class PostController extends Controller
         if ($dataObjectDTO->status) {
             $this->status = 'success';
             $this->code = 200;
-            $this->text = 'Новость создана';
             $this->dataJson = $dataObjectDTO->data->id;
         } else {
             $this->text = $dataObjectDTO->error;
@@ -106,9 +105,8 @@ class PostController extends Controller
         $dataEmptyDTO = $this->service->updatePost(data: $data);
 
         if ($dataEmptyDTO->status) {
-                $this->status = 'success';
-                $this->code = 200;
-                $this->text = 'Новость обновлена';
+            $this->status = 'success';
+            $this->code = 200;
         }
         else {
             $this->text = $dataEmptyDTO->error ;
@@ -132,7 +130,6 @@ class PostController extends Controller
             if ($dataObjectDTO->status) {
                 $this->status = 'success';
                 $this->code = 200;
-                $this->text = 'Новость удалена';
             } else {
                 $this->text = $dataObjectDTO->error ;
                 $this->code = $dataObjectDTO->code;

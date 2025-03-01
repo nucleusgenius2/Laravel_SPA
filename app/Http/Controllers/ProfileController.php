@@ -49,7 +49,6 @@ class ProfileController extends Controller
         $dataVoidDTO = $this->service->updateProfile(user: request()->user(), data: $data);
 
         if($dataVoidDTO->status){
-            $this->text = 'Данные успешно обновлены';
             $this->status = 'success';
             $this->code = 200;
         } else {

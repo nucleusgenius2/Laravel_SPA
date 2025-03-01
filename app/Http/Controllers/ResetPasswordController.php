@@ -55,7 +55,6 @@ class ResetPasswordController extends Controller
         $dataVoidDTO = $this->service->ResetPassword(data: $data);
 
         if($dataVoidDTO->status){
-            $this->text = 'Данные успешно обновлены';
             $this->status = 'success';
             $this->code = 200;
         } else {

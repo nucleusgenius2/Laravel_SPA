@@ -6,11 +6,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ModRequest;
 use App\Http\Requests\PageRequest;
 use App\Http\Requests\SearchByNameRequest;
-use App\Models\Mod;
 use App\Services\ModService;
-use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\File;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
@@ -67,13 +64,9 @@ class ModController extends Controller
 
         $dataObjectDTO = $this->service->getMods(data: $data, perPage: $this->perPageFrontend);
 
-        if ($dataObjectDTO->status) {
-            $this->status = 'success';
-            $this->code = 200;
-            $this->dataJson = $dataObjectDTO->data;
-        } else {
-            $this->code = $dataObjectDTO->code ?? 400;
-        }
+        $this->status = 'success';
+        $this->code = 200;
+        $this->dataJson = $dataObjectDTO->data;
 
         return $this->responseJsonApi();
     }
@@ -95,7 +88,7 @@ class ModController extends Controller
             $this->code = 200;
         }
         else{
-            $this->code = $dataVoidDTO->code ?? 400;
+            $this->code = $dataVoidDTO->code;
             $this->text = $dataVoidDTO->error;
         }
 
@@ -119,7 +112,7 @@ class ModController extends Controller
                 $this->code = 200;
             }
             else{
-                $this->code = $dataVoidDTO->code ?? 400;
+                $this->code = $dataVoidDTO->code;
                 $this->text = $dataVoidDTO->error;
             }
         }

@@ -13,7 +13,6 @@ use App\Services\MapsService;
 use Illuminate\Http\JsonResponse;
 
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use ZipArchive;
 
 class MapsController extends Controller
 {
@@ -58,14 +57,9 @@ class MapsController extends Controller
 
         $dataObjectDTO = $this->service->getMaps(data: $data, map: $map, perPage: $this->perPageFrontend);
 
-        if ($dataObjectDTO->status) {
-            $this->status = 'success';
-            $this->code = 200;
-            $this->dataJson = $dataObjectDTO->data;
-        } else {
-            $this->code = $dataObjectDTO->code ?? 400;
-            $this->text = $dataObjectDTO->error;
-        }
+        $this->status = 'success';
+        $this->code = 200;
+        $this->dataJson = $dataObjectDTO->data;
 
         return $this->responseJsonApi();
     }
@@ -84,7 +78,7 @@ class MapsController extends Controller
             $this->status = 'success';
             $this->code = 200;
         } else {
-            $this->code = $dataVoidDTO->code ?? 400;
+            $this->code = $dataVoidDTO->code;
             $this->text = $dataVoidDTO->error;
         }
 
@@ -108,7 +102,7 @@ class MapsController extends Controller
             $this->code = 200;
         }
         else{
-            $this->code = $dataVoidDTO->code ?? 400;
+            $this->code = $dataVoidDTO->code;
             $this->text = $dataVoidDTO->error;
         }
 
@@ -132,7 +126,7 @@ class MapsController extends Controller
                 $this->code = 200;
             }
             else{
-                $this->code = $dataVoidDTO->code ?? 400;
+                $this->code = $dataVoidDTO->code;
                 $this->text = $dataVoidDTO->error;
             }
 
