@@ -4,7 +4,6 @@
 namespace App\Http\Controllers;
 
 
-
 use App\Http\Requests\MapRequest;
 use App\Http\Requests\MapSearchRequest;
 use App\Http\Requests\SearchByNameRequest;
@@ -33,13 +32,13 @@ class MapsController extends Controller
      */
     public function downlandMap(SearchByNameRequest $request)
     {
-        $data =  $request->validated();
+        $data = $request->validated();
 
         $headers = [
             'Content-Type' => 'application/zip',
         ];
 
-        $file = public_path() . "/maps/".$data['name'];
+        $file = public_path() . "/maps/" . $data['name'];
 
         return response()->download($file, $data['name'], $headers);
     }
@@ -100,8 +99,7 @@ class MapsController extends Controller
         if ($dataVoidDTO->status) {
             $this->status = 'success';
             $this->code = 200;
-        }
-        else{
+        } else {
             $this->code = $dataVoidDTO->code;
             $this->text = $dataVoidDTO->error;
         }
@@ -117,15 +115,14 @@ class MapsController extends Controller
      */
     function destroy(int $id)
     {
-        if ( $id > 0){
+        if ($id > 0) {
 
             $dataVoidDTO = $this->service->deleteMaps(id: $id);
 
             if ($dataVoidDTO->status) {
                 $this->status = 'success';
                 $this->code = 200;
-            }
-            else{
+            } else {
                 $this->code = $dataVoidDTO->code;
                 $this->text = $dataVoidDTO->error;
             }

@@ -70,8 +70,7 @@ class UserController extends Controller
     {
         if (Gate::allows('is_admin')) {
             $data = ['status' => 'success', 'permission' => 'admin'];
-        }
-        else {
+        } else {
             $data = ['status' => 'success', 'permission' => 'user'];
         }
 

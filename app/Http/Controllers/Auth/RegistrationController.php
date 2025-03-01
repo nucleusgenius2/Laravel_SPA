@@ -29,12 +29,11 @@ class RegistrationController
 
         $dataArrayDTO = $this->service->createUser($data);
 
-        if($dataArrayDTO->status) {
+        if ($dataArrayDTO->status) {
             $this->status = 'success';
             $this->code = 200;
             $this->dataJson = $dataArrayDTO->data;
-        }
-        else{
+        } else {
             $this->code = $dataArrayDTO->code;
             $this->text = $dataArrayDTO->error;
         }

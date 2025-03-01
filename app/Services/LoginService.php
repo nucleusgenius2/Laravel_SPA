@@ -12,7 +12,7 @@ class LoginService
     {
         $user = User::where('email', $data['email'])->first();
 
-        if($user) {
+        if ($user) {
             if (Hash::check($data['password'], $user->password)) {
 
                 $token = $user->createToken('token', ['permission:user'])->plainTextToken;

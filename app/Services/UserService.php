@@ -26,8 +26,7 @@ class UserService
             ];
 
             return new DataArrayDTO(status: true, data: $data);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return new DataArrayDTO(status: false, error: $e->getMessage(), code: 500);
         }
     }
@@ -41,17 +40,15 @@ class UserService
 
     public function getUser(int $id): DataObjectDTO
     {
-        if( $id < 1){
+        if ($id < 1) {
             return new DataObjectDTO(status: false, error: 'id не может быть меньше 1', code: 422);
         }
 
         $user = User::where('id', '=', $id)->firts();
-        if($user){
+        if ($user) {
             return new DataObjectDTO(status: true, data: $user);
-        }
-        else{
+        } else {
             return new DataObjectDTO(status: false, error: 'Пользователь не найден', code: 404);
         }
-
     }
 }

@@ -21,12 +21,11 @@ class MapsService
     public function getMaps(array $data, Map $map, int $perPage): DataObjectDTO
     {
         //ветка фильтра
-        if ( isset($data['name']) || isset($data['total_player_from']) || isset($data['total_player_to']) || isset($data['size']) ){
+        if (isset($data['name']) || isset($data['total_player_from']) || isset($data['total_player_to']) || isset($data['size'])) {
             $query = $map->filterCustom($data);
 
-            $mapsList = $query->orderBy('map_rate', 'desc')->paginate($perPage , ['*'], 'page', $data['page']);
-        }
-        else {
+            $mapsList = $query->orderBy('map_rate', 'desc')->paginate($perPage, ['*'], 'page', $data['page']);
+        } else {
             $mapsList = Map::orderBy('map_rate', 'desc')->paginate($perPage, ['*'], 'page', $data['page']);
         }
 
@@ -45,10 +44,9 @@ class MapsService
             $data = $validated->valid();
 
             $map = Map::where('name', '=', $data['name'])->orderBy('map_rate', 'desc')->exists();
-            if ($map){
+            if ($map) {
                 return new DataVoidDTO(status: true);
-            }
-            else{
+            } else {
                 return new DataVoidDTO(status: false, error: 'Карта отсутствует', code: 404);
             }
         }
@@ -56,13 +54,13 @@ class MapsService
 
     public function createMaps(array $data, User $user): DataVoidDTO
     {
-        $dataStringDtoIMG = $this->uploadImage($data['url_img'],'maps/preview');
+        $dataStringDtoIMG = $this->uploadImage($data['url_img'], 'maps/preview');
         if ($dataStringDtoIMG->status) {
 
-            $dataStringDtoFile = $this->uploadFile($data['map_archive'],'maps');
-            if ( $dataStringDtoFile ->status) {
+            $dataStringDtoFile = $this->uploadFile($data['map_archive'], 'maps');
+            if ($dataStringDtoFile->status) {
 
-                $hash = $this->getHash('maps',$dataStringDtoFile->data);
+                $hash = $this->getHash('maps', $dataStringDtoFile->data);
                 if (!$hash) {
                     $hash = [];
                 }
@@ -81,18 +79,15 @@ class MapsService
                     'map_rate' => 0,
                 ]);
 
-                if ($map){
+                if ($map) {
                     return new DataVoidDTO(status: true);
-                }
-                else{
+                } else {
                     return new DataVoidDTO(status: false, error: 'Данные не сохранились', code: 500);
                 }
-            }
-            else{
+            } else {
                 return new DataVoidDTO(status: false, error: $dataStringDtoFile->error, code: 400);
             }
-        }
-        else{
+        } else {
             return new DataVoidDTO(status: false, error: $dataStringDtoIMG->error, code: 400);
         }
     }
@@ -100,25 +95,22 @@ class MapsService
     public function deleteMaps(int $id): DataVoidDTO
     {
         $fileDataBase = Map::where('id', $id)->first();
-        if ( $fileDataBase ){
+        if ($fileDataBase) {
             $dataFileVoidDTO = $this->deleteFile($fileDataBase->url_name);
 
-            if( $dataFileVoidDTO->status ){
+            if ($dataFileVoidDTO->status) {
                 $fileDataBase->delete();
 
                 $dataImgVoidDTO = $this->deleteFile($fileDataBase->url_img);
-                if( $dataImgVoidDTO->status ) {
+                if ($dataImgVoidDTO->status) {
                     return new DataVoidDTO(status: true);
-                }
-                else{
+                } else {
                     return new DataVoidDTO(status: false, error: $dataImgVoidDTO->error, code: 500);
                 }
-            }
-            else{
+            } else {
                 return new DataVoidDTO(status: false, error: $dataFileVoidDTO->error, code: 500);
             }
-        }
-        else{
+        } else {
             return new DataVoidDTO(status: false, error: 'Карта не найдена', code: 404);
         }
 

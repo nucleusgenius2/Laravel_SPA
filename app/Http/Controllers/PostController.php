@@ -32,7 +32,7 @@ class PostController extends Controller
         $data = $request->validated();
         $dataObjectDTO = $this->service->getPosts(data: $data, modelPost: $post, perPage: $this->perPageFrontend);
 
-        if ( $dataObjectDTO->status) {
+        if ($dataObjectDTO->status) {
             $this->code = 200;
             $this->status = 'success';
             $this->dataJson = $dataObjectDTO->data;
@@ -51,7 +51,7 @@ class PostController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        if ($id > 0){
+        if ($id > 0) {
 
             $dataObjectDTO = $this->service->getPost(id: $id);
 
@@ -107,9 +107,8 @@ class PostController extends Controller
         if ($dataEmptyDTO->status) {
             $this->status = 'success';
             $this->code = 200;
-        }
-        else {
-            $this->text = $dataEmptyDTO->error ;
+        } else {
+            $this->text = $dataEmptyDTO->error;
             $this->code = $dataEmptyDTO->code;
         }
 
@@ -124,14 +123,14 @@ class PostController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        if($id > 0) {
+        if ($id > 0) {
             $dataObjectDTO = $this->service->deletePost(id: $id);
 
             if ($dataObjectDTO->status) {
                 $this->status = 'success';
                 $this->code = 200;
             } else {
-                $this->text = $dataObjectDTO->error ;
+                $this->text = $dataObjectDTO->error;
                 $this->code = $dataObjectDTO->code;
             }
         }

@@ -12,7 +12,7 @@ class ProfileService
 {
     public function getProfileData(User $user): DataArrayDTO
     {
-        $dataBalance = UserBalanceOperations::where('user_id','=', $user->id)->orderBy('updated_at', 'desc')->limit(5)->with(['userBalance'])->get();
+        $dataBalance = UserBalanceOperations::where('user_id', '=', $user->id)->orderBy('updated_at', 'desc')->limit(5)->with(['userBalance'])->get();
 
         $userData = [
             'name' => $user->name,
@@ -27,7 +27,7 @@ class ProfileService
     {
         if (Hash::check($data['password'], $user->password)) {
 
-            if ( $data['newPassword'] === 'none') {
+            if ($data['newPassword'] === 'none') {
                 $updated = $user->update([
                     'name' => $data['name'],
                     'email' => $data['email'],
@@ -40,12 +40,12 @@ class ProfileService
                 ]);
             }
 
-            if($updated){ return new DataVoidDTO(status: true); }
-            else{
+            if ($updated) {
+                return new DataVoidDTO(status: true);
+            } else {
                 return new DataVoidDTO(status: false, error: 'Данные не обновлены', code: 500);
             }
-        }
-        else{
+        } else {
             return new DataVoidDTO(status: false, error: 'Пароль не верен', code: 400);
         }
     }

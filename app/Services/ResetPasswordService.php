@@ -15,20 +15,18 @@ class ResetPasswordService
     {
         $limit = LimitResetPassword::where('user_email', '=', $email)->orderBy('id', 'desc')->first();
 
-        if ( $limit && $limit->created_at > Carbon::today()) {
+        if ($limit && $limit->created_at > Carbon::today()) {
             return new DataVoidDTO(status: false, error: 'Вы уже делали восстановление пароля сегодня', code: 400);
-        }
-        else{
+        } else {
             $limit = LimitResetPassword::create([
                 'user_email' => $email,
             ]);
-            if($limit) {
+            if ($limit) {
                 $status = Password::sendResetLink(
                     ['email' => $email]
                 );
                 return new DataVoidDTO(status: true);
-            }
-            else{
+            } else {
                 return new DataVoidDTO(status: false, error: 'Ошибка при сохранении', code: 500);
             }
         }

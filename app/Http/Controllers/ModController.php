@@ -36,16 +36,16 @@ class ModController extends Controller
             'Content-Type' => 'application/zip',
         ];
 
-        $file = public_path() . "/mods/".$data['name'] ;
+        $file = public_path() . "/mods/" . $data['name'];
 
         //стратегические иконки
-        if ( $data ['name'] ==='icons1' ) {
+        if ($data ['name'] === 'icons1') {
             $file = public_path() . "/mods/target_icons_1/Advanced strategic icons.nxt";
         }
-        if ( $data ['name'] ==='icons2' ) {
+        if ($data ['name'] === 'icons2') {
             $file = public_path() . "/mods/target_icons_2/Advanced strategic icons.nxt";
         }
-        if ($data ['name'] ==='icons3' ) {
+        if ($data ['name'] === 'icons3') {
             $file = public_path() . "/mods/target_icons_3/Advanced strategic icons.nxt";
         }
 
@@ -58,7 +58,7 @@ class ModController extends Controller
      * @param PageRequest $request
      * @return JsonResponse
      */
-    public function index(PageRequest $request) : JsonResponse
+    public function index(PageRequest $request): JsonResponse
     {
         $data = $request->validated();
 
@@ -77,7 +77,7 @@ class ModController extends Controller
      * @param ModRequest $request
      * @return JsonResponse
      */
-    public function store(ModRequest $request) : JsonResponse
+    public function store(ModRequest $request): JsonResponse
     {
         $data = $request->validated();
 
@@ -86,8 +86,7 @@ class ModController extends Controller
         if ($dataVoidDTO->status) {
             $this->status = 'success';
             $this->code = 200;
-        }
-        else{
+        } else {
             $this->code = $dataVoidDTO->code;
             $this->text = $dataVoidDTO->error;
         }
@@ -103,15 +102,14 @@ class ModController extends Controller
      */
     function destroy(int $id): JsonResponse
     {
-        if ( $id > 0){
+        if ($id > 0) {
 
             $dataVoidDTO = $this->service->deleteMods(id: $id);
 
             if ($dataVoidDTO->status) {
                 $this->status = 'success';
                 $this->code = 200;
-            }
-            else{
+            } else {
                 $this->code = $dataVoidDTO->code;
                 $this->text = $dataVoidDTO->error;
             }

@@ -30,7 +30,7 @@ class ResetPasswordController extends Controller
 
         $dataVoidDTO = $this->service->startResetPassword(email: $data['email']);
 
-        if($dataVoidDTO->status){
+        if ($dataVoidDTO->status) {
             $this->text = 'Письмо со ссылкой отправлено на email';
             $this->status = 'success';
             $this->code = 200;
@@ -54,7 +54,7 @@ class ResetPasswordController extends Controller
 
         $dataVoidDTO = $this->service->ResetPassword(data: $data);
 
-        if($dataVoidDTO->status){
+        if ($dataVoidDTO->status) {
             $this->status = 'success';
             $this->code = 200;
         } else {

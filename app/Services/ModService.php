@@ -13,29 +13,30 @@ use App\Traits\UploadsImages;
 class ModService
 {
     use UploadsImages, UploadFiles, HashFileGenerated;
+
     public function getMods(array $data, int $perPage): DataObjectDTO
     {
-        $mapsList = Mod::orderBy('mod_rate', 'desc')->paginate($perPage , ['*'], 'page', $data['page']);
+        $mapsList = Mod::orderBy('mod_rate', 'desc')->paginate($perPage, ['*'], 'page', $data['page']);
 
         return new DataObjectDTO(status: true, data: $mapsList);
     }
 
     public function createMods(array $data, User $user): DataVoidDTO
     {
-        $dataStringDtoIMG = $this->uploadImage($data['url_img'],'preview_mods');
+        $dataStringDtoIMG = $this->uploadImage($data['url_img'], 'preview_mods');
         if ($dataStringDtoIMG->status) {
 
-            $dataStringDtoFile = $this->uploadFile($data['mod_archive'],'mods');
-            if ( $dataStringDtoFile ->status) {
+            $dataStringDtoFile = $this->uploadFile($data['mod_archive'], 'mods');
+            if ($dataStringDtoFile->status) {
 
-                $hash = $this->getHash('mods',  $dataStringDtoFile->data);
+                $hash = $this->getHash('mods', $dataStringDtoFile->data);
                 if (!$hash) {
                     $hash = [];
                 }
 
                 $mod = Mod::create([
                     'url_img' => $dataStringDtoIMG->data,
-                    'url_name' =>  $dataStringDtoFile->data,
+                    'url_name' => $dataStringDtoFile->data,
                     'name' => $data['name'],
                     'name_dir' => $data['name_dir'],
                     'description' => $data['description'],
@@ -49,16 +50,13 @@ class ModService
 
                 if ($mod) {
                     return new DataVoidDTO(status: true);
-                }
-                else{
+                } else {
                     return new DataVoidDTO(status: false, error: 'Данные не сохранились', code: 500);
                 }
-            }
-            else{
+            } else {
                 return new DataVoidDTO(status: false, error: $dataStringDtoFile->error, code: 500);
             }
-        }
-        else{
+        } else {
             return new DataVoidDTO(status: false, error: $dataStringDtoIMG->error, code: 500);
         }
     }
@@ -67,25 +65,22 @@ class ModService
     public function deleteMods(int $id): DataVoidDTO
     {
         $fileDataBase = Mod::where('id', $id)->first();
-        if ( $fileDataBase ){
+        if ($fileDataBase) {
             $dataFileVoidDTO = $this->deleteFile($fileDataBase->url_name);
 
-            if( $dataFileVoidDTO->status ){
+            if ($dataFileVoidDTO->status) {
                 $fileDataBase->delete();
 
                 $dataImgVoidDTO = $this->deleteFile($fileDataBase->url_img);
-                if( $dataImgVoidDTO->status ) {
+                if ($dataImgVoidDTO->status) {
                     return new DataVoidDTO(status: true);
-                }
-                else{
+                } else {
                     return new DataVoidDTO(status: false, error: $dataImgVoidDTO->error, code: 500);
                 }
-            }
-            else{
+            } else {
                 return new DataVoidDTO(status: false, error: $dataFileVoidDTO->error, code: 500);
             }
-        }
-        else{
+        } else {
             return new DataVoidDTO(status: false, error: 'Мод не найден', code: 404);
         }
     }
