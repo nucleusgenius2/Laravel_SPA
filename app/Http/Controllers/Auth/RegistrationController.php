@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\DTO\DataArrayDTO;
 use App\Http\Requests\RegistrationRequest;
 use App\Models\User;
 use App\Rules\ReCaptcha;
@@ -17,31 +18,32 @@ class RegistrationController
     use StructuredResponse;
 
     public UserService $service;
+
     function __construct(UserService $service)
     {
         $this->service = $service;
     }
 
+    /**
+     * Обычная регистрация юзеров
+     * @param RegistrationRequest $request
+     * @return JsonResponse
+     */
     public function registration(RegistrationRequest $request): JsonResponse
     {
         $data = $request->validated();
 
-        $userData = $this->service->createUser($data);
+        $dataArrayDTO = $this->service->createUser($data);
 
-        if($userData['status']) {
+        if($dataArrayDTO->status) {
             $this->status = 'success';
             $this->code = 200;
-            $this->dataJson = [
-                'token' => $userData['token'],
-                'user' => $userData['user']->email,
-            ];
-            $this->text = 'Регистрация прошла успешно';
+            $this->dataJson = $dataArrayDTO->data;
         }
         else{
-            $this->code = 500;
-            $this->text = 'Ошибка при регистрации: ' .  $userData['error'];
+            $this->code = $dataArrayDTO->code;
+            $this->text = $dataArrayDTO->error;
         }
-
 
         return $this->responseJsonApi();
     }

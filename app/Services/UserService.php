@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\DataArrayDTO;
 use App\DTO\DataObjectDTO;
 use App\DTO\DataVoidDTO;
 use App\Models\User;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class UserService
 {
-    public function createUser(array $data): array
+    public function createUser(array $data): DataArrayDTO
     {
         try {
             $user = User::create($data);
@@ -19,17 +20,15 @@ class UserService
 
             event(new Registered($user));
 
-            return [
-                'status' => true,
+            $data = [
                 'token' => $token,
                 'user' => $user
             ];
+
+            return new DataArrayDTO(status: true, data: $data);
         }
         catch (\Exception $e) {
-            return [
-                'status' => false,
-                'error' => $e->getMessage(),
-            ];
+            return new DataArrayDTO(status: false, error: $e->getMessage(), code: 500);
         }
     }
 
