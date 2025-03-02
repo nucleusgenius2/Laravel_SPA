@@ -6,6 +6,7 @@ use App\DTO\DataVoidDTO;
 use App\Models\LimitResetPassword;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -22,6 +23,7 @@ class ResetPasswordService
                 'user_email' => $email,
             ]);
             if ($limit) {
+
                 $status = Password::sendResetLink(
                     ['email' => $email]
                 );
@@ -50,5 +52,12 @@ class ResetPasswordService
                 }
             }
         );
+
+        if($status === 'passwords.token'){
+            return new DataVoidDTO(status: true);
+        }
+        else{
+            return new DataVoidDTO(status: false, error: 'Ошибка сохранения данных', code: 400 );
+        }
     }
 }
