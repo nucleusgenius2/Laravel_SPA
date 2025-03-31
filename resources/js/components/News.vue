@@ -90,7 +90,7 @@
 <script setup>
 import {ref} from 'vue';
 import {useRoute} from "vue-router";
-import {authRequest} from "@/api.js";
+import {authRequest} from "@/api.ts";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import '@vuepic/vue-datepicker/dist/main.css'
 import Pagination from "v-pagination-3";
@@ -130,7 +130,7 @@ async function paginationListing(filterClick = '') {
 
     let response = await authRequest('/api/posts?page=' + pageModel.value + stringFilter, 'get');
 
-    if (response.data.status === 'success') {
+    if (typeof response !== 'string' && response.data.status === 'success') {
         emptyPage.value = false;
         arrayPosts.value = response.data.json.data;
         pageTotal.value = response.data.json.last_page;

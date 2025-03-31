@@ -93,7 +93,7 @@
 
 import {ref} from 'vue';
 import { useRoute } from "vue-router";
-import {authRequest} from "@/api.js";
+import {authRequest} from "@/api.ts";
 import Pagination from "v-pagination-3";
 import {convertTime} from "@/script/convertTime";
 import VueDatePicker from '@vuepic/vue-datepicker';

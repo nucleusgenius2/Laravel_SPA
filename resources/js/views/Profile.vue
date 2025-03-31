@@ -78,7 +78,7 @@
 
 <script setup>
 import {onMounted, ref} from "vue";
-import {authRequest} from "@/api.js";
+import {authRequest} from "@/api.ts";
 import {useRoute} from "vue-router";
 const route = useRoute();
 

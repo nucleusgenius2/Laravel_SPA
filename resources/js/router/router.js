@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import {authRequest} from "@/api.js";
+import {authRequest} from "@/api.ts";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),

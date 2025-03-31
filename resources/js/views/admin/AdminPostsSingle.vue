@@ -66,7 +66,7 @@ import {onMounted, ref} from 'vue';
 import router from "@/router/router";
 import {useRoute} from "vue-router";
 import CKEditor from '@ckeditor/ckeditor5-vue';
-import {authRequest} from "@/api.js";
+import {authRequest} from "@/api.ts";
 
 const ckeditor = CKEditor.component;
 

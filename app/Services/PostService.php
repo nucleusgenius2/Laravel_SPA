@@ -46,7 +46,6 @@ class PostService
         } else {
             return new DataObjectDTO(status: false, error: 'Новости не существует', code: 404);
         }
-
     }
 
     public function createPost(array $data, User $user): DataObjectDTO

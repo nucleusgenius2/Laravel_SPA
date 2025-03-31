@@ -78,7 +78,7 @@
 
 <script setup>
 import {onMounted, ref} from 'vue';
-import {notAuthRequest} from "@/api.js";
+import {notAuthRequest} from "@/api.ts";
 import {useRoute} from "vue-router";
 import {Checkbox} from 'vue-recaptcha'
 import ShowingErrors from "@/components/ShowingErrors.vue";

@@ -94,10 +94,10 @@
 <script setup>
 import {onMounted, ref} from 'vue';
 import { useRoute } from "vue-router";
-import {authRequest} from "@/api.js";
+import {authRequest} from "@/api.ts";
 import ButtonSave from "@/components/admin/ButtonSave.vue";
 import Pagination from 'v-pagination-3';
-import {convertTime} from '@/script/convertTime.js'
+import {convertTime} from '@/script/convertTime.ts'
 let errors = ref(false)
 const route = useRoute();
 let showUploadPanel = ref(false);

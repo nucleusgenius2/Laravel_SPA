@@ -31,6 +31,7 @@ class PostController extends Controller
     public function index(PostSearchRequest $request, Post $post): JsonResponse
     {
         $data = $request->validated();
+
         $dataObjectDTO = $this->service->getPosts(data: $data, modelPost: $post, perPage: $this->perPageFrontend);
 
         $this->code = 200;
@@ -81,7 +82,6 @@ class PostController extends Controller
             $this->status = 'success';
             $this->code = 200;
             $this->dataJson = $dataObjectDTO->data;
-            log::info($dataObjectDTO->data);
         } else {
             $this->text = $dataObjectDTO->error;
             $this->code = $dataObjectDTO->code;

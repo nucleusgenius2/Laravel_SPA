@@ -1,6 +1,7 @@
-export function sizeMap(name){
-    let array = name.split('x');
-    let string = '';
+export function sizeMap(name: string): string{
+    let array : string[] = name.split('x');
+    let string: string = '';
+
     for (let i=0; i < array.length; i++) {
         if ( Number(array[i]) === 512 ){
             string += '10'

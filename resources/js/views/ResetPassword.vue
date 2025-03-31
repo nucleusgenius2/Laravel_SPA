@@ -42,7 +42,7 @@
 <script setup>
 import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
-import {notAuthRequest} from "@/api.js";
+import {notAuthRequest} from "@/api.ts";
 import {useI18n} from "vue-i18n";
 import ShowingErrors from "@/components/ShowingErrors.vue";
 const route = useRoute();

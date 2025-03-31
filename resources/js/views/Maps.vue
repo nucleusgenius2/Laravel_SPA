@@ -121,14 +121,15 @@
     </MainLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {useRoute} from "vue-router";
-import {authRequest} from "@/api";
 import {ref} from "vue";
 import Pagination from "v-pagination-3";
-import {rateMapsAndMods} from "@/script/rateMapsAndMods";
-import {nameMaxLength} from "@/script/nameMaxLength";
-import {sizeMap} from "@/script/sizeMap";
+import {rateMapsAndMods} from "@/script/rateMapsAndMods.ts";
+import {nameMaxLength} from "@/script/nameMaxLength.ts";
+import {sizeMap} from "@/script/sizeMap.ts";
+import {authRequest} from "@/api.ts";
+
 const route = useRoute();
 let pageModel = ref(1)
 let pageTotal = ref(1)
@@ -140,7 +141,9 @@ let filter = ref({
     'total_player_to' : '',
     'size' : '',
 });
-async function paginationListing(filterClick = '') {
+
+async function paginationListing(filterClick: string = '') {
+    console.log('1111')
     if (filterClick === 'filter') {
         pageModel.value = 1;
     }
@@ -165,7 +168,7 @@ async function paginationListing(filterClick = '') {
     }
 }
 paginationListing();
-
+console.log('122s')
 function clearFilter (){
     filter.value.name = '';
     filter.value.total_player_from = '';

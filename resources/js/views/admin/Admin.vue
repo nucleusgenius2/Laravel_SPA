@@ -33,7 +33,7 @@
 import AdminMenu from '@/components/admin/AdminMenu.vue';
 import {onMounted, ref} from 'vue';
 import { useRoute } from "vue-router";
-import {authRequest} from "@/api.js";
+import {authRequest} from "@/api.ts";
 
 let auth = ref('');
 let userEmail = ref('');

@@ -16,7 +16,7 @@
 
 <script setup>
 import {onMounted, ref , watch} from "vue";
-import {authRequest} from "@/api.js";
+import {authRequest} from "@/api.ts";
 
 
 let auth = ref('');
