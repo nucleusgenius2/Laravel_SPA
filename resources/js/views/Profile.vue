@@ -8,12 +8,12 @@
                     <h2>Ваш профиль</h2>
                     <div class="profile-el">
                         <span class="heading-field">Ваше имя</span>
-                        <input v-model="data.name" class="field-style" autocomplete="off" type="text" name="name" required/>
+                        <input v-if="data" v-model="data.name" class="field-style" autocomplete="off" type="text" name="name" required/>
                     </div>
 
                     <div class="profile-el">
                         <span class="heading-field">Ваш email</span>
-                        <input v-model="data.email" class="field-style" autocomplete="off" type="email" name="email" required/>
+                        <input v-if="data" v-model="data.email" class="field-style" autocomplete="off" type="email" name="email" required/>
                     </div>
 
                     <div class="profile-el">
@@ -47,7 +47,7 @@
                     </div>
 
                 </div>
-                <div class="wrap-balance" v-if="typeof (data.name) !=='undefined' ">
+                <div class="wrap-balance" v-if="data && typeof (data.name) !=='undefined'">
 
                     <div class="balance" v-if="data.data_balance.length > 0">
                         <span>Ваш баланс: </span><span>{{ data.data_balance[0].user_balance.balance }}</span>
@@ -59,7 +59,7 @@
 
                     <div class="last-operation">
                         <div>Последние 5 операций: </div>
-                        <div class="operation" v-for="(value, name) in data.data_balance">
+                        <div class="operation" v-for="(value) in data.data_balance">
                             <div class="name-operation">{{ value['name'] }}</div>
                             <div class="summa-operation plus" v-if="value['type']==='plus'">+ {{ value['balance'] }}</div>
                             <div class="summa-operation minus" v-if="value['type']==='minus'">- {{ value['balance'] }}</div>
@@ -76,13 +76,20 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import {onMounted, ref} from "vue";
 import {authRequest} from "@/api.ts";
 import {useRoute} from "vue-router";
 const route = useRoute();
 
-let data = ref({});
+interface Profile {
+    name: string;
+    email: string;
+    data_balance: any;
+}
+
+
+let data = ref<Profile | null>(null);
 let password = ref('');
 let newPassword = ref('');
 let error = ref('');
@@ -100,9 +107,8 @@ onMounted(
 
 async function updateProfile() {
 
-    if (data.value.name !== '' && data.value.name !== '' && password.value !== '') {
+    if (data.value && data.value.name !== '' && password.value !== '') {
 
-        //auth
         if (newPassword.value === '') {
             newPasswordValidate.value = 'none';
         } else {

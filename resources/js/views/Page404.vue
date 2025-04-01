@@ -11,14 +11,15 @@
     </MainLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {useRoute} from "vue-router";
 import {ref} from "vue";
 
 const route = useRoute();
-let error = ref(null);
+let error = ref<string | null>(null);
+
 if (route.query.textError){
-    error = ref( decodeURIComponent(route.query.textError) );
+    error.value = decodeURIComponent(route.query.textError as string);
 }
 
 </script>

@@ -49,23 +49,36 @@
     </MainLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {useRoute} from "vue-router";
-import {authRequest} from "@/api";
+import {authRequest} from "@/api.ts";
 import {ref} from "vue";
 import Pagination from "v-pagination-3";
-import {rateMapsAndMods} from "@/script/rateMapsAndMods";
-import {nameMaxLength} from "@/script/nameMaxLength";
+import {rateMapsAndMods} from "@/script/rateMapsAndMods.ts";
+import {nameMaxLength} from "@/script/nameMaxLength.ts";
 const route = useRoute();
+
+interface ModItem {
+    name: string;
+    name_dir: string;
+    url_img: string;
+    type: number;
+    description: string;
+    mod_rate: number;
+    author?: string;
+}
+let arrayMods = ref<ModItem[]>([]);
+
 let pageModel = ref(1)
 let pageTotal = ref(1)
-let arrayMods = ref([]);
+
+
 let errors = ref(false)
 
 async function paginationListing(){
     let response = await authRequest('/api/mods?page='+ pageModel.value, 'get' );
     if ( response.data.status === 'success' ) {
-        arrayMods.value  = response.data.json.data;
+        arrayMods.value = response.data.json.data;
         pageTotal.value = response.data.json.last_page;
     }
     else {
@@ -73,8 +86,6 @@ async function paginationListing(){
     }
 }
 paginationListing();
-
-
 
 
 </script>

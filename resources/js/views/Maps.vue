@@ -130,20 +130,40 @@ import {nameMaxLength} from "@/script/nameMaxLength.ts";
 import {sizeMap} from "@/script/sizeMap.ts";
 import {authRequest} from "@/api.ts";
 
+interface MapItem {
+    name: string;
+    name_dir: string;
+    url_img: string;
+    total_player: number;
+    size: string;
+    map_rate: number;
+    rate: number;
+    author?: string;
+}
+
+interface Filter {
+    name: string;
+    total_player_from: number | string;
+    total_player_to: number | string;
+    size: string;
+}
+
 const route = useRoute();
 let pageModel = ref(1)
 let pageTotal = ref(1)
-let arrayMaps = ref([]);
+let arrayMaps = ref<MapItem[]>([]);
 let errors = ref(false)
-let filter = ref({
+
+
+let filter = ref<Filter>({
     'name' : '',
     'total_player_from' : '',
     'total_player_to' : '',
     'size' : '',
 });
 
+
 async function paginationListing(filterClick: string = '') {
-    console.log('1111')
     if (filterClick === 'filter') {
         pageModel.value = 1;
     }
@@ -168,7 +188,7 @@ async function paginationListing(filterClick: string = '') {
     }
 }
 paginationListing();
-console.log('122s')
+
 function clearFilter (){
     filter.value.name = '';
     filter.value.total_player_from = '';
