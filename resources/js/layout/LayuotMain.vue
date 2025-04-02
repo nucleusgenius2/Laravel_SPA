@@ -16,7 +16,7 @@ import Footer from '@/layout/Footer.vue';
 import Header from '@/layout/Header.vue';
 let props = defineProps({
     layout: String,
-    auth: String
+    auth: Boolean
 });
 
 

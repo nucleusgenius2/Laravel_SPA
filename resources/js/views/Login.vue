@@ -4,7 +4,7 @@
 
             <div class="max">
 
-                <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit" v-if="status === 'noAuth'">
+                <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit" v-if="!status">
                     <div class="heading-form">{{ $t('auth_entry') }}</div>
                     <!-- Email Address -->
                     <div class="wrap-field">
@@ -29,7 +29,7 @@
                     <div class="reset-password"><router-link to="/reset-email">{{ $t('register_page_5') }}</router-link></div>
                 </form>
 
-                <div class="auth-text form-auth-true"  v-if="status === 'auth'">{{ $t('register_page_6') }}</div>
+                <div class="auth-text form-auth-true"  v-if="status">{{ $t('register_page_6') }}</div>
                 <showing-errors :errors="error" />
             </div>
 
@@ -50,11 +50,11 @@ const {t} = useI18n({ useScope: 'global' })
 
 let email = ref('');
 let password = ref('');
-let status = ref('noAuth');
+let status = ref(false);
 let error =  ref('');
 
 if (localStorage.getItem("token") !== null) {
-    status.value = 'auth';
+    status.value = true;
 }
 
 async function formSubmit(){
@@ -66,7 +66,7 @@ async function formSubmit(){
 
     let response = await notAuthRequest('/api/login', 'post', data);
     if (response.data.status === 'success') {
-        status.value = 'auth';
+        status.value = true;
         error.value ='';
         localStorage.setItem('token', JSON.stringify(response.data.json))
     }

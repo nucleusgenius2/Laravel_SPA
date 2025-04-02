@@ -41,7 +41,7 @@ import {useI18n} from "vue-i18n";
 const { t, locale } = useI18n({ useScope: 'global' })
 
 let props = defineProps({
-    auth: String
+    auth: Boolean
 });
 
 function getRandomNumber(min, max) {

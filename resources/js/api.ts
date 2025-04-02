@@ -10,7 +10,7 @@ export async function authRequest (url: string ='', type: 'get' | 'post' | 'patc
     let response: any | string = 'error';
 
     const storedToken = localStorage.getItem("token");
-    console.log(storedToken )
+
     if (storedToken !== null) {
         token = JSON.parse(storedToken) as Token | null;
     }
@@ -87,7 +87,7 @@ export async function authRequest (url: string ='', type: 'get' | 'post' | 'patc
     }
 
     if (typeof response.data.text === 'object'){
-        let string = '';
+        let string: string = '';
 
         for (let i in response.data.text) {
             string = string + response.data.text[i]+' ';
@@ -118,7 +118,7 @@ export async function notAuthRequest (url: string ='', type: 'get' | 'post' | 'p
     }
 
     if (typeof response.data.text === 'object'){
-        let string = '';
+        let string: string  = '';
 
         for (let i in response.data.text) {
             string = string + response.data.text[i]+' ';

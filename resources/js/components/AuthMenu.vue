@@ -1,11 +1,11 @@
 <template>
-    <div class="wrap-admin-link" v-if="auth.status==='success'">
+    <div class="wrap-admin-link" v-if="authUser.status==='success'">
         <div class="max">
             <div class="admin-link-text">
                 <span>{{ $t('register_page_6') }}: <span>{{ userEmail }}</span></span>
                 <div class="wrap-menu">
                     <span class="menu"><a class="link" href='/profile'>{{ $t('profile_auth_menu') }}</a> </span>
-                    <span class="menu" v-if="auth.permission==='admin'"><a class="admin-link" href='/admin'>{{ $t('admin_panel_auth_menu') }}</a> </span>
+                    <span class="menu" v-if="authUser.permission==='admin'"><a class="admin-link" href='/admin'>{{ $t('admin_panel_auth_menu') }}</a> </span>
                 </div>
                 <span class="logout link" @click="logout">{{ $t('auth_logout') }} </span>
             </div>
@@ -14,22 +14,30 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import {onMounted, ref , watch} from "vue";
 import {authRequest} from "@/api.ts";
 
+interface authObject {
+    status: string;
+    permission: string
+}
 
-let auth = ref('');
+let authUser = ref<authObject>({
+    status: '',
+    permission: ''
+});
+
 let userEmail = ref('');
 
 let props = defineProps({
-    auth: String
+    auth: Boolean
 });
 
-//listen props
+
 watch(() => props.auth, (selection, prevSelection) => {
     authorization();
-})
+});
 
 
 onMounted(async () => {
@@ -37,12 +45,17 @@ onMounted(async () => {
 });
 
 async function authorization(){
-    //check local store
-    if (localStorage.getItem("token") !== null ) {
+
+    if (localStorage.getItem("token") ) {
         let response = await authRequest('/api/authorization', 'get');
         if ( response.data.status === 'success' ){
-            auth.value = response.data;
-            userEmail.value = JSON.parse(localStorage.getItem('token')).user;
+            authUser.value = response.data;
+            console.log(authUser.value)
+
+            let token = localStorage.getItem('token');
+            if (token) {
+                userEmail.value = JSON.parse(token).user;
+            }
         }
         else {
             localStorage.removeItem('token');
@@ -50,11 +63,11 @@ async function authorization(){
     }
 }
 
-//logout
+
 async function logout() {
     let response = await authRequest('/api/logout/', 'get');
     if (response.data.status === 'success') {
-        auth.value.status = '';
+        authUser.value.status = '';
         localStorage.removeItem('token');
         window.location.replace("/login");
     }

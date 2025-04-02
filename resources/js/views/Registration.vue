@@ -4,7 +4,7 @@
 
             <div class="max">
 
-                <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit" v-if="status === 'noAuth'">
+                <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit" v-if="!status">
                     <div class="wrap-form">
                         <div class="heading-form">{{ $t('auth_registration') }}</div>
                         <!-- Name -->
@@ -44,7 +44,7 @@
                         </button>
                     </div>
 
-                    <div class="auth-text form-auth-true"  v-if="status === 'auth'">{{ $t('register_page_6') }}</div>
+                    <div class="auth-text form-auth-true"  v-if="status">{{ $t('register_page_6') }}</div>
                     <showing-errors :errors="error" />
 
                     <div class="wrap-already-reg">
@@ -64,7 +64,7 @@
                     </div>
                 </form>
 
-                <div class="auth-text form-auth-true" v-if="status === 'auth'">
+                <div class="auth-text form-auth-true" v-if="status">
                     <p>{{ $t('register_page_8') }}</p>
                     <p>{{ $t('register_page_9') }}</p>
                 </div>
@@ -76,8 +76,8 @@
 </template>
 
 
-<script setup>
-import {onMounted, ref} from 'vue';
+<script setup lang="ts">
+import {ref} from 'vue';
 import {notAuthRequest} from "@/api.ts";
 import {useRoute} from "vue-router";
 import {Checkbox} from 'vue-recaptcha'
@@ -88,14 +88,14 @@ let name = ref('');
 let email = ref('');
 let password = ref('');
 let passwordConfirm = ref('');
-let status = ref('noAuth');
+let status = ref(false);
 let error = ref('');
 let captcha = ref('');
 let location = ref(navigator.language);
 
 
-if (localStorage.getItem("token") !== null) {
-    status.value = 'auth';
+if (localStorage.getItem("token")) {
+    status.value = true;
 }
 
 async function formSubmit() {
@@ -110,11 +110,11 @@ async function formSubmit() {
 
     let response = await notAuthRequest('/api/registration', 'post', data);
     if (response.data.status === 'success') {
-        status.value = 'auth';
+        status.value = true;
         error.value = '';
         localStorage.setItem('token', JSON.stringify(response.data.json))
     } else {
-        status.value = 'noAuth';
+        status.value = false;
         error.value = response.data.text;
         if (!response.data.text) {
             error.value = response.data.message
