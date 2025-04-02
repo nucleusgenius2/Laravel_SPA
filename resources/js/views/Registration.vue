@@ -7,17 +7,17 @@
                 <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit" v-if="!status">
                     <div class="wrap-form">
                         <div class="heading-form">{{ $t('auth_registration') }}</div>
-                        <!-- Name -->
+
                         <div class="wrap-field">
                             <input id="name" v-model="name"  class="field-style" autocomplete="off" :placeholder="$t('auth_nickname')" type="text" name="name"  required autofocus />
                         </div>
 
-                        <!-- Email Address -->
+
                         <div class="wrap-field">
                             <input id="email" v-model="email" class="field-style" autocomplete="off" :placeholder="$t('auth_your_email')" type="email" name="email"  required />
                         </div>
 
-                        <!-- Password -->
+
                         <div class="wrap-field">
 
                             <input id="password" v-model="password" :placeholder="$t('auth_possword')" class="field-style"
@@ -26,7 +26,7 @@
                                    required autocomplete="new-password" />
                         </div>
 
-                        <!-- Confirm Password -->
+
                         <div class="wrap-field">
                             <input id="password_confirmation" v-model="passwordConfirm" :placeholder="$t('auth_repeat_password')" class="field-style"
                                    type="password"

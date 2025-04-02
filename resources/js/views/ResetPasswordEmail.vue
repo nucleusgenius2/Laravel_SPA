@@ -23,7 +23,7 @@
                     </div>
                 </form>
 
-                <div class="auth-text form-auth-true" v-if="status !== ''">{{ status }}</div>
+                <div class="auth-text form-auth-true" v-if="status !== ''">{{ successMessage }}</div>
                 <showing-errors :errors="error" />
             </div>
 
@@ -32,8 +32,8 @@
 </template>
 
 
-<script setup>
-import {onMounted, ref} from 'vue';
+<script setup lang="ts">
+import {ref} from 'vue';
 import {useRoute} from "vue-router";
 import {notAuthRequest} from "@/api.ts";
 import {useI18n} from "vue-i18n";
@@ -42,11 +42,12 @@ const route = useRoute();
 const {t} = useI18n({ useScope: 'global' })
 
 let email = ref('');
-let status = ref('');
+let status = ref(false);
+let successMessage = ref('');
 let error =  ref('');
 
-if (localStorage.getItem("token") !== null) {
-    status.value = 'auth';
+if (localStorage.getItem("token")) {
+    status.value = true;
 }
 
 async function formSubmit(){
@@ -54,26 +55,19 @@ async function formSubmit(){
         'email' : email.value
     });
     if (response.data.status === 'success') {
-        status.value = t('reset_password_5');
+        successMessage.value = t('reset_password_5');
         error.value ='';
+        status.value = true;
     }
     else {
 
-        console.log(response.data);
         try {
-            console.log('2')
-            // Проверка, можно ли распарсить строку как JSON
-
             error.value = JSON.parse(response.data.text);
         } catch (e) {
             error.value = response.data.text;
         }
 
-            // Если строка валидный JSON, парсим её и возвращаем результат
-                // error.value = JSON.parse(response.data.text);
-
-        console.log(typeof(error.value))
-        status.value = '';
+        status.value = false;
     }
 
 }

@@ -7,7 +7,7 @@
                 <form id="v-model-form" class="form-auth"  @submit.prevent="formSubmit">
                     <div class="heading-form">{{ $t('reset_password_1') }}</div>
 
-                    <!-- Password -->
+
                     <div class="wrap-field">
 
                         <input id="password" v-model="password" :placeholder="$t('auth_possword')" class="field-style"
@@ -16,7 +16,7 @@
                                required autocomplete="new-password" />
                     </div>
 
-                    <!-- Confirm Password -->
+
                     <div class="wrap-field">
                         <input id="password_confirmation" v-model="passwordConfirm" :placeholder="$t('auth_repeat_password')" class="field-style"
                                type="password"
@@ -39,20 +39,17 @@
 </template>
 
 
-<script setup>
-import {onMounted, ref} from 'vue';
+<script setup lang="ts">
+import {ref} from 'vue';
 import {useRoute} from "vue-router";
 import {notAuthRequest} from "@/api.ts";
 import {useI18n} from "vue-i18n";
 import ShowingErrors from "@/components/ShowingErrors.vue";
 const route = useRoute();
-let email = ref('');
 let password = ref('');
 let passwordConfirm = ref('');
 let status = ref(false);
 let error =  ref('');
-
-
 
 async function formSubmit(){
 
