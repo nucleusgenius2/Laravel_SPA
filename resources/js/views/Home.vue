@@ -53,11 +53,10 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import News from '@/components/News.vue';
 import {useRoute} from "vue-router";
 const route = useRoute();
-
 </script>
 
 

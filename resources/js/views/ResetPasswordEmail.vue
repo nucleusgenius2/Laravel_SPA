@@ -23,7 +23,7 @@
                     </div>
                 </form>
 
-                <div class="auth-text form-auth-true" v-if="status !== ''">{{ successMessage }}</div>
+                <div class="auth-text form-auth-true" v-if="status">{{ successMessage }}</div>
                 <showing-errors :errors="error" />
             </div>
 

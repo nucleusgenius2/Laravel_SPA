@@ -2,7 +2,7 @@
     <MainLayout :layout = 'route.meta.layout'>
         <template #content>
 
-            <div class="wrap-admin-link" v-if="auth">
+            <div class="wrap-admin-link" v-if="authUser.status==='success'">
                 <div class="max">
                     <div class="admin-link-text">
                         <span>Вы авторизованы: <span>{{ userEmail }}</span></span>
@@ -29,33 +29,47 @@
 
 
 
-<script setup>
+<script setup lang="ts">
 import AdminMenu from '@/components/admin/AdminMenu.vue';
 import {onMounted, ref} from 'vue';
 import { useRoute } from "vue-router";
 import {authRequest} from "@/api.ts";
 
-let auth = ref('');
 let userEmail = ref('');
 const route = useRoute();
 
-//check auth user
+interface authObject {
+    status: string;
+    permission: string
+}
+
+let authUser = ref<authObject>({
+    status: '',
+    permission: ''
+});
+
 onMounted(async () => {
-    if (localStorage.getItem("token") !== null) {
+    const tokenString = localStorage.getItem("token");
 
-        let response = await authRequest('/api/authorization', 'get');
+    if (tokenString) {
+        try {
+            let response = await authRequest('/api/authorization', 'get');
+            authUser.value = response.data;
 
-        auth.value = response.data;
-        userEmail.value = JSON.parse(localStorage.getItem('token')).user
+            let tokenParsed = JSON.parse(tokenString);
+            userEmail.value = tokenParsed.user;
+        } catch (error) {
+            console.error("Ошибка авторизации:", error);
+        }
     }
 });
 
 
-//logout
+
 async function logout() {
     let response = await authRequest('/api/logout/', 'get');
     if (response.data.status === 'success') {
-        auth.value.status = '';
+        authUser.value.status = '';
         localStorage.removeItem('token');
 
         window.location.replace("/login");

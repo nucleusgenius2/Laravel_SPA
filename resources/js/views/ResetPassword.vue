@@ -43,7 +43,6 @@
 import {ref} from 'vue';
 import {useRoute} from "vue-router";
 import {notAuthRequest} from "@/api.ts";
-import {useI18n} from "vue-i18n";
 import ShowingErrors from "@/components/ShowingErrors.vue";
 const route = useRoute();
 let password = ref('');

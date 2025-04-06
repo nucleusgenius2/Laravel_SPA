@@ -14,14 +14,22 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
 import {authRequest} from "@/api.ts";
 import router from "@/router/router";
 
+interface Post {
+    name: string;
+    content: string;
+}
+
 const route = useRoute();
-let post = ref([]);
+let post = ref<Post>({
+    name: '',
+    content: ''
+});
 
 onMounted(
     async () => {

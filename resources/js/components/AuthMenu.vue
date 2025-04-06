@@ -35,7 +35,7 @@ let props = defineProps({
 });
 
 
-watch(() => props.auth, (selection, prevSelection) => {
+watch(() => props.auth, () => {
     authorization();
 });
 

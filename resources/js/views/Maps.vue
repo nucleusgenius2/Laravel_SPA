@@ -73,7 +73,7 @@
                 <div class="wrap-el-grid">
                     <div v-if="!errors" class="post-el" v-for="(map) in arrayMaps">
                         <div class="maps-img maps-el">
-                            <img :src="map.url_img" alt="">
+                            <img :src="typeof map.url_img === 'string' ? map.url_img : ''" alt="">
                             <div class="wrap-icons-action">
                                 <a :href="'/api/mods/downland?name='+map.name_dir+'.zip'">
                                     <img  src="/images/downland.svg" alt="downland" class="downland-map">
@@ -124,22 +124,14 @@
 <script setup lang="ts">
 import {useRoute} from "vue-router";
 import {ref} from "vue";
+//@ts-ignore
 import Pagination from "v-pagination-3";
 import {rateMapsAndMods} from "@/script/rateMapsAndMods.ts";
 import {nameMaxLength} from "@/script/nameMaxLength.ts";
 import {sizeMap} from "@/script/sizeMap.ts";
 import {authRequest} from "@/api.ts";
+import type { MapItem } from '@/types/map';
 
-interface MapItem {
-    name: string;
-    name_dir: string;
-    url_img: string;
-    total_player: number;
-    size: string;
-    map_rate: number;
-    rate: number;
-    author?: string;
-}
 
 interface Filter {
     name: string;

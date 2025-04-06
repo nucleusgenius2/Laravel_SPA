@@ -14,7 +14,7 @@
                     <div class="wrap-maps-size">
                         <div class="wrap-field">
                             <div class="heading-field">Размер карты</div>
-                            <select class='field-admin' v-model="map.map_size">
+                            <select class='field-admin' v-model="map.size">
                                 <option value="256x256">5 на 5 (256 на 256)</option>
                                 <option value="512x512">10 на 10 (512 на 512)</option>
                                 <option value="1024x1024">20 на 20 (1024 на 1024)</option>
@@ -23,7 +23,7 @@
 
                         <div class="wrap-field">
                             <div class="heading-field">Произвольный размер</div>
-                            <input class='field-admin' v-model="map.map_size">
+                            <input class='field-admin' v-model="map.size">
                         </div>
                     </div>
 
@@ -160,18 +160,20 @@
                 <div class="maps-el">Удаление</div>
             </div>
 
-            <div class="post-el" v-for="(maps) in arrayMaps">
-                <div class="maps-img maps-el "><img :src="maps.url_img" alt=""></div>
-                <div class="maps-name maps-el">{{ maps.name }}</div>
-                <div class="maps-el">{{ maps.total_player }}</div>
-                <div v-if="maps.rate===0" class="maps-el">Нет</div>
-                <div v-else class="maps-el">Да</div>
-                <div class="maps-el size">{{ maps.size}}</div>
-                <div class="wrap-date">
-                    <div class="post-date-c"><span>Создание:</span> <span>{{ convertTime(maps.created_at) }}</span></div>
-                    <div class="post-date-u"><span>Обновление:</span> <span>{{  convertTime(maps.updated_at) }}</span></div>
+            <div class="post-el" v-for="(map) in arrayMaps">
+                <div class="maps-img maps-el ">
+                    <img :src="typeof map.url_img === 'string' ? map.url_img : ''" alt="">
                 </div>
-                <div class="remove-post" @click="removeMaps" :data-id="maps.id">Удалить</div>
+                <div class="maps-name maps-el">{{ map.name }}</div>
+                <div class="maps-el">{{ map.total_player }}</div>
+                <div v-if="map.rate===0" class="maps-el">Нет</div>
+                <div v-else class="maps-el">Да</div>
+                <div class="maps-el size">{{ map.size}}</div>
+                <div class="wrap-date">
+                    <div class="post-date-c"><span>Создание:</span> <span v-if="map.created_at">{{ convertTime(map.created_at) }}</span></div>
+                    <div class="post-date-u"><span>Обновление:</span> <span v-if="map.updated_at">{{  convertTime(map.updated_at) }}</span></div>
+                </div>
+                <div class="remove-post" @click="removeMaps" :data-id="map.id">Удалить</div>
             </div>
 
 
@@ -184,17 +186,20 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import {ref} from 'vue';
-import { useRoute } from "vue-router";
+
 import {authRequest} from "@/api.ts";
 import ButtonSave from "@/components/admin/ButtonSave.vue";
+//@ts-ignore
 import Pagination from 'v-pagination-3';
 import {convertTime} from '@/script/convertTime.ts'
-const route = useRoute();
+import type { MapItem } from '@/types/map';
+
 let error = ref('');
 let showUploadPanel = ref(false);
-let saveButtonRef = ref(null)
+let saveButtonRef = ref(null);
+
 let filter = ref({
     'name' : '',
     'total_player_from' : '',
@@ -203,49 +208,82 @@ let filter = ref({
 });
 let pageModel = ref(1)
 let pageTotal = ref(1)
-let map = ref({
-    'name' : '',
-    'map_size' : '',
-    'version' : '',
-    'total_player' : '',
-    'rate' : '',
-    'url_img' : '',
-    'map_archive' : ''
+
+
+let map = ref<MapItem>({
+    id: 0,
+    name: '',
+    name_dir: '',
+    url_img: '',
+    map_archive: '',
+    total_player: 0,
+    size: '',
+    map_rate: 0,
+    rate: 0,
+    version: 0,
 });
-let arrayMaps = ref([]);
+
+
+let arrayMaps = ref<MapItem[]>([]);
 
 function openUploadPanel(){
     showUploadPanel.value = true;
 }
 
-function onChangeFileImg(event) {
-    map.value.url_img = event.target.files[0];
+function onChangeFileImg(event: Event) {
+    const target = event.target as HTMLInputElement;
+
+    if (target.files && target.files[0]) {
+        map.value.url_img = target.files[0];
+    }
 }
 
-function onChangeFileMap(event) {
-    map.value.map_archive = event.target.files[0];
-    map.value.name = map.value.map_archive.name.replace('.zip', '')
+
+function onChangeFileMap(event: Event) {
+    const target = event.target as HTMLInputElement;
+
+    if (target.files && target.files[0]) {
+        map.value.map_archive = target.files[0];
+        map.value.name = map.value.map_archive.name.replace('.zip', '')
+    }
+
 }
 
 
 async function saveMap(){
     let formData = new FormData();
     formData.append('name', map.value.name);
-    formData.append('map_size', map.value.map_size);
-    formData.append('version', map.value.version);
-    formData.append('total_player',  map.value.total_player);
-    formData.append('rate', map.value.rate);
-    formData.append('url_img',  map.value.url_img);
-    formData.append('map_archive',  map.value.map_archive);
+    formData.append('map_size', map.value.size);
+    formData.append('version', map.value.version.toString());
+    formData.append('total_player', map.value.total_player.toString());
+    formData.append('rate', map.value.rate.toString());
+
+    // изображение карты
+    if (map.value.url_img instanceof File) {
+        formData.append('url_img', map.value.url_img, map.value.url_img.name);
+    } else {
+        formData.append('url_img', map.value.url_img);
+    }
+
+    //архив с картой
+    if(map.value.map_archive) {
+        if (map.value.map_archive instanceof File) {
+            formData.append('map_archive', map.value.map_archive, map.value.map_archive.name);
+        } else {
+            formData.append('map_archive', map.value.map_archive);
+        }
+    }
 
     let response = await authRequest('/api/maps', 'post', formData);
 
     if ( response.data.status  === 'success') {
+        //@ts-ignore
         saveButtonRef.value.save()
         error.value = ''
     }
     else {
-        saveButtonRef.value.error()
+        //@ts-ignore
+         saveButtonRef.value.error()
         error.value = response.data.text;
         error.value = error.value.replace(/map archive/g, 'Архив с картой' );
         error.value = error.value.replace(/Имя/g, 'Имя карты' );
@@ -280,13 +318,15 @@ async function paginationListing(filterClick = '') {
 }
 paginationListing();
 
-async function removeMaps(e){
-    let id = e.target.getAttribute('data-id');
+async function removeMaps(e: MouseEvent){
+    let target = e.target as HTMLElement;
+
+    let id = target.getAttribute('data-id');
 
     let response = await authRequest('/api/maps/'+id, 'delete');
 
     if ( response.data.status==='success' ){
-        e.target.closest('.post-el').remove();
+        target.closest('.post-el')?.remove();
     }
     else {
         console.error(response.data.status);

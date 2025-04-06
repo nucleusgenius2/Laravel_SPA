@@ -53,6 +53,7 @@
 import {useRoute} from "vue-router";
 import {authRequest} from "@/api.ts";
 import {ref} from "vue";
+//@ts-ignore
 import Pagination from "v-pagination-3";
 import {rateMapsAndMods} from "@/script/rateMapsAndMods.ts";
 import {nameMaxLength} from "@/script/nameMaxLength.ts";
