@@ -13,7 +13,7 @@
 
                     <div class="wrap-field">
                         <div class="heading-field">Имя папки с модом</div>
-                        <input class='field-admin' v-model="mod.dir">
+                        <input class='field-admin' v-model="mod.name_dir">
                     </div>
 
                     <div class="wrap-field">
@@ -43,7 +43,6 @@
                         </div>
                     </div>
 
-
                 </div>
 
 
@@ -71,17 +70,19 @@
                 <div class="mods-el">Удаление</div>
             </div>
 
-            <div class="post-el" v-for="(mods) in arrayMods">
-                <div class="mods-img mods-el "><img :src="mods.url_img" alt=""></div>
-                <div class="mods-name mods-el">{{ mods.name }}</div>
-                <div class="mods-el description">{{ mods.description }}</div>
-                <div v-if="mods.type===0" class="mods-el">SIM Мод</div>
+            <div class="post-el" v-for="(mod) in arrayMods">
+                <div class="mods-img mods-el">
+                    <img :src="typeof mod.url_img === 'string' ? mod.url_img : ''" alt="">
+                </div>
+                <div class="mods-name mods-el">{{ mod.name }}</div>
+                <div class="mods-el description">{{ mod.description }}</div>
+                <div v-if="mod.type===0" class="mods-el">SIM Мод</div>
                 <div v-else class="mods-el">IU Мод</div>
                 <div class="wrap-date">
-                    <div class="post-date-c"><span>Создание:</span> <span>{{ convertTime(mods.created_at) }}</span></div>
-                    <div class="post-date-u"><span>Обновление:</span> <span>{{ convertTime(mods.updated_at) }}</span></div>
+                    <div class="post-date-c"><span>Создание:</span> <span v-if="mod.created_at">{{ convertTime(mod.created_at) }}</span></div>
+                    <div class="post-date-u"><span>Обновление:</span> <span v-if="mod.updated_at">{{ convertTime(mod.updated_at) }}</span></div>
                 </div>
-                <div class="remove-post" @click="removeMods" :data-id="mods.id">Удалить</div>
+                <div class="remove-post" @click="removeMods" :data-id="mod.id">Удалить</div>
             </div>
 
 
@@ -91,29 +92,36 @@
 </template>
 
 
-<script setup>
-import {onMounted, ref} from 'vue';
-import { useRoute } from "vue-router";
+<script setup lang="ts">
+import {ref} from 'vue';
+
 import {authRequest} from "@/api.ts";
 import ButtonSave from "@/components/admin/ButtonSave.vue";
+//@ts-ignore
 import Pagination from 'v-pagination-3';
 import {convertTime} from '@/script/convertTime.ts'
+import type { ModItem } from '@/types/mod';
 let errors = ref(false)
-const route = useRoute();
+
 let showUploadPanel = ref(false);
 let saveButtonRef = ref(null)
 let pageModel = ref(1)
 let pageTotal = ref(1)
-let arrayMods = ref([]);
+let arrayMods = ref<ModItem[]>([]);
 
-let mod = ref({
-    'name' : '',
-    'version' : '',
-    'description' : '',
-    'type' : '',
-    'url_img' : '',
-    'mod_archive' : '',
-    'dir' : ''
+let mod = ref<ModItem>({
+    id: 0,
+    name: '',
+    name_dir: '',
+    url_img: '',
+    mod_archive : '',
+    type: 0,
+    description: '',
+    mod_rate: 0,
+    author: '',
+    version: 0,
+    created_at: '',
+    updated_at: '',
 });
 
 async function paginationListing(){
@@ -133,13 +141,20 @@ function openUploadPanel(){
     showUploadPanel.value = true;
 }
 
+function onChangeFileImg(event: Event) {
+    const target = event.target as HTMLInputElement;
 
-function onChangeFileImg(event) {
-    mod.value.url_img = event.target.files[0];
+    if (target.files && target.files[0]) {
+        mod.value.url_img = target.files[0];
+    }
 }
 
-function onChangeFileMod(event) {
-    mod.value.mod_archive = event.target.files[0];
+function onChangeFileMod(event: Event) {
+    const target = event.target as HTMLInputElement;
+
+    if (target.files && target.files[0]) {
+        mod.value.mod_archive = target.files[0];
+    }
 }
 
 
@@ -147,19 +162,33 @@ async function saveMods(){
 
     let formData = new FormData();
     formData.append('name', mod.value.name);
-    formData.append('name_dir', mod.value.dir);
-    formData.append('version', mod.value.version);
+    formData.append('name_dir', mod.value.name_dir);
+    formData.append('version', mod.value.version.toString());
     formData.append('description', mod.value.description);
-    formData.append('type', mod.value.type);
-    formData.append('url_img',  mod.value.url_img);
-    formData.append('mod_archive',  mod.value.mod_archive);
+    formData.append('type', mod.value.type.toString());
+
+    if (mod.value.url_img instanceof File) {
+        formData.append('url_img', mod.value.url_img, mod.value.url_img.name);
+    } else {
+        formData.append('url_img', mod.value.url_img);
+    }
+
+    if(mod.value.mod_archive) {
+        if (mod.value.mod_archive instanceof File) {
+            formData.append('mod_archive', mod.value.mod_archive, mod.value.mod_archive.name);
+        } else {
+            formData.append('mod_archive', mod.value.mod_archive);
+        }
+    }
 
     let response = await authRequest('/api/mods', 'post', formData);
 
     if ( response.data.status  === 'success') {
+        //@ts-ignore
         saveButtonRef.value.save()
     }
     else {
+        //@ts-ignore
         saveButtonRef.value.error()
         errors.value = response.data.text;
     }
@@ -167,13 +196,15 @@ async function saveMods(){
 
 
 
-async function removeMods(e){
-    let id = e.target.getAttribute('data-id');
+async function removeMods(e: MouseEvent){
+    let target = e.target as HTMLElement;
+
+    let id = target.getAttribute('data-id');
 
     let response = await authRequest('/api/mods/'+id, 'delete');
 
     if ( response.data.status==='success' ){
-        e.target.closest('.post-el').remove();
+        target.closest('.post-el')?.remove();
     }
     else {
         console.error(response.data.status);

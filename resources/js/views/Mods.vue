@@ -8,7 +8,7 @@
                 <div class="wrap-el-grid">
                     <div v-if="!errors" class="post-el" v-for="(mod, key) in arrayMods">
                         <div class="maps-img maps-el">
-                            <img :src="mod.url_img" alt="">
+                            <img :src="typeof mod.url_img ==='string' ? mod.url_img : ''" alt="">
                             <div class="wrap-icons-action">
                                 <a :href="'/api/mods/downland?name='+mod.name_dir+'.zip'">
                                     <img  src="/images/downland.svg" alt="downland" class="downland-map">
@@ -57,17 +57,10 @@ import {ref} from "vue";
 import Pagination from "v-pagination-3";
 import {rateMapsAndMods} from "@/script/rateMapsAndMods.ts";
 import {nameMaxLength} from "@/script/nameMaxLength.ts";
+import type { ModItem } from '@/types/mod';
 const route = useRoute();
 
-interface ModItem {
-    name: string;
-    name_dir: string;
-    url_img: string;
-    type: number;
-    description: string;
-    mod_rate: number;
-    author?: string;
-}
+
 let arrayMods = ref<ModItem[]>([]);
 
 let pageModel = ref(1)

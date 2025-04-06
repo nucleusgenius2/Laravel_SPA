@@ -246,7 +246,6 @@ function onChangeFileMap(event: Event) {
         map.value.map_archive = target.files[0];
         map.value.name = map.value.map_archive.name.replace('.zip', '')
     }
-
 }
 
 
