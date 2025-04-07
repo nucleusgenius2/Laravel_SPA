@@ -30,19 +30,17 @@
 </template>
 
 
-<script setup>
-
+<script setup lang="ts">
 import {ref} from 'vue';
-import { useRoute } from "vue-router";
 import {authRequest} from "@/api.ts";
+//@ts-ignore
 import Pagination from "v-pagination-3";
-import {convertTime} from "../../script/convertTime";
+import {convertTime} from "@/script/convertTime.ts";
+import type {UserItem} from "@/types/user.ts";
 
-
-const route = useRoute();
 let pageModel = ref(1)
 let pageTotal = ref(1)
-let arrayUsers = ref([]);
+let arrayUsers = ref<UserItem[]>([]);
 
 async function paginationListing() {
     let response = await authRequest('/api/users?page=' + pageModel.value, 'get');

@@ -44,7 +44,7 @@ class UserService
             return new DataObjectDTO(status: false, error: 'id не может быть меньше 1', code: 422);
         }
 
-        $user = User::where('id', '=', $id)->firts();
+        $user = User::where('id', '=', $id)->first();
         if ($user) {
             return new DataObjectDTO(status: true, data: $user);
         } else {

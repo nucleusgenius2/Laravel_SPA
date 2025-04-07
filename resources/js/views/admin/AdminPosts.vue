@@ -89,26 +89,29 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 
 import {ref} from 'vue';
-import { useRoute } from "vue-router";
 import {authRequest} from "@/api.ts";
+//@ts-ignore
 import Pagination from "v-pagination-3";
 import {convertTime} from "@/script/convertTime";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import {PostFilter, PostItem} from '@/types/post';
+
 let pageModel = ref(1)
 let pageTotal = ref(1)
-let filter = ref({
+
+let filter = ref<PostFilter>({
     'name' : '',
     'created_at_from' : '',
     'created_at_to' : '',
     'date_fixed' : ''
 });
 
-const route = useRoute();
-let arrayPosts = ref([]);
+
+let arrayPosts = ref<PostItem[]>([]);
 
 async function paginationListing(filterClick = '') {
     if (filterClick === 'filter') {
@@ -128,7 +131,6 @@ async function paginationListing(filterClick = '') {
         stringFilter += '&date_fixed=' + filter.value.date_fixed;
     }
 
-
     let response = await authRequest('/api/posts?page=' + pageModel.value + stringFilter, 'get');
 
     if (response.data.status === 'success') {
@@ -141,26 +143,28 @@ async function paginationListing(filterClick = '') {
 }
 paginationListing();
 
-function clearFilter (){
+function clearFilter(){
     filter.value.name = '';
     filter.value.created_at_from = '';
     filter.value.created_at_to = '';
-    filter.value.chunk = '';
-    paginationListing();
+    filter.value.date_fixed = '';
 }
 
 
-async function removePost(e){
-    let id = e.target.getAttribute('data-id');
+async function removePost(e: MouseEvent){
+    let target = e.target as HTMLElement;
+
+    let id = target.getAttribute('data-id');
 
     let response = await authRequest('/api/posts/'+id, 'delete');
     if ( response.data.status==='success' ){
-        e.target.closest('.post-el').remove();
+        target.closest('.post-el')?.remove();
     }
     else {
         console.error(response.data.status);
     }
 }
+
 </script>
 
 

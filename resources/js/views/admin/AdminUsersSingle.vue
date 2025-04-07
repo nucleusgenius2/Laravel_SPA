@@ -13,17 +13,19 @@
             </div>
 
             <div class="wrap-field">
-                <div class="heading-field">Дата регистрации</div>
-                <span>{{ user.created_at }} </span>
+                <div class="heading-field">Статус пользователя</div>
+                <input class='field-admin' v-model="user.status">
             </div>
 
             <div class="wrap-field">
-                <div class="heading-field">Краткое описание новости</div>
-                <textarea class='field-admin textarea-field' v-model="user.short_description"></textarea>
+                <div class="heading-field">Дата регистрации</div>
+                <span>{{ convertTime(user.created_at) }} </span>
             </div>
 
+
+
             <div class="wrap-save">
-                <div class="save news" @click="save()">Сохранить</div>
+                <!--<div class="save" @click="save()">Сохранить</div> -->
                 <div class="text-status" v-if="saveStatus==='success' || saveStatus==='save_success_redirect'">
                     <span>Успешно сохранено</span>
                 </div>
@@ -35,90 +37,48 @@
 
 
 
-<script setup>
+<script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import router from "@/router/router";
 import {useRoute} from "vue-router";
-import CKEditor from '@ckeditor/ckeditor5-vue';
 import {authRequest} from "@/api.ts";
 
-const ckeditor = CKEditor.component;
-
+import type { UserItem } from '@/types/user';
+import {convertTime} from "@/script/convertTime.ts";
 const route = useRoute();
-let user = ref({
-    name : '',
-    img : '',
+
+let user = ref<UserItem >({
+    id: 0,
+    name: '',
+    email: '',
+    status: 0,
+    icons: '',
+    created_at: '',
+    updated_at: '',
 });
 let textEditor = ref('');
 let saveStatus = ref('');
-let imgPreview = ref('');
 
 
-function onChangeFile(event) {
-    user.value.img = event.target.files[0];
-    imgPreview.value = window.URL.createObjectURL( array.value.img );
-}
-
-
-//get post info
 onMounted(
     async () => {
         if (route.params.id !== 'add') {
             let response = await authRequest('/api/users/' + route.params.id, 'get');
 
             if ( response.data.status === 'success' ){
-                user.value = response.data.json[0];
-                user.value.created_at = new Date(user.value.created_at).toLocaleString();
-                textEditor.value = response.data.json[0].content;
-                imgPreview.value = response.data.json[0].img;
+                console.log(response.data)
+                user.value = response.data.json;
             }
             else {
-                return router.put({ name: '404',  query: { textError: encodeURIComponent(response.data.text) } })
+                router.push({
+                    name: '404',
+                    query: { textError: encodeURIComponent(response.data.text) }
+                });
+
             }
         }
     }
 );
-
-//update post
-async function save(){
-
-    //save or update
-    let formData = new FormData();
-    formData.append('id', route.params.id)
-    formData.append('name', user.value.name)
-    formData.append('img', user.value.img)
-    formData.append('content', textEditor.value)
-    formData.append('short_description', user.value.short_description)
-    formData.append('author', JSON.parse(localStorage.getItem('token')).user);
-    formData.append('seo_title', '');
-    formData.append('seo_description', '');
-    formData.append('id_category', '');
-    //create post
-    if ( route.params.id === 'add' ){
-        let response = await authRequest('/api/posts', 'post', formData);
-
-        if (response.data.status === 'success'){
-            saveStatus.value = response.data.status;
-            window.location.replace("/admin/posts/"+response.data.json);
-        }
-    }
-    //update post
-    else {
-        formData.append('_method',"PATCH") //фикс бага ларавел(форм дата не работает в пут и патч), отправляем пост, но с методом PATCH, чтобы вызвался роут патч
-        let response = await authRequest('/api/posts', 'post', formData );
-        saveStatus.value = response.data.status;
-    }
-
-    if ( saveStatus.value === 'success') {
-        setTimeout(() => {
-            saveStatus.value = '';
-        }, 3000);
-    }
-    else {
-        console.log(saveStatus.value);
-    }
-
-}
 
 
 </script>
@@ -134,10 +94,6 @@ async function save(){
 }
 .wrap-save {
     display:flex;
-}
-.img-field {
-    display:flex;
-    align-items: center;
 }
 .img-field img {
     max-width:100px;

@@ -101,8 +101,8 @@ import ButtonSave from "@/components/admin/ButtonSave.vue";
 import Pagination from 'v-pagination-3';
 import {convertTime} from '@/script/convertTime.ts'
 import type { ModItem } from '@/types/mod';
-let errors = ref(false)
 
+let errors = ref(false)
 let showUploadPanel = ref(false);
 let saveButtonRef = ref(null)
 let pageModel = ref(1)
@@ -230,21 +230,12 @@ async function removeMods(e: MouseEvent){
     flex-basis: 8%;
 }
 
-.author {
-    flex-basis: 14%
-}
 
 .wrap-mods-size .wrap-field:first-child{
     margin-right: 8px;
 }
 
-.size {
-    flex-basis: 7%
-}
 
-.wrap-mods-size {
-    display:flex;
-}
 .wrap-mods-field {
     display:flex;
 }
