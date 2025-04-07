@@ -4,7 +4,7 @@
 
             <div class="wrap-field">
                 <div class="heading-field">Название новости</div>
-                <input class='field-admin' v-model="array.name">
+                <input class='field-admin' v-model="post.name">
             </div>
 
             <div class="document-editor__toolbar"></div>
@@ -16,13 +16,13 @@
             <div class="document-editor__toolbar"></div>
             <div class="wrap-field">
                 <div class="heading-field">Краткое описание новости</div>
-                <textarea class='field-admin textarea-field' v-model="array.short_description"></textarea>
+                <textarea class='field-admin textarea-field' v-model="post.short_description"></textarea>
             </div>
 
             <div class="wrap-field">
                 <div class="heading-field">Изображение новости</div>
                 <div class="img-field">
-                    <img v-if="array.img!==''" :src="imgPreview">
+                    <img v-if="typeof post.img==='string'" :src="imgPreview">
                     <input class='file' type="file" @change="onChangeFile">
                 </div>
             </div>
@@ -38,52 +38,54 @@
     </div>
 </template>
 
-<script>
-import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
-export default {
-    name: 'app',
-    data() {
-        return {
-            editor: DecoupledEditor,
-        };
-    },
-    methods: {
-        onReady( editor )  {
-            // Insert the toolbar before the editable area.
-            editor.ui.getEditableElement().parentElement.insertBefore(
-                editor.ui.view.toolbar.element,
-                editor.ui.getEditableElement()
-            );
-        }
-    }
-}
-
-</script>
 
 
-<script setup>
+<script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import router from "@/router/router";
 import {useRoute} from "vue-router";
+//@ts-ignore
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import {authRequest} from "@/api.ts";
+import type { PostItem } from '@/types/post';
+//@ts-ignore
+import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 
+const editor = ref(DecoupledEditor);
 const ckeditor = CKEditor.component;
 
 const route = useRoute();
-let array = ref({
-    name : '',
-    img : '',
+let post = ref<PostItem>({
+    name: '',
+    content:  '',
+    short_description: '',
+    seo_title: '',
+    seo_description: '',
+    img: '',
+    category_id: 0,
+    author: 0,
+    created_at: '',
+    updated_at: '',
 });
 let textEditor = ref('');
 let saveStatus = ref('');
-let imgPreview = ref('');
+let imgPreview = ref<string>('');
 
 
-function onChangeFile(event) {
-    array.value.img = event.target.files[0];
-    imgPreview.value = window.URL.createObjectURL( array.value.img );
+function onChangeFile(event: Event) {
+    const target = event.target as HTMLInputElement;
+
+    if (target.files && target.files[0]) {
+        post.value.img = target.files[0];
+    }
+
+    if (post.value.img instanceof File) {
+        imgPreview.value = URL.createObjectURL(post.value.img);
+    } else if (typeof post.value.img === 'string') {
+        imgPreview.value = post.value.img;
+    }
 }
+
 
 
 let editorConfig = {
@@ -123,18 +125,33 @@ let editorConfig = {
 
 }
 
+// 👇 Здесь то, что было в методе `onReady`
+function onReady(editorInstance: any) {
+    const editableElement = editorInstance.ui.getEditableElement();
+    if (editableElement && editableElement.parentElement) {
+        editableElement.parentElement.insertBefore(
+            editorInstance.ui.view.toolbar.element,
+            editableElement
+        );
+    }
+}
+
+
 onMounted(
     async () => {
         if (route.params.id !== 'add') {
             let response = await authRequest('/api/posts/' + route.params.id, 'get');
 
             if ( response.data.status === 'success' ){
-                array.value = response.data.json[0];
+                post.value = response.data.json[0];
                 textEditor.value = response.data.json[0].content;
                 imgPreview.value = response.data.json[0].img;
             }
             else {
-                return router.put({ name: '404',  query: { textError: encodeURIComponent(response.data.text) } })
+                router.push({
+                    name: '404',
+                    query: { textError: encodeURIComponent(response.data.text) }
+                });
             }
         }
     }
@@ -143,13 +160,13 @@ onMounted(
 
 async function save(){
     let formData = new FormData();
-    formData.append('id', route.params.id)
-    formData.append('name', array.value.name)
-    if (array.value.img && typeof(array.value.img) !=='string') {
-        formData.append('img', array.value.img)
+    formData.append('id', route.params.id.toString())
+    formData.append('name', post.value.name)
+    if (post.value.img && typeof(post.value.img) !=='string') {
+        formData.append('img', post.value.img)
     }
     formData.append('content', textEditor.value)
-    formData.append('short_description', array.value.short_description)
+    formData.append('short_description', post.value.short_description)
     formData.append('seo_title', '');
     formData.append('seo_description', '');
     formData.append('id_category', '');

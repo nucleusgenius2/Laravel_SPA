@@ -56,7 +56,6 @@ let user = ref<UserItem >({
     created_at: '',
     updated_at: '',
 });
-let textEditor = ref('');
 let saveStatus = ref('');
 
 

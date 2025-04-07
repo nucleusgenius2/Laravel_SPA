@@ -3,8 +3,8 @@ export interface PostItem {
     name: string;
     content: string;
     short_description: string;
-    seo_title: string;
-    seo_description: string;
+    seo_title?: string;
+    seo_description?: string;
     img: File | string;
     category_id: number;
     author: number;

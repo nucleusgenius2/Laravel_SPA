@@ -95,7 +95,7 @@ import {ref} from 'vue';
 import {authRequest} from "@/api.ts";
 //@ts-ignore
 import Pagination from "v-pagination-3";
-import {convertTime} from "@/script/convertTime";
+import {convertTime} from "@/script/convertTime.ts";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import {PostFilter, PostItem} from '@/types/post';

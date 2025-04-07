@@ -19,16 +19,20 @@ import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
 import {authRequest} from "@/api.ts";
 import router from "@/router/router";
-
-interface Post {
-    name: string;
-    content: string;
-}
+import {PostItem} from '@/types/post';
 
 const route = useRoute();
-let post = ref<Post>({
+let post = ref<PostItem>({
     name: '',
-    content: ''
+    content:  '',
+    short_description: '',
+    seo_title: '',
+    seo_description: '',
+    img: '',
+    category_id: 0,
+    author: 0,
+    created_at: '',
+    updated_at: '',
 });
 
 onMounted(
