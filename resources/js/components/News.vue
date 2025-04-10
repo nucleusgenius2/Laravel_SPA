@@ -67,7 +67,7 @@
             <div class="post-el" v-for="(post) in arrayPosts">
                 <div class="heading-post">{{ post.name }}</div>
                 <div class="wrap-section-post">
-                    <div class="thumb-post"><img :src="post.img" alt="new-thumb"></div>
+                    <div class="thumb-post"><img v-if="typeof post.img==='string'" :src="post.img" alt="new-thumb"></div>
                     <div class="post-short-text">
                         <div class="content-short-post">{{ post.short_description }}</div>
                     </div>
@@ -87,22 +87,22 @@
 
 
 
-<script setup>
+<script setup lang="ts">
 import {ref} from 'vue';
-import {useRoute} from "vue-router";
 import {authRequest} from "@/api.ts";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import '@vuepic/vue-datepicker/dist/main.css'
+//@ts-ignore
 import Pagination from "v-pagination-3";
 import {useI18n} from "vue-i18n";
 const { t, locale } = useI18n({ useScope: 'global' })
+import {PostFilter, PostItem} from '@/types/post';
 
-const route = useRoute();
-let arrayPosts = ref([]);
+let arrayPosts = ref<PostItem[]>([]);
 let emptyPage = ref(false);
 let pageModel = ref(1)
 let pageTotal = ref(1)
-let filter = ref({
+let filter = ref<PostFilter>({
     'name' : '',
     'created_at_from' : '',
     'created_at_to' : '',
@@ -146,7 +146,7 @@ function clearFilter (){
     filter.value.name = '';
     filter.value.created_at_from = '';
     filter.value.created_at_to = '';
-    filter.value.chunk = '';
+    filter.value.date_fixed = '';
     paginationListing();
 }
 </script>

@@ -155,7 +155,7 @@ let filter = ref<Filter>({
 });
 
 
-async function paginationListing(filterClick: string = '') {
+async function paginationListing(filterClick: string = ''): Promise<void>  {
     if (filterClick === 'filter') {
         pageModel.value = 1;
     }
@@ -181,7 +181,7 @@ async function paginationListing(filterClick: string = '') {
 }
 paginationListing();
 
-function clearFilter (){
+function clearFilter(): void {
     filter.value.name = '';
     filter.value.total_player_from = '';
     filter.value.total_player_to = '';

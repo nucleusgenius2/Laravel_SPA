@@ -44,7 +44,7 @@ const {t} = useI18n({ useScope: 'global' })
 let email = ref('');
 let status = ref(false);
 let successMessage = ref('');
-let error =  ref('');
+let error = ref('');
 
 if (localStorage.getItem("token")) {
     status.value = true;

@@ -18,10 +18,11 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref} from "vue";
+import {TabItem} from '@/types/tab';
 
-let tab = ref({
+let tab = ref<TabItem>({
     tab1 : false,
     tab2 : false,
     tab3 : false,
@@ -29,12 +30,14 @@ let tab = ref({
     tab5 : false,
 });
 
-function active(e) {
+function active(e: string): void {
     tab.value.tab1 = false;
     tab.value.tab2 = false;
     tab.value.tab3 = false;
     tab.value.tab4 = false;
     tab.value.tab5 = false;
+    tab.value[e] = true;
+
 }
 </script>
 
@@ -52,8 +55,12 @@ function active(e) {
     }
     .wrap-admin-menu a:hover{
         background-color: #8b8b8b;
-    }
-    .wrap-admin-menu a:hover  {
         color:#fff;
     }
+
+    .wrap-admin-menu .active {
+        background-color: #8b8b8b;
+        color:#fff;
+    }
+
 </style>

@@ -17,11 +17,7 @@
 <script setup lang="ts">
 import {onMounted, ref , watch} from "vue";
 import {authRequest} from "@/api.ts";
-
-interface authObject {
-    status: string;
-    permission: string
-}
+import type { authObject } from '@/types/auth';
 
 let authUser = ref<authObject>({
     status: '',
@@ -50,7 +46,6 @@ async function authorization(){
         let response = await authRequest('/api/authorization', 'get');
         if ( response.data.status === 'success' ){
             authUser.value = response.data;
-            console.log(authUser.value)
 
             let token = localStorage.getItem('token');
             if (token) {

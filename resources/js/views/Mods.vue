@@ -60,12 +60,10 @@ import {nameMaxLength} from "@/script/nameMaxLength.ts";
 import type { ModItem } from '@/types/mod';
 const route = useRoute();
 
-
 let arrayMods = ref<ModItem[]>([]);
 
 let pageModel = ref(1)
 let pageTotal = ref(1)
-
 
 let errors = ref(false)
 
