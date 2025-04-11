@@ -10,7 +10,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref} from "vue";
 let success = ref(false);
 let err = ref(false);

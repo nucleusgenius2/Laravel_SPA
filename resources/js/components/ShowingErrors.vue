@@ -10,13 +10,14 @@
                   <span v-else>{{ $t(el) }}</span>
                </div>
         </div>
-        <span v-else> {{$t( removeQuotes(props.errors) )}}</span>
+        <span v-else-if="typeof props.errors === 'string'"> {{$t(removeQuotes(props.errors))}}</span>
+        <span v-else>{{ $t('Произошла ошибка') }}</span>
     </div>
 </div>
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 let props = defineProps({
     errors: {
         type: [String, Object, Array],
@@ -24,12 +25,10 @@ let props = defineProps({
     }
 });
 
-function checkObject(errors){
-    console.log(typeof errors === 'object' && errors !== null)
+function checkObject(errors: any){
     return typeof errors === 'object' && errors !== null;
 }
-function removeQuotes(str) {
-
+function removeQuotes(str: string) {
     if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
         return str.slice(1, -1);
     }
